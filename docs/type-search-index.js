@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"ib.grapher","l":"Cell"},{"p":"ib.grapher","l":"DataTable"},{"p":"ib.grapher","l":"Graph"},{"p":"ib.grapher","l":"Main"},{"p":"ib.grapher","l":"PlottableTable"},{"p":"ib.grapher","l":"Series"}];updateSearchResults();

@@ -1,0 +1,130 @@
+package ib.grapher;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+
+/**
+ * A class which loosely "holds" any number of Cells in a doubly linked list.
+ * As well as calculating a statistical report of the series and holding
+ * references to its first and last Cells, a Series also contains an iterator
+ * to make it easier to loop through the whole series at once.
+ */
+public class Series implements Iterable<Cell> {
+	private String name = "";
+	private Cell firstCell = null;
+	private Cell lastCell = null;
+	private HashMap<String, Double> statistics = new HashMap<>();
+
+	/**
+	 * Creates an iterator for this series.
+	 * @return The created Iterator
+	 */
+	@Override
+	public Iterator<Cell> iterator() {
+		Iterator<Cell> iterator = new Iterator<Cell>() {
+			private Cell c = Series.this.firstCell;
+
+			@Override
+			public boolean hasNext() {
+				return (c != null);
+			}
+
+			@Override
+			public Cell next() {
+				Cell current = c;
+				c.getNext();
+				return current;
+			}
+
+			@Override
+			public void remove() {}
+		};
+		return iterator;
+	}
+
+	/**
+	 * Searches this series for cells with a particular value, returning an
+	 * ArrayList of any matches
+	 * @param s The string to search for
+	 * @return A list of cells whose values exactly match the search criteria
+	 */
+	public ArrayList<Cell> search(String s) {
+		ArrayList<Cell> matches = new ArrayList<>();
+		for (Cell c : this) {
+			if (c.getValue().equals(s))
+				matches.add(c);
+			c = c.getNext();
+		}
+		return matches;
+	}
+
+	/**
+	 * Calculates a statistical summary of this series, storing the value in the
+	 * statistics HashMap for later retrieval
+	 */
+	public void calculateStatistics() {
+
+	}
+
+	// Getters and setters
+
+	/**
+	 * Gets the name of this series.
+	 * @return the String name of this series
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Changes the name of this series.
+	 * @param s the new name of this series
+	 */
+	public void setName(String s) {
+		name = s;
+	}
+
+	/**
+	 * Gets the first (top) cell in this series.
+	 * @return A reference to the first Cell object in this series
+	 */
+	public Cell getFirst() {
+		return firstCell;
+	}
+
+	/**
+	 * Changes which cell is the first one in this series
+	 * @param c The new Cell object to place at the top of this series
+	 */
+	public void setFirst(Cell c) {
+		firstCell = c;
+	}
+
+	/**
+	 * Gets the last (bottom) cell in this series.
+	 * @return A reference to the last Cell object in this series
+	 */
+	public Cell getLast() {
+		return lastCell;
+	}
+
+	/**
+	 * Changes which cell is the last one in this series
+	 * @param c The new Cell object to place at the bottom of this series
+	 */
+	public void setLast(Cell c) {
+		lastCell = c;
+	}
+
+	/**
+	 * Gets a given statistic about this series.
+	 * @param key The key to search the statistics HashMap for
+	 */
+	public double getStatistic(String key) {
+		return statistics.get(key);
+	}
+
+	// Statistics are calculated by the series object itself, therefore they do
+	// not have a setter method.
+}
