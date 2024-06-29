@@ -1,0 +1,24 @@
+<project default="compile">
+	<path id="umlDoclet.classpath">
+		<fileset dir=".">
+			<include name="umldoclet-*.jar"/>
+		</fileset>
+	</path>
+	<target name="compile">
+		<mkdir dir="bin"/>
+		<javac srcdir="src" destdir="bin"/>
+	</target>
+	<target name="jar" depends="compile">
+		<jar destfile="Grapher.jar" basedir="bin"/>
+	</target>
+	<target name="javadoc">
+		<mkdir dir="docs"/>
+		<javadoc destdir="docs" sourcepath="src" access="private">
+			<doclet name="nl.talsmasoftware.umldoclet.UMLDoclet" pathref="umlDoclet.classpath">
+			</doclet>
+		</javadoc>
+	</target>
+	<target name="run" depends="jar">
+		<java jar="Grapher.jar" fork="true"/>
+	</target>
+</project>
