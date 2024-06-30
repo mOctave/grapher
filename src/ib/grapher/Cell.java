@@ -26,12 +26,17 @@ public class Cell extends JPanel {
 	}
 
 
-
+	/** The cell that comes before this one in its series. */
 	private Cell previousCell = null;
+	/** The cell that comes after this one in its series. */
 	private Cell nextCell = null;
+	/** The textual value of this cell. */
 	private String value = "";
+	/** A graphical text field to allow for data entry. */
 	private JTextField textField = null;
+	/** The index of this cell in its series. */
 	private int index = -1;
+	/** The series this cell belongs to. */
 	private Series series = null;
 
 
