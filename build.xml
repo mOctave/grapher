@@ -9,7 +9,12 @@
 		<javac srcdir="src" destdir="bin"/>
 	</target>
 	<target name="jar" depends="compile">
-		<jar destfile="Grapher.jar" basedir="bin"/>
+		<jar destfile="Grapher.jar">
+			<fileset dir="bin"/>
+			<manifest>
+				<attribute name="Main-Class" value="ib.grapher.Main"/>
+			</manifest>
+		</jar>
 	</target>
 	<target name="javadoc">
 		<mkdir dir="docs"/>

@@ -3,6 +3,7 @@ package ib.grapher;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * A class which loosely "holds" any number of Cells in a doubly linked list.
@@ -22,7 +23,7 @@ public class Series implements Iterable<Cell> {
 
 	/**
 	 * Creates an iterator for this series.
-	 * @return The created Iterator
+	 * @return The created {@link java.util.Iterator}
 	 */
 	@Override
 	public Iterator<Cell> iterator() {
@@ -45,13 +46,13 @@ public class Series implements Iterable<Cell> {
 	}
 
 	/**
-	 * Searches this series for cells with a particular value, returning an
-	 * ArrayList of any matches
+	 * Searches this series for cells with a particular value, returning a
+	 * {@link java.util.List} of any matches
 	 * @param s The string to search for
 	 * @return A list of cells whose values exactly match the search criteria
 	 */
-	public ArrayList<Cell> search(String s) {
-		ArrayList<Cell> matches = new ArrayList<>();
+	public List<Cell> search(String s) {
+		List<Cell> matches = new ArrayList<>();
 		for (Cell c : this) {
 			if (c.getValue().equals(s))
 				matches.add(c);
@@ -61,8 +62,8 @@ public class Series implements Iterable<Cell> {
 	}
 
 	/**
-	 * Calculates a statistical summary of this series, storing the value in the
-	 * statistics HashMap for later retrieval
+	 * Calculates a statistical summary of this series, storing the value in
+	 * {@link #statistics} for later retrieval
 	 */
 	public void calculateStatistics() {
 
@@ -72,7 +73,7 @@ public class Series implements Iterable<Cell> {
 
 	/**
 	 * Gets the name of this series.
-	 * @return the String name of this series
+	 * @return the {@link java.lang.String} name of this series
 	 */
 	public String getName() {
 		return name;
@@ -88,7 +89,7 @@ public class Series implements Iterable<Cell> {
 
 	/**
 	 * Gets the first (top) cell in this series.
-	 * @return A reference to the first Cell object in this series
+	 * @return A reference to the first {@link Cell} object in this series
 	 */
 	public Cell getFirst() {
 		return firstCell;
@@ -96,7 +97,7 @@ public class Series implements Iterable<Cell> {
 
 	/**
 	 * Changes which cell is the first one in this series
-	 * @param c The new Cell object to place at the top of this series
+	 * @param c The new {@link Cell} object to place at the top of this series
 	 */
 	public void setFirst(Cell c) {
 		firstCell = c;
@@ -104,7 +105,7 @@ public class Series implements Iterable<Cell> {
 
 	/**
 	 * Gets the last (bottom) cell in this series.
-	 * @return A reference to the last Cell object in this series
+	 * @return A reference to the last {@link Cell} object in this series
 	 */
 	public Cell getLast() {
 		return lastCell;
@@ -112,7 +113,7 @@ public class Series implements Iterable<Cell> {
 
 	/**
 	 * Changes which cell is the last one in this series
-	 * @param c The new Cell object to place at the bottom of this series
+	 * @param c The new {@link Cell} object to place at the bottom of this series
 	 */
 	public void setLast(Cell c) {
 		lastCell = c;
@@ -120,7 +121,7 @@ public class Series implements Iterable<Cell> {
 
 	/**
 	 * Gets a given statistic about this series.
-	 * @param key The key to search the statistics HashMap for
+	 * @param key The key to search {@link #statistics} for
 	 */
 	public double getStatistic(String key) {
 		return statistics.get(key);

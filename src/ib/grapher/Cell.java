@@ -42,7 +42,7 @@ public class Cell extends JPanel {
 
 
 	/**
-	 * Standard update loop, called whenever the DataTable updates.
+	 * Standard update loop, called whenever the {@link DataTable} updates.
 	 */
 	public void update() {
 
@@ -52,7 +52,7 @@ public class Cell extends JPanel {
 
 	/**
 	 * Gets the numeric value of this cell. If this cell does not contain
-	 * numeric data, this method will throw a NumberFormatException.
+	 * numeric data, this method will throw a {@link java.lang.NumberFormatException}.
 	 * @return The double numeric value of this cell
 	 */
 	public double getNumeric() throws NumberFormatException {
@@ -207,7 +207,7 @@ public class Cell extends JPanel {
 
 	/**
 	 * Gets the textual value of this cell.
-	 * @return The String value
+	 * @return The {@link java.lang.String} value
 	 */
 	public String getValue() {
 		return value;
@@ -215,7 +215,7 @@ public class Cell extends JPanel {
 
 	/**
 	 * Sets the textual value of this cell to a new value.
-	 * @param s The String to set as the new value
+	 * @param s The {@link java.lang.String} to set as the new value
 	 */
 	public void setValue(String s) {
 		value = s;
@@ -242,8 +242,8 @@ public class Cell extends JPanel {
 	}
 
 	/**
-	 * Gets the Series object this cell belongs to.
-	 * @return The Series of this cell, or null if it does not belong to a
+	 * Gets the series this cell belongs to.
+	 * @return The {@link Series} of this cell, or null if it does not belong to a
 	 * series.
 	 */
 	public Series getSeries() {
@@ -252,7 +252,7 @@ public class Cell extends JPanel {
 
 	/**
 	 * Changes which series this cell belongs to.
-	 * @param r The Series to link this cell to
+	 * @param r The {@link Series} to link this cell to
 	 */
 	public void setSeries(Series r) {
 		series = r;
