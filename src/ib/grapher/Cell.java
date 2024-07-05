@@ -1,9 +1,14 @@
 package ib.grapher;
 
-import javax.swing.BorderFactory;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 /**
@@ -17,27 +22,68 @@ public class Cell extends JPanel {
 	 * handles graphical layout.
 	 */
 	public Cell() {
-		textField = new JTextField();
-		this.setBorder(BorderFactory.createCompoundBorder(
-			new EmptyBorder(2, 2, 2, 2),
-			new EtchedBorder(EtchedBorder.RAISED)
-		));
+		this.previousCell = null;
+		this.nextCell = null;
+		this.value = "";
+		this.textField = new JTextField(8);
+		this.index = -1;
+		this.series = null;
+
+		this.setBackground(Main.WHITE);
+		FlowLayout layout = new FlowLayout();
+		layout.setHgap(0);
+		layout.setVgap(0);
+
+		textField.setMargin(new Insets(0,0,0,0));
+		this.setBorder(new EtchedBorder(EtchedBorder.RAISED));
 		this.add(textField);
+		this.setLayout(layout);
+		Main.getDataTable().addCell(this);
+
+		textField.addFocusListener(new FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				Cell.this.setBackground(Main.YELLOW);
+				Cell.this.textField.setBackground(Main.LIGHT_YELLOW);
+				Cell.this.series.setBackground(Main.GREY);
+			}
+
+			public void focusLost(FocusEvent e) {
+				Cell.this.setBackground(Main.WHITE);
+				Cell.this.textField.setBackground(Main.WHITE);
+				Cell.this.series.setBackground(Main.SILVER);
+			}
+		});
+
+		textField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Cell.this.setValue(Cell.this.textField.getText());
+			}
+		});
+	}
+
+	/**
+	 * A slightly more advanced constructor, which allows for the value of the
+	 * cell to be set at initialization.
+	 */
+	public Cell(String s) {
+		this();
+		this.setValue(s);
+		this.textField.setText(s);
 	}
 
 
 	/** The cell that comes before this one in its series. */
-	private Cell previousCell = null;
+	private Cell previousCell;
 	/** The cell that comes after this one in its series. */
-	private Cell nextCell = null;
+	private Cell nextCell;
 	/** The textual value of this cell. */
-	private String value = "";
+	private String value;
 	/** A graphical text field to allow for data entry. */
-	private JTextField textField = null;
+	private JTextField textField;
 	/** The index of this cell in its series. */
-	private int index = -1;
+	private int index;
 	/** The series this cell belongs to. */
-	private Series series = null;
+	private Series series;
 
 
 
@@ -96,6 +142,7 @@ public class Cell extends JPanel {
 	 * @param insertedCell The cell to insert
 	 */
 	public void insertCellAfter(Cell insertedCell) {
+		System.out.println("Index: " + this.index);
 		insertedCell.setSeries(this.series);
 		Cell oldNext = this.nextCell;
 		insertedCell.setPrevious(this);
@@ -219,6 +266,7 @@ public class Cell extends JPanel {
 	 */
 	public void setValue(String s) {
 		value = s;
+		textField.setText(s);
 	}
 
 	// textField has no getters or setters, as it is intended to be used
