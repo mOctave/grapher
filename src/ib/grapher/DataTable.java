@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.Border;
@@ -24,10 +25,11 @@ public class DataTable extends JFrame {
 	 * listeners and triggers for GUI functionality.
 	 */
 	public DataTable() {
+		// Initialize non-GUI properties
 		this.data = new ArrayList<>();
 		this.activeCells = new ArrayList<>();
-		this.scrollX = 0;
-		this.scrollY = 0;
+
+		this.setLayout(new BorderLayout());
 
 		this.tableLayout = new GridBagLayout();
 		this.table = new JPanel(tableLayout);
@@ -38,7 +40,7 @@ public class DataTable extends JFrame {
 		tableView.setColumnHeaderView(header);
 		header.setVisible(true);
 
-		this.add(tableView);
+		this.add(tableView, BorderLayout.CENTER);
 
 		fillerT = new JPanel();
 		fillerT.setOpaque(false);
@@ -56,16 +58,13 @@ public class DataTable extends JFrame {
 
 		this.setPreferredSize(new Dimension(400, 300));
 		this.setMinimumSize(new Dimension(200, 150));
+		this.setJMenuBar(Main.getMenuBar());
 	}
 
 	/** All the base data for this project. */
 	private List<Series> data;
 	/** The current row of cells to manipulate. */
 	private List<Cell> activeCells;
-	/** A measure of how far the table has been scrolled horizontally. */
-	private int scrollX;
-	/** A measure of how far the table has been scrolled vertically. */
-	private int scrollY;
 
 	private JPanel fillerT;
 	private JPanel fillerH;
@@ -73,6 +72,7 @@ public class DataTable extends JFrame {
 	private GridBagLayout tableLayout;
 	private JPanel header;
 	private GridBagLayout headerLayout;
+	private JMenuBar menuBar;
 
 	/**
 	 * Updates the main data table. Called whenever the window is resized or
@@ -200,41 +200,5 @@ public class DataTable extends JFrame {
 		for (int i = 0; i < activeCells.size(); i++) {
 			activeCells.set(i, activeCells.get(i).getNext());
 		}
-	}
-
-
-
-	// Other getters and setters
-
-	/**
-	 * Gets the current horizontal scroll offset.
-	 * @return The horizontal scroll offset
-	 */
-	public int getScrollX() {
-		return scrollX;
-	}
-
-	/**
-	 * Changes the current horizontal scroll offset.
-	 * @param i The new position to scroll to
-	 */
-	public void setScrollX(int i) {
-		scrollX = i;
-	}
-
-	/**
-	 * Gets the current vertical scroll offset.
-	 * @return The vertical scroll offset
-	 */
-	public int getScrollY() {
-		return scrollY;
-	}
-
-	/**
-	 * Changes the current vertical scroll offset.
-	 * @param i The new position to scroll to
-	 */
-	public void setScrollY(int i) {
-		scrollY = i;
 	}
 }

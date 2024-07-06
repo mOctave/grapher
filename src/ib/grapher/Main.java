@@ -22,9 +22,12 @@ public class Main {
 	private static PlottableTable plottableTable;
 	/** The graph being modified. */
 	private static Graph graph;
+	/** The menu bar for the application. */
+	private static MenuBar menuBar;
 
 	public static void main(String[] args) {
 		System.out.println("Launching Grapher");
+		menuBar = new MenuBar();
 
 		FileDataManager.openFile("testfile");
 		Byte[] x = {0,1,2,3,5,6,8};
@@ -77,6 +80,14 @@ public class Main {
 		return graph;
 	}
 
-	// dataTable, plottableTable, and graph have no setters, because they are
-	// intended as composites of the Main class.
+	/**
+	 * Gets a reference to the global menu bar object.
+	 * @return The project's menu bar
+	 */
+	public static MenuBar getMenuBar() {
+		return menuBar;
+	}
+
+	// dataTable, plottableTable, graph, and menuBar have no setters, because
+	// they are intended as composites of the Main class.
 }
