@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+
 /**
  * A utility class which interfaces between an open file and a project.
  * This class holds entirely static methods, as the program is only
@@ -16,19 +19,65 @@ import java.util.List;
  */
 public class FileDataManager {
 	/** The currently open project file. */
+	private static File currentFile;
+	/** The currently open project file, as a RandomAccessFile. */
 	private static RandomAccessFile currentProject;
 
 	/**
-	 * Opens the file at a specified location.
-	 * @param fp The filepath of the file to open.
+	 * Displays a file selection menu, and opens the file chosen by it.
+	 * @param ext The desired file extension.
+	 * @param desc The description for the desired file extension.
+	 * @param mode true if the file chooser should open a "save as" dialog,
+	 * false if it should open an "open" dialog.
+	 * @return The selected file.
 	 */
-	public static void openFile(String fp) {
-		File f = new File(fp);
+	public static File chooseFile(String ext, String desc, boolean saveAs) {
+		// Set up the file chooser
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileFilter(new FileFilter() {
+			public String getDescription() {
+				return String.format("%s (%s)", desc, ext);
+			}
+
+			public boolean accept(File f) {
+				if (f.isDirectory()) {
+					return true;
+				} else {
+					return f.getName().toLowerCase().endsWith(ext);
+				}
+			}
+		});
+		if (currentProject != null) {
+			fileChooser.setCurrentDirectory(
+				currentFile.getAbsoluteFile().getParentFile());
+		}
+
+		// Get the file
+		if (saveAs) {
+			if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
+				return fileChooser.getSelectedFile();
+			else
+				return null;
+		} else {
+			if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
+				return fileChooser.getSelectedFile();
+			else
+				return null;
+		}
+		
+	}
+
+	/**
+	 * Opens the specified file as the project file.
+	 * @param f The file to open.
+	 */
+	public static void openFile(File f) {
 		try {
 			// Opens in RWD mode because the file is supposed to autosave
+			currentFile = f;
 			currentProject = new RandomAccessFile(f, "rwd");
 		} catch (FileNotFoundException e) {
-			System.err.printf("No such file as \"%s\".%n", fp);
+			System.err.printf("No such file as \"%s\".%n", f.getName());
 			e.printStackTrace();
 		}
 	}

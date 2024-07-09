@@ -1,6 +1,8 @@
 package ib.grapher;
 
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JMenuBar;
@@ -24,6 +26,11 @@ public class MenuBar extends JMenuBar {
 			KeyEvent.VK_S,
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
 		));
+		projectSaveAs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FileDataManager.chooseFile(".graph", "Grapher Files", true);
+			}
+		});
 		menuProject.add(projectSaveAs);
 
 		JMenuItem projectOpen = new JMenuItem("Open");
@@ -31,6 +38,11 @@ public class MenuBar extends JMenuBar {
 			KeyEvent.VK_O,
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
 		));
+		projectOpen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FileDataManager.chooseFile(".graph", "Grapher Files", false);
+			}
+		});
 		menuProject.add(projectOpen);
 
 		// Data menu
@@ -42,6 +54,11 @@ public class MenuBar extends JMenuBar {
 			KeyEvent.VK_I,
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
 		));
+		dataImport.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FileDataManager.chooseFile(".csv", "CSV Files", false);
+			}
+		});
 		menuData.add(dataImport);
 
 		JMenuItem dataSort = new JMenuItem("Sort by Selected Column");

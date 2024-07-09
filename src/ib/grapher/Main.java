@@ -29,7 +29,7 @@ public class Main {
 		System.out.println("Launching Grapher");
 		menuBar = new MenuBar();
 
-		FileDataManager.openFile("testfile");
+		FileDataManager.openFile(FileDataManager.chooseFile("", "All Files", true));
 		Byte[] x = {0,1,2,3,5,6,8};
 		FileDataManager.writeByteList(Arrays.asList(x), 0);
 		HashMap<Long, Byte> h = new HashMap<>();

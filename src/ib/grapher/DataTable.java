@@ -11,10 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.border.Border;
 
 /**
  * The table which stores all the textual data for a graph.
@@ -72,7 +70,6 @@ public class DataTable extends JFrame {
 	private GridBagLayout tableLayout;
 	private JPanel header;
 	private GridBagLayout headerLayout;
-	private JMenuBar menuBar;
 
 	/**
 	 * Updates the main data table. Called whenever the window is resized or
