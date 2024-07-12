@@ -33,7 +33,7 @@ public class FileDataManager {
 	 */
 	public static File chooseFile(String ext, String desc, boolean saveAs) {
 		// Set up the file chooser
-		JFileChooser fileChooser = new JFileChooser();
+		JFileChooser fileChooser = new JFileChooser("./");
 		fileChooser.setFileFilter(new FileFilter() {
 			public String getDescription() {
 				return String.format("%s (%s)", desc, ext);
@@ -115,6 +115,8 @@ public class FileDataManager {
 	 * @param pos A pointer to the first byte to overwrite
 	 */
 	public static void writeByteList(List<Byte> byteList, long pos) {
+		System.out.println("WRITING...");
+		System.out.println(byteList);
 		try {
 			currentProject.seek(pos);
 			for (byte nextByte : byteList) {

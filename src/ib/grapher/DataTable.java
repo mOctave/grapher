@@ -3,16 +3,22 @@ package ib.grapher;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 
 /**
  * The table which stores all the textual data for a graph.
@@ -27,6 +33,7 @@ public class DataTable extends JFrame {
 		this.data = new ArrayList<>();
 		this.activeCells = new ArrayList<>();
 
+		// Initialize GUI
 		this.setLayout(new BorderLayout());
 
 		this.tableLayout = new GridBagLayout();
@@ -38,6 +45,11 @@ public class DataTable extends JFrame {
 		tableView.setColumnHeaderView(header);
 		header.setVisible(true);
 
+		this.rowNumbers = new JPanel();
+		this.rowNumbers.setLayout(new GridBagLayout());
+		tableView.setRowHeaderView(rowNumbers);
+		rowNumbers.setVisible(true);
+
 		this.add(tableView, BorderLayout.CENTER);
 
 		fillerT = new JPanel();
@@ -47,6 +59,14 @@ public class DataTable extends JFrame {
 		fillerH = new JPanel();
 		fillerH.setOpaque(false);
 		header.add(fillerH);
+
+		rnFiller = new JPanel();
+		rnFiller.setOpaque(false);
+		rowNumbers.add(rnFiller);
+
+		this.title = new JLabel("<html><i>Unsaved File</i></html>");
+		title.setHorizontalAlignment(SwingConstants.CENTER);
+		this.add(title, BorderLayout.NORTH);
 
 		this.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent componentEvent) {
@@ -63,9 +83,16 @@ public class DataTable extends JFrame {
 	private List<Series> data;
 	/** The current row of cells to manipulate. */
 	private List<Cell> activeCells;
+	/** The row numbers which make up the sidebar. */
+	private JPanel rowNumbers;
 
+	/** "Filler" panels to keep the GridBagLayouts aligned with the top left. */
 	private JPanel fillerT;
 	private JPanel fillerH;
+	private JPanel rnFiller;
+
+	private JLabel title;
+
 	private JPanel table;
 	private GridBagLayout tableLayout;
 	private JPanel header;
@@ -104,6 +131,12 @@ public class DataTable extends JFrame {
 			tableLayout.setConstraints(fillerT, constraints);
 			headerLayout.setConstraints(fillerH, constraints);
 		}
+
+		while (data.size() > rowNumbers.getComponentCount() - 2)
+			addRowNumber();
+		while (rowNumbers.getComponentCount() - 2 > data.size())
+			removeRowNumber();
+
 	}
 
 	public void addCell(Cell c) {
@@ -167,6 +200,69 @@ public class DataTable extends JFrame {
 		data.remove(r);
 	}
 
+	/**
+	 * Creates a new {@link javax.swing.JLabel} with the proper formatting for
+	 * a row number object, then adds it to the list of row numbers.
+	 */
+	private void addRowNumber() {
+		// Remove filler
+		rowNumbers.remove(rowNumbers.getComponentCount() - 1);
+
+		GridBagConstraints rnConstraints = new GridBagConstraints();
+		rnConstraints.fill = GridBagConstraints.HORIZONTAL;
+		rnConstraints.weightx = 1;
+		rnConstraints.gridx = 1;
+		rnConstraints.weighty = 0;
+		rnConstraints.gridy = rowNumbers.getComponentCount();
+
+		JLabel rowNumber = new JLabel();
+		rowNumber.setText(Integer.toString(rowNumbers.getComponentCount() + 1));
+		rowNumber.setBorder(BorderFactory.createCompoundBorder(
+			new EmptyBorder(new Insets(5, 2, 5, 2)),
+			new EtchedBorder(EtchedBorder.RAISED)
+		));
+		rowNumber.setMinimumSize(new Dimension(20, 30));
+		rowNumber.setPreferredSize(new Dimension(20, 30));
+	
+		rowNumbers.add(rowNumber, rnConstraints);
+
+		// Re-add filler
+		rnConstraints.weighty = 1;
+		rnConstraints.gridy ++;
+		rowNumbers.add(rnFiller, rnConstraints);
+	}
+
+	/**
+	 * Removes the last row number, updating the filler in doing so.
+	 */
+	private void removeRowNumber() {
+		try {
+			// Remove filler
+			rowNumbers.remove(rowNumbers.getComponentCount() - 1);
+
+			// Remove actual number
+			rowNumbers.remove(rowNumbers.getComponentCount() - 1);
+
+			// Re-add filler
+			GridBagConstraints rnConstraints = new GridBagConstraints();
+			rnConstraints.weighty = 1;
+			rnConstraints.gridy = rowNumbers.getComponentCount();
+			rowNumbers.add(rnFiller, rnConstraints);
+		} catch (IndexOutOfBoundsException e) {
+			System.out.println(
+				"Could not remove row number: no row number to remove");
+		}
+	}
+
+	/**
+	 * Changes the background colour of a specified row number label.
+	 * @param i The row number to change (starting at 0).
+	 * @param c The {@link java.awt.Color} to change it to.
+	 */
+	public void setRowNumberBackground(int i, Color c) {
+		rowNumbers.getComponent(i).setBackground(c);
+	}
+
 
 
 	// Active Cell Utility Methods
@@ -198,4 +294,17 @@ public class DataTable extends JFrame {
 			activeCells.set(i, activeCells.get(i).getNext());
 		}
 	}
+}
+
+class ColumnNumber extends JLabel {
+	/**
+	 * A constructor that allows for the creation of a label with specific
+	 * text.
+	 * @param s The text to put on the label.
+	 */
+	public ColumnNumber(String s) {
+		this.setText(s);
+		this.setPreferredSize(new Dimension(20, 30));
+	}
+
 }
