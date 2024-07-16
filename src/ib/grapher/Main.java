@@ -1,6 +1,8 @@
 package ib.grapher;
 
 import java.awt.Color;
+import java.awt.EventQueue;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ public class Main {
 		System.out.println("Launching Grapher");
 		menuBar = new MenuBar();
 
-		FileDataManager.openFile(FileDataManager.chooseFile("", "All Files", true));
+		FileDataManager.openFile(new File("./test.graph"));
 		Byte[] x = {0,1,2,3,5,6,8};
 		FileDataManager.writeByteList(Arrays.asList(x), 0);
 		HashMap<Long, Byte> h = new HashMap<>();
@@ -39,21 +41,16 @@ public class Main {
 		FileDataManager.insertBytes(h);
 
 		dataTable = new DataTable();
-		dataTable.setSize(400, 300);
-		dataTable.setVisible(true);
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				dataTable.setSize(400, 300);
+				dataTable.addSeries(new Series(1));
+				dataTable.setVisible(true);
+				dataTable.update();
+			}
+		});
 
-		Series testSeries1 = new Series(new Cell());
-		testSeries1.getLast().insertCellAfter(new Cell("Text"));
-		testSeries1.getLast().insertCellAfter(new Cell("17.4"));
-		dataTable.addSeries(testSeries1);
-		Series testSeries2 = new Series(new Cell());
-		testSeries2.getFirst().setValue("Second Column");
-		testSeries2.getLast().insertCellAfter(new Cell("-19"));
-		testSeries2.getLast().insertCellAfter(new Cell("Cucumber"));
-		dataTable.addSeries(testSeries2);
-		dataTable.update();
-
-		saveAllData();
+		//saveAllData();
 	}
 
 	/**

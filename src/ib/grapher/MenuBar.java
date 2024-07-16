@@ -88,6 +88,16 @@ public class MenuBar extends JMenuBar {
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
 			| KeyEvent.SHIFT_DOWN_MASK
 		));
+		insertRowAbove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DataTable dt = Main.getDataTable();
+				dt.matchActiveToSelected();
+				for (Cell c : dt.getActiveCells()) {
+					c.insertCellBefore(new Cell());
+				}
+				dt.update();
+			}
+		});
 		menuInsert.add(insertRowAbove);
 
 		JMenuItem insertRowBelow = new JMenuItem("Insert Row Below");
@@ -95,6 +105,16 @@ public class MenuBar extends JMenuBar {
 			KeyEvent.VK_ENTER,
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
 		));
+		insertRowBelow.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DataTable dt = Main.getDataTable();
+				dt.matchActiveToSelected();
+				for (Cell c : dt.getActiveCells()) {
+					c.insertCellAfter(new Cell());
+				}
+				dt.update();
+			}
+		});
 		menuInsert.add(insertRowBelow);
 
 		JMenuItem insertColumnLeft = new JMenuItem("Insert Column Left");
@@ -103,6 +123,15 @@ public class MenuBar extends JMenuBar {
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
 			| KeyEvent.SHIFT_DOWN_MASK
 		));
+		insertColumnLeft.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DataTable dt = Main.getDataTable();
+				dt.insertSeries(
+					dt.indexOf(dt.getSelectedCell().getSeries()),
+					new Series(dt.getData().get(0).length())
+				);
+			}
+		});
 		menuInsert.add(insertColumnLeft);
 
 		JMenuItem insertColumnRight = new JMenuItem("Insert Column Right");
@@ -110,6 +139,15 @@ public class MenuBar extends JMenuBar {
 			KeyEvent.VK_TAB,
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
 		));
+		insertColumnRight.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DataTable dt = Main.getDataTable();
+				dt.insertSeries(
+					dt.indexOf(dt.getSelectedCell().getSeries()) + 1,
+					new Series(dt.getData().get(0).length())
+				);
+			}
+		});
 		menuInsert.add(insertColumnRight);
 
 		JMenuItem dataDeleteRow = new JMenuItem("Delete Row");

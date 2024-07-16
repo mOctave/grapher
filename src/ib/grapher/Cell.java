@@ -45,6 +45,7 @@ public class Cell extends JPanel {
 				Cell.this.setBackground(Main.YELLOW);
 				Cell.this.textField.setBackground(Main.LIGHT_YELLOW);
 				Cell.this.series.setBackground(Main.GREY);
+				Main.getDataTable().setSelectedCell(Cell.this);
 				Main.getDataTable().setRowNumberBackground(Cell.this.getIndex(), Main.GREY);
 			}
 
@@ -52,6 +53,7 @@ public class Cell extends JPanel {
 				Cell.this.setBackground(Main.WHITE);
 				Cell.this.textField.setBackground(Main.WHITE);
 				Cell.this.series.setBackground(Main.SILVER);
+				Main.getDataTable().setSelectedCell(Cell.this);
 				Main.getDataTable().setRowNumberBackground(Cell.this.getIndex(), Main.SILVER);
 			}
 		});

@@ -68,12 +68,6 @@ public class DataTable extends JFrame {
 		title.setHorizontalAlignment(SwingConstants.CENTER);
 		this.add(title, BorderLayout.NORTH);
 
-		this.addComponentListener(new ComponentAdapter() {
-			public void componentResized(ComponentEvent componentEvent) {
-				update();
-			}
-		});
-
 		this.setPreferredSize(new Dimension(400, 300));
 		this.setMinimumSize(new Dimension(200, 150));
 		this.setJMenuBar(Main.getMenuBar());
@@ -85,6 +79,8 @@ public class DataTable extends JFrame {
 	private List<Cell> activeCells;
 	/** The row numbers which make up the sidebar. */
 	private JPanel rowNumbers;
+	/** The current selected cell. */
+	private Cell selectedCell;
 
 	/** "Filler" panels to keep the GridBagLayouts aligned with the top left. */
 	private JPanel fillerT;
@@ -132,16 +128,20 @@ public class DataTable extends JFrame {
 			headerLayout.setConstraints(fillerH, constraints);
 		}
 
-		while (data.size() > rowNumbers.getComponentCount() - 2)
+		int len = 0;
+		try {
+			len = data.get(0).length();
+		} catch (IndexOutOfBoundsException e) {}
+		while (len > rowNumbers.getComponentCount() - 1)
 			addRowNumber();
-		while (rowNumbers.getComponentCount() - 2 > data.size())
+		while (rowNumbers.getComponentCount() - 1 > len)
 			removeRowNumber();
 
 	}
 
 	public void addCell(Cell c) {
 		table.add(c);
-		this.update();
+		update();
 	}
 
 	// Data utility methods
@@ -180,6 +180,8 @@ public class DataTable extends JFrame {
 	public void addSeries(Series r) {
 		header.add(r);
 		data.add(r);
+		resetActiveCells();
+		update();
 	}
 
 	/**
@@ -190,6 +192,8 @@ public class DataTable extends JFrame {
 	public void insertSeries(int i, Series r) {
 		header.add(r);
 		data.add(i, r);
+		resetActiveCells();
+		update();
 	}
 
 	/**
@@ -198,6 +202,8 @@ public class DataTable extends JFrame {
 	 */
 	public void removeSeries(Series r) {
 		data.remove(r);
+		resetActiveCells();
+		update();
 	}
 
 	/**
@@ -268,6 +274,23 @@ public class DataTable extends JFrame {
 	// Active Cell Utility Methods
 
 	/**
+	 * Gets the currently selected cell.
+	 * @return The selected cell.
+	 */
+	public Cell getSelectedCell() {
+		return selectedCell;
+	}
+
+	/**
+	 * Changes the cell which is marked as selected, without reformatting the
+	 * cell.
+	 * @param c The newly selected cell.
+	 */
+	public void setSelectedCell(Cell c) {
+		selectedCell = c;
+	}
+
+	/**
 	 * Gets the currently active row of cells.
 	 * @return A reference to the list of {@link #activeCells}
 	 */
@@ -293,6 +316,25 @@ public class DataTable extends JFrame {
 		for (int i = 0; i < activeCells.size(); i++) {
 			activeCells.set(i, activeCells.get(i).getNext());
 		}
+	}
+
+	/**
+	 * Rolls the currently active row of cells backward (up) one row.
+	 */
+	public void rollActiveCellsBackward() {
+		for (int i = 0; i < activeCells.size(); i++) {
+			activeCells.set(i, activeCells.get(i).getPrevious());
+		}
+	}
+
+	/**
+	 * Moves the row of active cells until it aligns with the selected cell.
+	 */
+	public void matchActiveToSelected() {
+		while (activeCells.get(0).getIndex() > selectedCell.getIndex())
+			rollActiveCellsBackward();
+		while (activeCells.get(0).getIndex() < selectedCell.getIndex())
+			rollActiveCellsForward();
 	}
 }
 

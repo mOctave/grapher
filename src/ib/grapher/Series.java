@@ -28,19 +28,26 @@ import javax.swing.border.EtchedBorder;
  */
 public class Series extends JPanel implements Iterable<Cell> {
 	/**
-	 * A constructor that initializes this series, as well as adding a single
-	 * empty cell to it. All series should always have at least one cell in them
-	 * at all time.
+	 * A constructor that initializes this series, as well as adding a set
+	 * number of empty cells to it. All series should always have at least
+	 * one cell in them at all times.
+	 * @param cells The number of cells to be added. This should be at least
+	 * 1. If it is 0 or less, it will be ignored.
 	 */
-	public Series(Cell c) {
+	public Series(int cells) {
 		// Non-GUI initialization
 		this.name = "Untitled Series";
 		this.statistics = new HashMap<>();
 
-		this.firstCell = c;
+		Cell c = new Cell();
+		this.firstCell = new Cell();
 		this.lastCell = c;
 		c.setSeries(this);
 		c.setIndex(0);
+
+		for(int i = 0; i < cells - 1; i++) {
+			firstCell.insertCellAfter(new Cell());
+		}
 
 		// GUI initialization
 		setBackground(Main.SILVER);
@@ -84,6 +91,7 @@ public class Series extends JPanel implements Iterable<Cell> {
 		statView.setBorder(new EtchedBorder(EtchedBorder.RAISED));
 		statView.setVerticalAlignment(SwingConstants.TOP);
 		add(statView);
+
 	}
 
 
@@ -145,6 +153,15 @@ public class Series extends JPanel implements Iterable<Cell> {
 			c = c.getNext();
 		}
 		return matches;
+	}
+
+	/**
+	 * Gets the length of the series based off of the index of the last cell in
+	 * it.
+	 * @return The length of this series.
+	 */
+	public int length() {
+		return lastCell.getIndex() + 1;
 	}
 
 	/**
