@@ -130,6 +130,7 @@ public class MenuBar extends JMenuBar {
 					dt.indexOf(dt.getSelectedCell().getSeries()),
 					new Series(dt.getData().get(0).length())
 				);
+				dt.update();
 			}
 		});
 		menuInsert.add(insertColumnLeft);
@@ -146,6 +147,7 @@ public class MenuBar extends JMenuBar {
 					dt.indexOf(dt.getSelectedCell().getSeries()) + 1,
 					new Series(dt.getData().get(0).length())
 				);
+				dt.update();
 			}
 		});
 		menuInsert.add(insertColumnRight);

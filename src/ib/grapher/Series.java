@@ -40,7 +40,7 @@ public class Series extends JPanel implements Iterable<Cell> {
 		this.statistics = new HashMap<>();
 
 		Cell c = new Cell();
-		this.firstCell = new Cell();
+		this.firstCell = c;
 		this.lastCell = c;
 		c.setSeries(this);
 		c.setIndex(0);
