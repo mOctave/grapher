@@ -1,10 +1,10 @@
 package ib.grapher;
 
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
@@ -64,12 +65,18 @@ public class DataTable extends JFrame {
 		rnFiller.setOpaque(false);
 		rowNumbers.add(rnFiller);
 
+		this.statView = new JTextArea(6, 80);
+		statView.setEditable(false);
+		statView.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
+		statView.setMargin(new Insets(0, 5, 0, 5));
+		this.add(statView, BorderLayout.SOUTH);
+
 		this.title = new JLabel("<html><i>Unsaved File</i></html>");
 		title.setHorizontalAlignment(SwingConstants.CENTER);
 		this.add(title, BorderLayout.NORTH);
 
-		this.setPreferredSize(new Dimension(400, 300));
-		this.setMinimumSize(new Dimension(200, 150));
+		this.setPreferredSize(new Dimension(800, 600));
+		this.setMinimumSize(new Dimension(400, 300));
 		this.setJMenuBar(Main.getMenuBar());
 	}
 
@@ -81,6 +88,19 @@ public class DataTable extends JFrame {
 	private JPanel rowNumbers;
 	/** The current selected cell. */
 	private Cell selectedCell;
+	/** A text panel which displays statistics about the selected cell. */
+	private JTextArea statView;
+
+	/** A template for the stat view. */
+	private static final String STAT_VIEW_TEMPLATE = """
+	Series Statistics
+	Minimum: %-21s Non-Empty Cells: %-13s
+	Q1: %-26s Numeric Values: %-14s
+	Median: %-22s Sum: %-25s
+	Q3: %-26s Mean: %-24s
+	Maximum: %-21s Variance: %-20s
+	Range: %-23s Standard Deviation: %-10s
+	""";
 
 	/** "Filler" panels to keep the GridBagLayouts aligned with the top left. */
 	private JPanel fillerT;
@@ -137,6 +157,27 @@ public class DataTable extends JFrame {
 		while (rowNumbers.getComponentCount() - 1 > len)
 			removeRowNumber();
 
+		if (selectedCell == null) {
+			statView.setText("Select a cell to view series statistics.");
+		} else {
+			System.out.println("A cell has been selected!");
+			Series currentSeries = selectedCell.getSeries();
+			statView.setText(String.format(
+				STAT_VIEW_TEMPLATE,
+				currentSeries.getStatistic("Non-Empty Cells"),
+				currentSeries.getStatistic("Numeric Values"),
+				currentSeries.getStatistic("Sum"),
+				currentSeries.getStatistic("Mean"),
+				currentSeries.getStatistic("Minimum"),
+				currentSeries.getStatistic("Q1"),
+				currentSeries.getStatistic("Median"),
+				currentSeries.getStatistic("Q3"),
+				currentSeries.getStatistic("Maximum"),
+				currentSeries.getStatistic("Range"),
+				currentSeries.getStatistic("Variance"),
+				currentSeries.getStatistic("Standard Deviation")
+			));
+		}
 	}
 
 	public void addCell(Cell c) {
@@ -288,6 +329,7 @@ public class DataTable extends JFrame {
 	 */
 	public void setSelectedCell(Cell c) {
 		selectedCell = c;
+		update();
 	}
 
 	/**
