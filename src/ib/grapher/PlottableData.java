@@ -1,11 +1,15 @@
 package ib.grapher;
 
+import java.awt.Color;
+
 /**
  * A class which stores a single set of plottable data.
  */
 public class PlottableData {
 	/** The name of the data set. */
 	private String name;
+	/** The colour to plot this data in. */
+	private Color colour;
 
 	/** The series to use for the X-axis. */
 	private Series dataX;
@@ -81,6 +85,21 @@ public class PlottableData {
 	 */
 	public void setName(String s) {
 		name = s;
+	}
+
+	/**
+	 * @return The colour to plot this data set in.
+	 */
+	public Color getColour() {
+		return colour;
+	}
+
+	/**
+	 * Changes the colour of the data set.
+	 * @param col The new colour to use when graphing.
+	 */
+	public void setColour(Color col) {
+		colour = col;
 	}
 
 	/**

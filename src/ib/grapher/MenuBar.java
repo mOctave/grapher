@@ -84,9 +84,8 @@ public class MenuBar extends JMenuBar {
 
 		JMenuItem insertRowAbove = new JMenuItem("Insert Row Above");
 		insertRowAbove.setAccelerator(KeyStroke.getKeyStroke(
-			KeyEvent.VK_ENTER,
+			KeyEvent.VK_BACK_SLASH,
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
-			| KeyEvent.SHIFT_DOWN_MASK
 		));
 		insertRowAbove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -119,9 +118,8 @@ public class MenuBar extends JMenuBar {
 
 		JMenuItem insertColumnLeft = new JMenuItem("Insert Column Left");
 		insertColumnLeft.setAccelerator(KeyStroke.getKeyStroke(
-			KeyEvent.VK_TAB,
+			KeyEvent.VK_OPEN_BRACKET,
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
-			| KeyEvent.SHIFT_DOWN_MASK
 		));
 		insertColumnLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -137,7 +135,7 @@ public class MenuBar extends JMenuBar {
 
 		JMenuItem insertColumnRight = new JMenuItem("Insert Column Right");
 		insertColumnRight.setAccelerator(KeyStroke.getKeyStroke(
-			KeyEvent.VK_TAB,
+			KeyEvent.VK_CLOSE_BRACKET,
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
 		));
 		insertColumnRight.addActionListener(new ActionListener() {

@@ -30,7 +30,7 @@ public class DataTable extends JFrame {
 	 * listeners and triggers for GUI functionality.
 	 */
 	public DataTable() {
-		// Initialize non-GUI properties
+		// Initialize non-GUI attributes
 		this.data = new ArrayList<>();
 		this.activeCells = new ArrayList<>();
 
@@ -125,7 +125,7 @@ public class DataTable extends JFrame {
 			constraints.gridx = indexOf(r);
 			constraints.gridy = 0;
 			constraints.anchor = GridBagConstraints.FIRST_LINE_START;
-			headerLayout.setConstraints(r, constraints);
+			headerLayout.setConstraints(r.getHeader(), constraints);
 
 			for (Cell c : r) {
 				constraints = new GridBagConstraints();
@@ -178,6 +178,10 @@ public class DataTable extends JFrame {
 				currentSeries.getStatistic("Standard Deviation")
 			));
 		}
+
+		this.invalidate();
+		this.validate();
+		this.repaint();
 	}
 
 	public void addCell(Cell c) {
@@ -219,9 +223,13 @@ public class DataTable extends JFrame {
 	 * @param r The {@link Series} object to add
 	 */
 	public void addSeries(Series r) {
-		header.add(r);
+		header.add(r.getHeader());
 		data.add(r);
 		resetActiveCells();
+		for (SeriesSelector selector : Main.getSelectors()) {
+			selector.refresh();
+		}
+		Main.getPlottableTable().update();
 		update();
 	}
 
@@ -231,9 +239,13 @@ public class DataTable extends JFrame {
 	 * @param r The {@link Series} object to insert
 	 */
 	public void insertSeries(int i, Series r) {
-		header.add(r);
+		header.add(r.getHeader());
 		data.add(i, r);
 		resetActiveCells();
+		for (SeriesSelector selector : Main.getSelectors()) {
+			selector.refresh();
+		}
+		Main.getPlottableTable().update();
 		update();
 	}
 
@@ -242,8 +254,13 @@ public class DataTable extends JFrame {
 	 * @param r The {@link Series} object to remove
 	 */
 	public void removeSeries(Series r) {
+		header.remove(r.getHeader());
 		data.remove(r);
 		resetActiveCells();
+		for (SeriesSelector selector : Main.getSelectors()) {
+			selector.refresh();
+		}
+		Main.getPlottableTable().update();
 		update();
 	}
 

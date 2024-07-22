@@ -27,7 +27,7 @@ public class FileDataManager {
 	 * Displays a file selection menu, and opens the file chosen by it.
 	 * @param ext The desired file extension.
 	 * @param desc The description for the desired file extension.
-	 * @param mode true if the file chooser should open a "save as" dialog,
+	 * @param saveAs true if the file chooser should open a "save as" dialog,
 	 * false if it should open an "open" dialog.
 	 * @return The selected file.
 	 */

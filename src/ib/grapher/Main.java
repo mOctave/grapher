@@ -4,8 +4,10 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * The main class of the grapher, in charge of managing other windows.
@@ -18,6 +20,23 @@ public class Main {
 	public static final Color SILVER = new Color(220, 220, 220);
 	public static final Color TRANSPARENT = new Color(0, 0, 0,0);
 
+	/**
+	 * These are the colours that will be selected by default for the graph.
+	 * They are specifically designed to be high contrast, including for
+	 * colour-blind people. I don't expect that to be an issue with my client,
+	 * but since I have to choose arbitrary colours anyways, I might as well
+	 * choose the most accessible ones possible. Plus, I like the palette.
+	 */
+	public static final Color[] WONG_COLORS = {
+		new Color(230, 159, 0),
+		new Color(86, 180, 233),
+		new Color(0, 158, 115),
+		new Color(240, 228, 66),
+		new Color(0, 114, 178),
+		new Color(213, 94, 0),
+		new Color(204, 121, 167)
+	};
+
 	/** The data table being modified. */
 	private static DataTable dataTable;
 	/** The table of plottable data being modified. */
@@ -26,6 +45,11 @@ public class Main {
 	private static Graph graph;
 	/** The menu bar for the application. */
 	private static MenuBar menuBar;
+	/**
+	 * A list of all the Series Selectors that need to be notified when a
+	 * {@link Series} is added, deleted, or renamed.
+	 */
+	private static final List<SeriesSelector> seriesSelectors = new ArrayList<>();
 
 	public static void main(String[] args) {
 		System.out.println("Launching Grapher");
@@ -41,12 +65,16 @@ public class Main {
 		FileDataManager.insertBytes(h);
 
 		dataTable = new DataTable();
+		plottableTable = new PlottableTable();
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				dataTable.setSize(400, 300);
 				dataTable.addSeries(new Series(1));
 				dataTable.setVisible(true);
 				dataTable.update();
+
+				plottableTable.setSize(400, 300);
+				plottableTable.setVisible(true);
 			}
 		});
 
@@ -164,6 +192,13 @@ public class Main {
 	 */
 	public static MenuBar getMenuBar() {
 		return menuBar;
+	}
+
+	/**
+	 * @return A list of every series selector in the project.
+	 */
+	public static List<SeriesSelector> getSelectors() {
+		return seriesSelectors;
 	}
 
 	// dataTable, plottableTable, graph, and menuBar have no setters, because
