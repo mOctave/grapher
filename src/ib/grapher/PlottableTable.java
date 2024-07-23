@@ -27,19 +27,17 @@ import javax.swing.Box.Filler;
 public class PlottableTable extends JFrame {
 	public PlottableTable() {
 		super();
+		this.setTitle("Data to Plot");
+
 		// Initialize attributes.
 		this.dataSets = new ArrayList<>();
 
 		// Set up GUI.
-		this.setLayout(new BorderLayout());
-		JLabel title = new JLabel("<html><b>Data to Plot</b></html>");
-		this.add(title, BorderLayout.NORTH);
 
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
 		JPanel heading = new JPanel(new GridBagLayout());
-		heading.setPreferredSize(new Dimension(Integer.MAX_VALUE, 20));
 
 		JLabel labelName = new JLabel("Name", SwingConstants.CENTER);
 		labelName.setPreferredSize(new Dimension(120, 20));
@@ -66,7 +64,7 @@ public class PlottableTable extends JFrame {
 		constraints.gridx++;
 		constraints.weightx = 0.2;
 		heading.add(labelBuffer);
-		mainPanel.add(heading);
+		this.add(heading, BorderLayout.NORTH);
 
 		glue = (Filler) Box.createVerticalGlue();
 		glue.changeShape(

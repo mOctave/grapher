@@ -34,6 +34,8 @@ public class FileDataManager {
 	public static File chooseFile(String ext, String desc, boolean saveAs) {
 		// Set up the file chooser
 		JFileChooser fileChooser = new JFileChooser("./");
+		if (saveAs)
+			fileChooser.setSelectedFile(new File("Untitled"+ext));
 		fileChooser.setFileFilter(new FileFilter() {
 			public String getDescription() {
 				return String.format("%s (%s)", desc, ext);

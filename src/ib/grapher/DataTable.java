@@ -30,6 +30,8 @@ public class DataTable extends JFrame {
 	 * listeners and triggers for GUI functionality.
 	 */
 	public DataTable() {
+		super();
+		this.setTitle("Grapher");
 		// Initialize non-GUI attributes
 		this.data = new ArrayList<>();
 		this.activeCells = new ArrayList<>();

@@ -66,6 +66,7 @@ public class Main {
 
 		dataTable = new DataTable();
 		plottableTable = new PlottableTable();
+		graph = new Graph();
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				dataTable.setSize(400, 300);
@@ -75,6 +76,9 @@ public class Main {
 
 				plottableTable.setSize(400, 300);
 				plottableTable.setVisible(true);
+
+				graph.setSize(400, 300);
+				graph.setVisible(true);
 			}
 		});
 
