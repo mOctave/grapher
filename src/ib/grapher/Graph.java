@@ -104,7 +104,7 @@ public class Graph extends JFrame {
 
 				rotatedGraphics.dispose();
 
-				// Set up borders and gridlines
+				// Set up borders and draw gridlines
 				graphics.setColor(Main.BLACK);
 
 				if (stepX == null) {
@@ -184,6 +184,52 @@ public class Graph extends JFrame {
 								);
 							}
 						}
+					}
+				}
+
+				// Draw plottable data sets
+				for (PlottableData pd : Main.getPlottableTable().getDataSets()) {
+					graphics.setColor(pd.getColour());
+
+					if (pd.getDataX() == null || pd.getDataY() == null)
+						continue;
+
+					Cell activeX = pd.getDataX().getFirst();
+					Cell activeY = pd.getDataY().getFirst();
+
+					while (true) {
+						try {
+							double x = activeX.getNumeric();
+							double y = activeY.getNumeric();
+							if (
+								x >= xLower
+								&& x <= xUpper
+								&& y >= yLower
+								&& y <= yUpper
+							) {
+								graphics.drawOval(
+									getRelativeX(x) - 3,
+									getRelativeY(y) - 3,
+									6,
+									6
+								);
+								graphics.drawOval(
+									getRelativeX(x) - 2,
+									getRelativeY(y) - 2,
+									4,
+									4
+								);
+							}
+						} catch (NumberFormatException e) {
+							// Non-numeric data. Not actually an error, but
+							// it'll skip the pair of cells
+							System.out.println("Non-numeric data pair skipped.");
+						}
+						if (activeX.getNext() == null || activeY.getNext() == null)
+							break;
+
+						activeX = activeX.getNext();
+						activeY = activeY.getNext();
 					}
 				}
 
