@@ -63,8 +63,21 @@ public class PlottableDataMenu extends JPanel {
 
 		this.toggleVisible = new JCheckBox("Visibility", true);
 		toggleVisible.setPreferredSize(new Dimension(120, 20));
+		toggleVisible.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PlottableDataMenu.this.getData()
+					.setActive(toggleVisible.isSelected());
+			}
+		});
+
 		this.toggleTrendline = new JCheckBox("Trendline");
 		toggleTrendline.setPreferredSize(new Dimension(120, 20));
+		toggleTrendline.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PlottableDataMenu.this.getData()
+					.setLinReg(toggleTrendline.isSelected());
+			}
+		});
 
 		this.buttonRemove = new JButton("X");
 		buttonRemove.addActionListener(new ActionListener() {

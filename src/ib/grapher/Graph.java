@@ -225,7 +225,11 @@ public class Graph extends JFrame {
 				for (PlottableData pd : Main.getPlottableTable().getDataSets()) {
 					graphics.setColor(pd.getColour());
 
-					if (pd.getDataX() == null || pd.getDataY() == null)
+					if (
+						(!pd.isActive())
+						|| pd.getDataX() == null
+						|| pd.getDataY() == null
+					)
 						continue;
 
 					Cell activeX = pd.getDataX().getFirst();
@@ -265,6 +269,19 @@ public class Graph extends JFrame {
 						activeX = activeX.getNext();
 						activeY = activeY.getNext();
 					}
+
+					// Draw trendline
+					if (pd.isLinRegActive()) {
+						System.out.println("Linear Regression Active");
+						pd.doLinearRegression();
+						System.out.println(pd.getA());
+						System.out.println(pd.getB());
+						if (pd.getA() != Double.MIN_VALUE && pd.getB() != Double.MIN_VALUE) {
+							int[] points = calculateTrendline(pd.getA(), pd.getB());
+							System.out.printf("[(%d, %d), (%d, %d)]%n", points[0], points[1], points[2], points[3]);
+							graphics.drawLine(points[0], points[1], points[2], points[3]);
+						}
+					}
 				}
 
 				// Clean up
@@ -283,6 +300,39 @@ public class Graph extends JFrame {
 				labelOffset += (stepY != null && stepY.length() <= 2) ? 0 : 15;
 				return this.getHeight() - (int) ((y - yLower) / (yUpper - yLower) *
 					(this.getHeight() - (20 + labelOffset))) - (10 + labelOffset);
+			}
+
+			private int[] calculateTrendline(double a, double b) {
+				// Select first point
+				double x1 = xLower;
+				double y1 = a * x1 + b;
+
+				if (y1 < yLower) {
+					y1 = yLower;
+					x1 = (y1 - b) / a;
+				} else if(y1 > yUpper) {
+					y1 = yUpper;
+					x1 = (y1 - b) / a;
+				}
+
+				// Select second point
+				double x2 = xUpper;
+				double y2 = a * x2 + b;
+
+				if (y2 < yLower) {
+					y2 = yLower;
+					x2 = (y2 - b) / a;
+				} else if(y2 > yUpper) {
+					y2 = yUpper;
+					x2 = (y2 - b) / a;
+				}
+
+				return new int[]{
+					getRelativeX(x1),
+					getRelativeY(y1),
+					getRelativeX(x2),
+					getRelativeY(y2)
+				};
 			}
 		};
 		drawingPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));

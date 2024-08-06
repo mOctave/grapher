@@ -6,6 +6,13 @@ import java.awt.Color;
  * A class which stores a single set of plottable data.
  */
 public class PlottableData {
+	/** Sole constructor. Sets up visibility and placeholders. */
+	public PlottableData() {
+		this.name = "Unnamed Data Set";
+		this.active = true;
+		this.linRegActive = false;
+	}
+
 	/** The name of the data set. */
 	private String name;
 	/** The colour to plot this data in. */
@@ -47,9 +54,9 @@ public class PlottableData {
 			return;
 		}
 
-		while (dataX.iterator().hasNext() && dataY.iterator().hasNext()) {
-			Cell xCell = dataX.iterator().next();
-			Cell yCell = dataY.iterator().next();
+		Cell xCell = dataX.getFirst();
+		Cell yCell = dataY.getFirst();
+		while (xCell != null && yCell != null) {
 			try {
 				double x = xCell.getNumeric();
 				double y = yCell.getNumeric();
@@ -60,13 +67,28 @@ public class PlottableData {
 				sumYSquared += y * y;
 				n++;
 			} catch (NumberFormatException e) {
-				continue;
+				System.out.printf(
+					"Skipping invalid data point (%d,%d)%n",
+					xCell.getValue(),
+					yCell.getValue()
+				);
 			}
+			xCell = xCell.getNext();
+			yCell = yCell.getNext();
 		}
-		int productsSum = sumXY - (sumX * sumY / n);
-		b = (productsSum) / (sumXSquared - (sumX * sumX / n));
-		a = (sumY - b * sumX) / n;
-		r = (productsSum) / Math.sqrt(sumXSquared * sumYSquared);
+
+		try {
+			int productsSum = sumXY - (sumX * sumY / n);
+			a = (productsSum) / (sumXSquared - (sumX * sumX / n));
+			b = (sumY - a * sumX) / n;
+			r = (productsSum) / Math.sqrt(sumXSquared * sumYSquared);
+		} catch (ArithmeticException e) {
+			// If there are 0 or 1 values being plotted, no trendline can be
+			// calculated.
+			a = Double.MIN_VALUE;
+			b = Double.MIN_VALUE;
+			r = 0;
+		}
 	}
 
 	// Getters and setters
