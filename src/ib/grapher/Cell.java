@@ -58,12 +58,14 @@ public class Cell extends JPanel {
 
 				// Losing focus also does data entry
 				Cell.this.setValue(Cell.this.textField.getText());
+				Cell.this.getSeries().calculateStatistics();
 			}
 		});
 
 		textField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Cell.this.setValue(Cell.this.textField.getText());
+				Cell.this.getSeries().calculateStatistics();
 			}
 		});
 	}
@@ -119,13 +121,12 @@ public class Cell extends JPanel {
 	 * @param insertedCell The cell to insert
 	 */
 	public void insertCellBefore(Cell insertedCell) {
+		System.out.println("Inserting cell before #" + this.index);
 		insertedCell.setSeries(this.series);
 		Cell oldPrevious = this.previousCell;
 
 		if (oldPrevious == null) {
 			this.series.setFirst(insertedCell);
-			if (this.getNext() == null)
-				this.series.setLast(insertedCell);
 		} else {
 			oldPrevious.setNext(insertedCell);
 			insertedCell.setPrevious(oldPrevious);
@@ -149,7 +150,7 @@ public class Cell extends JPanel {
 	 * @param insertedCell The cell to insert
 	 */
 	public void insertCellAfter(Cell insertedCell) {
-		System.out.println("Index: " + this.index);
+		System.out.println("Inserting cell after #" + this.index);
 		insertedCell.setSeries(this.series);
 		Cell oldNext = this.nextCell;
 		insertedCell.setPrevious(this);
@@ -158,8 +159,6 @@ public class Cell extends JPanel {
 
 		if (oldNext == null) {
 			this.series.setLast(insertedCell);
-			if (this.getPrevious() == null)
-				this.series.setFirst(insertedCell);
 		} else {
 			oldNext.setPrevious(insertedCell);
 			insertedCell.setNext(oldNext);

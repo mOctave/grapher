@@ -166,17 +166,17 @@ public class DataTable extends JFrame {
 			Series currentSeries = selectedCell.getSeries();
 			statView.setText(String.format(
 				STAT_VIEW_TEMPLATE,
-				currentSeries.getStatistic("Non-Empty Cells"),
-				currentSeries.getStatistic("Numeric Values"),
-				currentSeries.getStatistic("Sum"),
-				currentSeries.getStatistic("Mean"),
 				currentSeries.getStatistic("Minimum"),
+				currentSeries.getStatisticAsInt("Non-Empty Cells"),
 				currentSeries.getStatistic("Q1"),
+				currentSeries.getStatisticAsInt("Numeric Values"),
 				currentSeries.getStatistic("Median"),
+				currentSeries.getStatistic("Sum"),
 				currentSeries.getStatistic("Q3"),
+				currentSeries.getStatistic("Mean"),
 				currentSeries.getStatistic("Maximum"),
-				currentSeries.getStatistic("Range"),
 				currentSeries.getStatistic("Variance"),
+				currentSeries.getStatistic("Range"),
 				currentSeries.getStatistic("Standard Deviation")
 			));
 		}

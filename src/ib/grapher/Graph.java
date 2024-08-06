@@ -107,15 +107,28 @@ public class Graph extends JFrame {
 				// Set up borders and draw gridlines
 				graphics.setColor(Main.BLACK);
 
-				if (stepX == null) {
+				if (stepX == null || stepX.length() < 2) {
 					xLower = -10;
 					xUpper = 10;
 				} else {
-					xLower = stepX.getFirst().getNumeric();
-					xUpper = stepX.getLast().getNumeric();
+					try {
+						xLower = stepX.getFirst().getNumeric();
+					} catch (NumberFormatException e) {
+						System.err.println("Warning: Undefined Left Bound");
+						xLower = -10;
+					}
+					try {
+						xUpper = stepX.getFirst().getNext().getNumeric();
+					} catch (NumberFormatException e) {
+						System.err.println("Warning: Undefined Right Bound");
+						// Using this instead of 10 because it won't accidentally
+						// flip the graph around or cause other issues if xLower
+						// was properly defined.
+						xUpper = xLower + 20;
+					}
 				}
 
-				if (stepY == null) {
+				if (stepY == null || stepY.length() < 2) {
 					yLower = -10;
 					yUpper = 10;
 					graphics.drawLine(
@@ -131,30 +144,48 @@ public class Graph extends JFrame {
 							+ metrics.getHeight() / 3
 					);
 				} else {
-					yLower = stepY.getFirst().getNumeric();
-					yUpper = stepY.getLast().getNumeric();
+					try {
+						yLower = stepY.getFirst().getNumeric();
+					} catch (NumberFormatException e) {
+						System.err.println("Warning: Undefined Lower Bound");
+						yLower = -10;
+					}
+					try {
+						yUpper = stepY.getFirst().getNext().getNumeric();
+					} catch (NumberFormatException e) {
+						System.err.println("Warning: Undefined Upper Bound");
+						// Using this instead of 10 because it won't accidentally
+						// flip the graph around or cause other issues if yLower
+						// was properly defined.
+						yUpper = yLower + 20;
+					}
 					if (stepY.length() > 2) {
 						for (Cell c : stepY) {
-							if (c.getIndex() != 0 && c.getIndex() != stepY.length() - 1) {
-								graphics.drawLine(
-									25,
-									getRelativeY(c.getNumeric()),
-									this.getWidth(),
-									getRelativeY(c.getNumeric())
-								);
-								graphics.drawString(
-									c.getValue(),
-									getRelativeX(xLower) - 5
-										- metrics.stringWidth(c.getValue()),
-									getRelativeY(c.getNumeric())
-										+ metrics.getHeight() / 3
-								);
+							try {
+								if (c.getIndex() > 1) {
+									graphics.drawLine(
+										25,
+										getRelativeY(c.getNumeric()),
+										this.getWidth(),
+										getRelativeY(c.getNumeric())
+									);
+									graphics.drawString(
+										c.getValue(),
+										getRelativeX(xLower) - 5
+											- metrics.stringWidth(c.getValue()),
+										getRelativeY(c.getNumeric())
+											+ metrics.getHeight() / 3
+									);
+								}
+							} catch (NumberFormatException e) {
+								// Usually caused by an empty cell, so nothing
+								// to worry about.
 							}
 						}
 					}
 				}
 
-				if (stepX == null) {
+				if (stepX == null || stepX.length() < 2) {
 					graphics.drawLine(
 						getRelativeX(0),
 						getRelativeY(yLower),
@@ -166,10 +197,10 @@ public class Graph extends JFrame {
 						getRelativeX(0) - metrics.stringWidth("0") / 2,
 						getRelativeY(yLower) + 15
 					);
-				} else {
-					if (stepX.length() > 2) {
-						for (Cell c : stepX) {
-							if (c.getIndex() != 0 && c.getIndex() != stepX.length() - 1) {
+				} else if (stepX.length() > 2) {
+					for (Cell c : stepX) {
+						try {
+							if (c.getIndex() > 1) {
 								graphics.drawLine(
 									getRelativeX(c.getNumeric()),
 									0,
@@ -183,6 +214,9 @@ public class Graph extends JFrame {
 									getRelativeY(yLower) + 15
 								);
 							}
+						} catch (NumberFormatException e) {
+							// Usually caused by an empty cell, so nothing
+							// to worry about.
 						}
 					}
 				}

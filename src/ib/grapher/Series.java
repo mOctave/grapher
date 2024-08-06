@@ -110,7 +110,52 @@ public class Series implements Iterable<Cell> {
 	 * {@link #statistics} for later retrieval.
 	 */
 	public void calculateStatistics() {
+		double min = Integer.MAX_VALUE;
+		double max = Integer.MIN_VALUE;
+		double sum = 0;
+		int nonEmpty = 0;
+		int numeric = 0;
+		for (Cell c : this) {
+			try {
+				double numVal = c.getNumeric();
 
+				numeric++;
+
+				// A value can be both the highest and lowest in a data set.
+				if (numVal > max)
+					max = numVal;
+				if (numVal < min)
+					min = numVal;
+				
+				sum += numVal;
+
+			} catch (NumberFormatException e) {
+				// Perfectly valid situation, just don't run analytics.
+			}
+
+			if (!c.getValue().equals(""))
+				nonEmpty++;
+		}
+
+		statistics.put("Non-Empty Cells", (double) nonEmpty);
+		statistics.put("Numeric Values", (double) numeric);
+		statistics.put("Sum", sum);
+		statistics.put("Mean", sum / numeric);
+
+		// This won't work with full datasets containing only the max/min
+		// integer values, but I can't imagine anyone would ever use such
+		// a data set.
+		if (min == Integer.MAX_VALUE)
+			statistics.put("Minimum", null);
+		else
+			statistics.put("Minimum", min);
+
+		if (max == Integer.MIN_VALUE)
+			statistics.put("Maximum", null);
+		else
+			statistics.put("Maximum", max);
+
+		statistics.put("Range", max - min);
 	}
 
 	@Override
@@ -188,6 +233,19 @@ public class Series implements Iterable<Cell> {
 	public String getStatistic(String key) {
 		try {
 			return Double.toString(statistics.get(key));
+		} catch (NullPointerException e) {
+			return "N/A";
+		}
+	}
+
+	/**
+	 * Gets a given statistic about this series, formatting it as an integer
+	 * rather than as a double.
+	 * @param key The key to search {@link #statistics} for
+	 */
+	public String getStatisticAsInt(String key) {
+		try {
+			return Integer.toString((int) (double) statistics.get(key));
 		} catch (NullPointerException e) {
 			return "N/A";
 		}
