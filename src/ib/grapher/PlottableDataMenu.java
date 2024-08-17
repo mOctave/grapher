@@ -24,6 +24,7 @@ import javax.swing.SwingConstants;
 public class PlottableDataMenu extends JPanel {
 	public PlottableDataMenu(PlottableData plottableData, PlottableTable table) {
 		this.plottableData = plottableData;
+		this.plottableData.setMenu(this);
 		this.table = table;
 
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -241,10 +242,6 @@ public class PlottableDataMenu extends JPanel {
 	/** A button to change the colour this data is plotted in. */
 	private JButton buttonChooseColour;
 
-	public void update() {
-		updateTrendlineLabel();
-	}
-
 	// Getters and setters
 	public PlottableData getData() {
 		return plottableData;
@@ -257,14 +254,14 @@ public class PlottableDataMenu extends JPanel {
 	public void updateTrendlineLabel() {
 		if (this.getData().ixXAgainstY())
 			labelTrendline.setText(String.format(
-				"x = %dy + %d • r = %d",
+				"x = %fy + %f • r = %f",
 				this.getData().getA(),
 				this.getData().getB(),
 				this.getData().getR()
 			));
 		else
 			labelTrendline.setText(String.format(
-				"y = %dx + %d • r = %d",
+				"y = %fx + %f • r = %f",
 				this.getData().getA(),
 				this.getData().getB(),
 				this.getData().getR()

@@ -13,6 +13,9 @@ public class PlottableData {
 		this.linRegActive = false;
 	}
 
+	/** The menu this data set is linked to. */
+	private PlottableDataMenu menu;
+
 	/** The name of the data set. */
 	private String name;
 	/** The colour to plot this data in. */
@@ -47,11 +50,11 @@ public class PlottableData {
 	 * {@link #a}, {@link #b}, and {@link #r}.
 	 */
 	public void doLinearRegression() {
-		int sumX = 0;
-		int sumY = 0;
-		int sumXY = 0;
-		int sumXSquared = 0;
-		int sumYSquared = 0;
+		double sumX = 0;
+		double sumY = 0;
+		double sumXY = 0;
+		double sumXSquared = 0;
+		double sumYSquared = 0;
 		int n = 0;
 		if (dataX == null || dataY == null) {
 			System.err.println("Can't do linear regression without both"
@@ -65,15 +68,25 @@ public class PlottableData {
 			try {
 				double x = xCell.getNumeric();
 				double y = yCell.getNumeric();
-				sumX += x;
-				sumY += y;
+				if (XAgainstY) {
+					// Flip the inputs in this case because it's the easiest way
+					// to calculate it.
+					sumX += y;
+					sumY += x;
+					sumXSquared += y * y;
+					sumYSquared += x * x;
+				} else {
+					// For normal, y-against-x regression
+					sumX += x;
+					sumY += y;
+					sumXSquared += x * x;
+					sumYSquared += y * y;
+				}
 				sumXY += x * y;
-				sumXSquared += x * x;
-				sumYSquared += y * y;
 				n++;
 			} catch (NumberFormatException e) {
 				System.out.printf(
-					"Skipping invalid data point (%d,%d)%n",
+					"Skipping invalid data point (%s,%s)%n",
 					xCell.getValue(),
 					yCell.getValue()
 				);
@@ -83,10 +96,20 @@ public class PlottableData {
 		}
 
 		try {
-			int productsSum = sumXY - (sumX * sumY / n);
-			a = (productsSum) / (sumXSquared - (sumX * sumX / n));
+			a = (sumXY - (sumX * sumY / n)) / (sumXSquared - (sumX * sumX / n));
 			b = (sumY - a * sumX) / n;
-			r = (productsSum) / Math.sqrt(sumXSquared * sumYSquared);
+			r = (n * sumXY - sumX * sumY) / Math.sqrt(
+				(n * sumXSquared - sumX * sumX)
+				* (n * sumYSquared - sumY * sumY)
+			);
+
+			if (XAgainstY) {
+				// Converting back to the form y = ax + b
+				b = -(b / a);
+				a = 1 / a;
+				// r is the same for both types of regression, and doesn't need
+				// any conversion.
+			}
 		} catch (ArithmeticException e) {
 			// If there are 0 or 1 values being plotted, no trendline can be
 			// calculated.
@@ -94,9 +117,24 @@ public class PlottableData {
 			b = Double.MIN_VALUE;
 			r = 0;
 		}
+		menu.updateTrendlineLabel();
 	}
 
 	// Getters and setters
+	/**
+	 * @return The menu this data set is linked to.
+	 */
+	public PlottableDataMenu getMenu() {
+		return menu;
+	}
+
+	/**
+	 * Links this data set to a menu.
+	 * @param pdm The menu to link to.
+	 */
+	public void setMenu(PlottableDataMenu pdm) {
+		menu = pdm;
+	}
 
 	/**
 	 * Gets the name of the plottable data set.
