@@ -4,9 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -23,6 +25,8 @@ public class PlottableDataMenu extends JPanel {
 	public PlottableDataMenu(PlottableData plottableData, PlottableTable table) {
 		this.plottableData = plottableData;
 		this.table = table;
+
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		this.fieldName = new JTextField();
 		fieldName.setPreferredSize(new Dimension(120, 20));
@@ -76,6 +80,8 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setLinReg(toggleTrendline.isSelected());
+				PlottableDataMenu.this.panelTrendline
+					.setVisible(toggleTrendline.isSelected());
 			}
 		});
 
@@ -109,7 +115,28 @@ public class PlottableDataMenu extends JPanel {
 		});
 		buttonChooseColour.setPreferredSize(new Dimension(60, 20));
 
-		this.setLayout(new GridBagLayout());
+		// Extra trendline options
+		labelTrendline = new JLabel();
+		labelTrendline.setPreferredSize(new Dimension(200, 20));
+		labelTrendline.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
+
+		this.toggleXAgainstY = new JCheckBox(
+			"Regress X against Y (minimize horizontal distance)"
+		);
+		toggleXAgainstY.setPreferredSize(new Dimension(300, 20));
+		toggleXAgainstY.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PlottableDataMenu.this.getData()
+					.setXAgainstY(toggleXAgainstY.isSelected());
+			}
+		});
+
+
+
+		// Set up main panel
+		panelMain = new JPanel();
+		panelMain.setLayout(new GridBagLayout());
+		this.add(panelMain);
 
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridx = 0;
@@ -118,43 +145,63 @@ public class PlottableDataMenu extends JPanel {
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 
 		constraints.weightx = 0.2;
-		this.add(fieldName, constraints);
+		panelMain.add(fieldName, constraints);
 		constraints.gridx++;
 		constraints.weightx = 0.3;
-		this.add(selectorXAxis, constraints);
+		panelMain.add(selectorXAxis, constraints);
 		constraints.gridx++;
 		constraints.weightx = 0.3;
-		this.add(selectorYAxis, constraints);
+		panelMain.add(selectorYAxis, constraints);
 		constraints.gridx++;
 		constraints.weightx = 0.1;
-		this.add(toggleVisible, constraints);
+		panelMain.add(toggleVisible, constraints);
 		constraints.gridx++;
 		constraints.weightx = 0.1;
-		this.add(buttonRemove, constraints);
+		panelMain.add(buttonRemove, constraints);
 
 		constraints.gridx = 0;
 		constraints.gridy++;
 
 		constraints.weightx = 0.2;
-		this.add(errorBarLabel, constraints);
+		panelMain.add(errorBarLabel, constraints);
 		constraints.gridx++;
 		constraints.weightx = 0.3;
-		this.add(selectorXErrorBars, constraints);
+		panelMain.add(selectorXErrorBars, constraints);
 		constraints.gridx++;
 		constraints.weightx = 0.3;
-		this.add(selectorYErrorBars, constraints);
+		panelMain.add(selectorYErrorBars, constraints);
 		constraints.gridx++;
 		constraints.weightx = 0.1;
-		this.add(toggleTrendline, constraints);
+		panelMain.add(toggleTrendline, constraints);
 		constraints.gridx++;
 		constraints.weightx = 0.1;
-		this.add(buttonChooseColour, constraints);
+		panelMain.add(buttonChooseColour, constraints);
+
+		// Set up the trendline panel
+		panelTrendline = new JPanel(new GridBagLayout());
+		panelTrendline.setVisible(false);
+		this.add(panelTrendline);
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.weighty = 0;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+
+		constraints.weightx = 0.6;
+		panelTrendline.add(labelTrendline, constraints);
+		constraints.gridx++;
+		constraints.weightx = 0.4;
+		panelTrendline.add(toggleXAgainstY, constraints);
 	}
 
 	/** The {@link PlottableData} object that this menu is linked to. */
 	private final PlottableData plottableData;
 	/** The {@link PlottableTable} object that this menu is part of. */
 	private final PlottableTable table;
+
+	/** The main menu panel, always shown. */
+	private JPanel panelMain;
 
 	/** A text field to change the name of the plottable data. */
 	private JTextField fieldName;
@@ -173,10 +220,30 @@ public class PlottableDataMenu extends JPanel {
 	/** A check box to toggle rendering of a trendline for this data. */
 	private JCheckBox toggleTrendline;
 
+	/**
+	 * A JPanel which displays linear regression information.
+	 * Only shown when the trendline is switched on ({@link #toggleTrendline}
+	 * is true).
+	 */
+	private JPanel panelTrendline;
+
+	/** A label containing linear regression stats. */
+	private JLabel labelTrendline;
+	/** 
+	 * A check box to toggle using X against Y regression (instead of Y
+	 * against X).
+	 */
+	private JCheckBox toggleXAgainstY;
+
+
 	/** A button to remove this field of plottable data. */
 	private JButton buttonRemove;
 	/** A button to change the colour this data is plotted in. */
 	private JButton buttonChooseColour;
+
+	public void update() {
+		updateTrendlineLabel();
+	}
 
 	// Getters and setters
 	public PlottableData getData() {
@@ -185,5 +252,22 @@ public class PlottableDataMenu extends JPanel {
 
 	public PlottableTable getTable() {
 		return table;
+	}
+
+	public void updateTrendlineLabel() {
+		if (this.getData().ixXAgainstY())
+			labelTrendline.setText(String.format(
+				"x = %dy + %d • r = %d",
+				this.getData().getA(),
+				this.getData().getB(),
+				this.getData().getR()
+			));
+		else
+			labelTrendline.setText(String.format(
+				"y = %dx + %d • r = %d",
+				this.getData().getA(),
+				this.getData().getB(),
+				this.getData().getR()
+			));
 	}
 }

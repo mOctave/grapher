@@ -31,6 +31,11 @@ public class PlottableData {
 
 	/** Whether or not a linear trendline should be calculated for this data. */
 	private boolean linRegActive;
+	/** 
+	 * When true, linear regression minimizes horizontal distance, rather
+	 * than vertical distance.
+	 */
+	private boolean XAgainstY;
 	// Linear regression data, for the form y=ax+b
 	private double a;
 	private double b;
@@ -218,6 +223,22 @@ public class PlottableData {
 	 */
 	public void setLinReg(boolean active) {
 		linRegActive = active;
+	}
+
+	/**
+	 * Checks what type of distance to minimize in linear regression.
+	 * @return {@link #XAgainstY}.
+	 */
+	public boolean ixXAgainstY() {
+		return XAgainstY;
+	}
+
+	/**
+	 * Activates or deactivates X-against-Y regression.
+	 * @param active Whether or not to regress X against Y.
+	 */
+	public void setXAgainstY(boolean active) {
+		XAgainstY = active;
 	}
 
 	// Linear regression data do not have setters, as they are calculated

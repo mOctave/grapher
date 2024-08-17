@@ -145,17 +145,15 @@ public class Series implements Iterable<Cell> {
 		// This won't work with full datasets containing only the max/min
 		// integer values, but I can't imagine anyone would ever use such
 		// a data set.
-		if (min == Integer.MAX_VALUE)
+		if (min == Integer.MAX_VALUE || max == Integer.MIN_VALUE) {
 			statistics.put("Minimum", null);
-		else
-			statistics.put("Minimum", min);
-
-		if (max == Integer.MIN_VALUE)
 			statistics.put("Maximum", null);
-		else
+			statistics.put("Range", null);
+		} else {
+			statistics.put("Minimum", min);
 			statistics.put("Maximum", max);
-
-		statistics.put("Range", max - min);
+			statistics.put("Range", max - min);
+		}
 	}
 
 	@Override
