@@ -234,6 +234,13 @@ public class Graph extends JFrame {
 
 					Cell activeX = pd.getDataX().getFirst();
 					Cell activeY = pd.getDataY().getFirst();
+					Cell ebX = null;
+					Cell ebY = null;
+
+					if (pd.getErrorBarsX() != null)
+						ebX = pd.getErrorBarsX().getFirst();
+					if (pd.getErrorBarsY() != null)
+						ebY = pd.getErrorBarsY().getFirst();
 
 					while (true) {
 						try {
@@ -257,6 +264,62 @@ public class Graph extends JFrame {
 									4,
 									4
 								);
+								if (ebX != null) {
+									// Add horizontal error bars
+									try {
+										graphics.drawLine(
+											getRelativeX(x - ebX.getNumeric()),
+											getRelativeY(y),
+											getRelativeX(x + ebX.getNumeric()),
+											getRelativeY(y)
+										);
+										// Draw caps
+										graphics.drawLine(
+											getRelativeX(x - ebX.getNumeric()),
+											getRelativeY(y) - 4,
+											getRelativeX(x - ebX.getNumeric()),
+											getRelativeY(y) + 4
+										);
+										graphics.drawLine(
+											getRelativeX(x + ebX.getNumeric()),
+											getRelativeY(y) - 4,
+											getRelativeX(x + ebX.getNumeric()),
+											getRelativeY(y) + 4
+										);
+									} catch (NumberFormatException e) {
+										// Non-numeric data. Not actually an error,
+										// but no trendline will be drawn
+										System.out.println("Non-numeric error bar skipped.");
+									}
+								}
+								if (ebY != null) {
+									// Add horizontal error bars
+									try {
+										graphics.drawLine(
+											getRelativeX(x),
+											getRelativeY(y - ebY.getNumeric()),
+											getRelativeX(x),
+											getRelativeY(y + ebY.getNumeric())
+										);
+										// Draw caps
+										graphics.drawLine(
+											getRelativeX(x) - 4,
+											getRelativeY(y - ebY.getNumeric()),
+											getRelativeX(x) + 4,
+											getRelativeY(y - ebY.getNumeric())
+										);
+										graphics.drawLine(
+											getRelativeX(x) - 4,
+											getRelativeY(y + ebY.getNumeric()),
+											getRelativeX(x) + 4,
+											getRelativeY(y + ebY.getNumeric())
+										);
+									} catch (NumberFormatException e) {
+										// Non-numeric data. Not actually an error,
+										// but no trendline will be drawn
+										System.out.println("Non-numeric error bar skipped.");
+									}
+								}
 							}
 						} catch (NumberFormatException e) {
 							// Non-numeric data. Not actually an error, but
@@ -268,6 +331,10 @@ public class Graph extends JFrame {
 
 						activeX = activeX.getNext();
 						activeY = activeY.getNext();
+						if (ebX != null)
+							ebX = ebX.getNext();
+						if (ebY != null)
+							ebY = ebY.getNext();
 					}
 
 					// Draw trendline
