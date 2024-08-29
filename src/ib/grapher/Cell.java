@@ -6,6 +6,9 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -111,7 +114,12 @@ public class Cell extends JPanel {
 	 * @return The double numeric value of this cell
 	 */
 	public double getNumeric() throws NumberFormatException {
-		return Double.parseDouble(this.value);
+		try {
+			return NumberFormat.getNumberInstance(Locale.getDefault())
+				.parse(this.value).doubleValue();
+		} catch (ParseException e) {
+			throw new NumberFormatException("Invalid number format.");
+		}
 	}
 
 

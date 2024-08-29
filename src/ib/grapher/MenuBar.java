@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import java.io.File;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -57,7 +59,10 @@ public class MenuBar extends JMenuBar {
 		));
 		dataImport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FileDataManager.chooseFile(".csv", "CSV Files", false);
+				File f = FileDataManager.chooseFile(".csv", "CSV Files", false);
+				if (f != null) {
+					FileDataManager.importCSV(f);
+				}
 			}
 		});
 		menuData.add(dataImport);

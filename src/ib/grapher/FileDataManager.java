@@ -8,6 +8,7 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -82,6 +83,101 @@ public class FileDataManager {
 			System.err.printf("No such file as \"%s\".%n", f.getName());
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Opens the specified CSV file, overwriting the current data table's
+	 * project file with its contents. The first row of CSV data is interpreted
+	 * as a header row.
+	 * @param f The {@link File} to open.
+	 */
+	public static void importCSV(File f) {
+		try {
+			// Opens in RWD mode because the file is supposed to autosave
+			Main.getDataTable().clear();
+			Scanner s = new Scanner(f);
+
+			int lnum = 0;
+
+			while (s.hasNextLine()) {
+				String line = s.nextLine();
+
+				List<String> sublines = splitCSVLine(line);
+
+				if (lnum == 0) {
+					// Add series, and set header names
+					for (String subline : sublines) {
+						Series r = new Series(1);
+						Main.getDataTable().addSeries(r);
+						r.setName(subline.trim());
+					}
+				} else if (lnum == 1) {
+					// Fill in single empty cell
+					for (int i = 0; i < sublines.size(); i++) {
+						Main.getDataTable().getSeries(i).getFirst()
+							.setValue(sublines.get(i).trim());
+					}
+				} else {
+					// Add a new cell
+					for (int i = 0; i < sublines.size(); i++) {
+						Main.getDataTable().getSeries(i).getLast()
+							.insertCellAfter(new Cell(sublines.get(i).trim()));
+					}
+				}
+
+				lnum++;
+			}
+
+			s.close();
+			Main.getDataTable().update();
+		} catch (FileNotFoundException e) {
+			System.err.printf("No such file as \"%s\".%n", f.getName());
+			e.printStackTrace();
+		}
+	}
+
+
+	/**
+	 * Splits a CSV line. This method usually splits on commas, but will work
+	 * properly with quoted text. Escaped double quotes are properly added to
+	 * items as single (double) quotes, while unescaped quotes can be used to
+	 * avoid splitting the CSV on commas.
+	 * @param line The line to split.
+	 * @return A {@link List holding the trimmed elements of the line}.
+	 */
+	public static List<String> splitCSVLine(String line) {
+		List<String> entries = new ArrayList<>();
+		boolean escape = false;
+		boolean quoted = false;
+		String currentEntry = "";
+		for (char c : line.toCharArray()) {
+			if (escape) {
+				escape = false;
+				if (c == '"') {
+					currentEntry += c;
+					continue;
+				} else {
+					quoted = !quoted;
+				}
+			}
+
+			if (c == ',' && !quoted) {
+				entries.add(currentEntry);
+				currentEntry = "";
+				continue;
+			}
+
+			if (c == '"') {
+				escape = true;
+				continue;
+			}
+
+			currentEntry += c;
+		}
+
+		entries.add(currentEntry);
+
+		return entries;
 	}
 
 	/**

@@ -3,6 +3,7 @@ package ib.grapher;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -396,6 +397,27 @@ public class DataTable extends JFrame {
 			rollActiveCellsBackward();
 		while (activeCells.get(0).getIndex() < selectedCell.getIndex())
 			rollActiveCellsForward();
+	}
+
+	/**
+	 * Clears both the logical and graphical parts of the data table.
+	 * Every {@link Series}, {@link Cell}, and {@link ColumnNumber} is removed.
+	 * The {@link #selectedCell} is reset to null.
+	 */
+	public void clear() {
+		selectedCell = null;
+		data.clear();
+		
+		// Remove components
+		for (Component comp : this.getComponents()) {
+			if (
+				comp instanceof SeriesHeader
+				|| comp instanceof Cell
+				|| comp instanceof ColumnNumber
+			) {
+				this.remove(comp);
+			}
+		}
 	}
 }
 
