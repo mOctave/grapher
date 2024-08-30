@@ -170,9 +170,9 @@ public class Graph extends JFrame {
 							try {
 								if (c.getIndex() > 1) {
 									graphics.drawLine(
-										25,
+										getRelativeX(xLower),
 										getRelativeY(c.getNumeric()),
-										this.getWidth(),
+										getRelativeX(xUpper),
 										getRelativeY(c.getNumeric())
 									);
 									graphics.drawString(
@@ -209,9 +209,9 @@ public class Graph extends JFrame {
 							if (c.getIndex() > 1) {
 								graphics.drawLine(
 									getRelativeX(c.getNumeric()),
-									0,
+									getRelativeY(yLower),
 									getRelativeX(c.getNumeric()),
-									this.getHeight() - 25
+									getRelativeY(yUpper)
 								);
 								graphics.drawString(
 									c.getValue(),
