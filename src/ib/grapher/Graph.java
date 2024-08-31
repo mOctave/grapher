@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,7 +16,6 @@ import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -24,8 +25,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.Box.Filler;
 
 /**
  * The visual graph associated with a project.
@@ -412,45 +411,61 @@ public class Graph extends JFrame {
 		panelGraph.add(drawingPanel, BorderLayout.CENTER);
 
 		this.panelMenu = new JPanel();
-		panelMenu.setLayout(new BoxLayout(panelMenu, BoxLayout.Y_AXIS));
+		panelMenu.setLayout(new GridBagLayout());
 		this.add(panelMenu, BorderLayout.EAST);
 
 		// Set up menu panel
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.weightx = 1;
+		constraints.weighty = 0;
+		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
+
 		this.labelType = new JLabel("Graph Type", SwingConstants.CENTER);
-		labelType.setPreferredSize(new Dimension(120, 20));
-		panelMenu.add(labelType);
+		labelType.setPreferredSize(new Dimension(180, 20));
+		panelMenu.add(labelType, constraints);
+		constraints.gridy++;
 		this.selectorType = new JComboBox<String>(new String[]{SCATTERPLOT, LINE, BAR});
-		selectorType.setPreferredSize(new Dimension(120, 20));
+		selectorType.setPreferredSize(new Dimension(180, 20));
 		selectorType.setSelectedItem(SCATTERPLOT);
-		panelMenu.add(selectorType);
+		panelMenu.add(selectorType, constraints);
+		constraints.gridy++;
 
 		this.labelGridlineX = new JLabel("Horizontal Gridlines", SwingConstants.CENTER);
-		labelGridlineX.setPreferredSize(new Dimension(120, 20));
-		panelMenu.add(labelGridlineX);
+		labelGridlineX.setPreferredSize(new Dimension(180, 20));
+		panelMenu.add(labelGridlineX, constraints);
+		constraints.gridy++;
 		this.selectorGridlineX = new SeriesSelector();
-		selectorGridlineX.setPreferredSize(new Dimension(120, 20));
+		selectorGridlineX.setPreferredSize(new Dimension(180, 20));
 		selectorGridlineX.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Graph.this.setGridlinesX((Series) selectorGridlineX.getSelectedItem());
 			}
 		});
-		panelMenu.add(selectorGridlineX);
+		panelMenu.add(selectorGridlineX, constraints);
+		constraints.gridy++;
 
 		this.labelGridlineY = new JLabel("Vertical Gridlines", SwingConstants.CENTER);
-		labelGridlineY.setPreferredSize(new Dimension(120, 20));
-		panelMenu.add(labelGridlineY);
+		labelGridlineY.setPreferredSize(new Dimension(180, 20));
+		panelMenu.add(labelGridlineY, constraints);
+		constraints.gridy++;
 		this.selectorGridlineY = new SeriesSelector();
-		selectorGridlineY.setPreferredSize(new Dimension(120, 20));
+		selectorGridlineY.setPreferredSize(new Dimension(180, 20));
 		selectorGridlineY.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Graph.this.setGridlinesY((Series) selectorGridlineY.getSelectedItem());
 			}
 		});
-		panelMenu.add(selectorGridlineY);
+		panelMenu.add(selectorGridlineY, constraints);
+		constraints.gridy++;
 
-		panelMenu.add(new JLabel("X-Axis Title", SwingConstants.CENTER));
+		JLabel labelXAxisTitle = new JLabel("X-Axis Title", SwingConstants.CENTER);
+		labelXAxisTitle.setPreferredSize(new Dimension(180, 20));
+		panelMenu.add(labelXAxisTitle, constraints);
+		constraints.gridy++;
 		this.fieldGraphHorizontalAxis = new JTextField();
-		fieldGraphHorizontalAxis.setPreferredSize(new Dimension(120, 20));
+		fieldGraphHorizontalAxis.setPreferredSize(new Dimension(180, 20));
 		fieldGraphHorizontalAxis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Graph.this.setAxisTitleX(fieldGraphHorizontalAxis.getText());
@@ -463,12 +478,15 @@ public class Graph extends JFrame {
 				Graph.this.setAxisTitleX(fieldGraphHorizontalAxis.getText());
 			};
 		});
-		panelMenu.add(fieldGraphHorizontalAxis);
+		panelMenu.add(fieldGraphHorizontalAxis, constraints);
+		constraints.gridy++;
 
-
-		panelMenu.add(new JLabel("Y-Axis Title", SwingConstants.CENTER));
+		JLabel labelYAxisTitle = new JLabel("Y-Axis Title", SwingConstants.CENTER);
+		labelYAxisTitle.setPreferredSize(new Dimension(180, 20));
+		panelMenu.add(labelYAxisTitle, constraints);
+		constraints.gridy++;
 		this.fieldGraphVerticalAxis = new JTextField();
-		fieldGraphVerticalAxis.setPreferredSize(new Dimension(120, 20));
+		fieldGraphVerticalAxis.setPreferredSize(new Dimension(180, 20));
 		fieldGraphVerticalAxis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Graph.this.setAxisTitleY(fieldGraphVerticalAxis.getText());
@@ -481,29 +499,29 @@ public class Graph extends JFrame {
 				Graph.this.setAxisTitleY(fieldGraphVerticalAxis.getText());
 			};
 		});
-		panelMenu.add(fieldGraphVerticalAxis);
+		panelMenu.add(fieldGraphVerticalAxis, constraints);
+		constraints.gridy++;
 
-		glue = (Filler) Box.createVerticalGlue();
-		glue.changeShape(
-			glue.getMinimumSize(),
-			new Dimension(0, Integer.MAX_VALUE),
-			glue.getMaximumSize()
-		);
-		panelMenu.add(glue);
+		JPanel glue = new JPanel();
+		constraints.weighty = 1;
+		panelMenu.add(glue, constraints);
+		constraints.gridy++;
+		constraints.weighty = 0;
 
 		this.labelDimensions = new JLabel("<html><i>###x###</i></html>",
 			SwingConstants.CENTER);
-		labelDimensions.setPreferredSize(new Dimension(120, 20));
-		panelMenu.add(labelDimensions);
+		labelDimensions.setPreferredSize(new Dimension(180, 20));
+		panelMenu.add(labelDimensions, constraints);
+		constraints.gridy++;
 
 		this.buttonExport = new JButton("Export");
-		buttonExport.setPreferredSize(new Dimension(120, 20));
+		buttonExport.setPreferredSize(new Dimension(180, 20));
 		buttonExport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				export();
 			}
 		});
-		panelMenu.add(buttonExport);
+		panelMenu.add(buttonExport, constraints);
 	}
 
 	// String constants that are used for choosing .
@@ -548,8 +566,6 @@ public class Graph extends JFrame {
 	private JLabel labelGridlineY;
 	/** Selector for vertical gridlines. */
 	private SeriesSelector selectorGridlineY;
-	/** Glue to keep everything grouped together. */
-	private Filler glue;
 	/** A label describing the dimensions of the graph. */
 	private JLabel labelDimensions;
 	/** A button to export the graph data. */
@@ -608,6 +624,20 @@ public class Graph extends JFrame {
 		}
 
 	}
+
+	/**
+	 * Called whenever this graph updates.
+	 */
+	@Override
+	public void validate() {
+		labelDimensions.setText(String.format(
+			"<html><i>%dx%d</i></html>",
+			panelGraph.getWidth(),
+			panelGraph.getHeight()
+		));
+		super.validate();
+	}
+	
 
 	/**
 	 * Exports this graph to a file.
