@@ -626,16 +626,20 @@ public class Graph extends JFrame {
 	}
 
 	/**
-	 * Called whenever this graph updates.
+	 * Called whenever this graph updates. Updates the dimension label,
+	 * refreshes the graph, and then calls {@link #invalidate()},
+	 * {@link #validate()}, and {@link #repaint()}
 	 */
-	@Override
-	public void validate() {
+	public void doUpdate() {
 		labelDimensions.setText(String.format(
 			"<html><i>%dx%d</i></html>",
 			panelGraph.getWidth(),
 			panelGraph.getHeight()
 		));
-		super.validate();
+		
+		invalidate();
+		validate();
+		repaint();
 	}
 	
 

@@ -129,7 +129,7 @@ public class FileDataManager {
 			}
 
 			s.close();
-			Main.getDataTable().update();
+			Main.updateAllComponents();
 		} catch (FileNotFoundException e) {
 			System.err.printf("No such file as \"%s\".%n", f.getName());
 			e.printStackTrace();

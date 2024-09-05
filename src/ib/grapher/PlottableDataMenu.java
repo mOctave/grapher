@@ -36,6 +36,7 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setDataX((Series) selectorXAxis.getSelectedItem());
+				Main.updateAllComponents();
 			}
 		});
 		this.selectorYAxis = new SeriesSelector();
@@ -43,6 +44,7 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setDataY((Series) selectorYAxis.getSelectedItem());
+				Main.updateAllComponents();
 			}
 		});
 
@@ -56,6 +58,7 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setErrorBarsX((Series) selectorXErrorBars.getSelectedItem());
+				Main.updateAllComponents();
 			}
 		});
 		this.selectorYErrorBars = new SeriesSelector();
@@ -63,6 +66,7 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setErrorBarsY((Series) selectorYErrorBars.getSelectedItem());
+				Main.updateAllComponents();
 			}
 		});
 
@@ -72,6 +76,7 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setActive(toggleVisible.isSelected());
+				Main.updateAllComponents();
 			}
 		});
 
@@ -83,6 +88,7 @@ public class PlottableDataMenu extends JPanel {
 					.setLinReg(toggleTrendline.isSelected());
 				PlottableDataMenu.this.panelTrendline
 					.setVisible(toggleTrendline.isSelected());
+				Main.updateAllComponents();
 			}
 		});
 
@@ -91,6 +97,7 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getTable()
 					.removePlottableData(PlottableDataMenu.this);
+				Main.updateAllComponents();
 			}
 		});
 		buttonRemove.setPreferredSize(new Dimension(60, 20));
@@ -112,6 +119,7 @@ public class PlottableDataMenu extends JPanel {
 					PlottableDataMenu.this.getData().setColour(newColour);
 					buttonChooseColour.setBackground(newColour);
 				}
+				Main.updateAllComponents();
 			}
 		});
 		buttonChooseColour.setPreferredSize(new Dimension(60, 20));
@@ -129,6 +137,7 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setXAgainstY(toggleXAgainstY.isSelected());
+				Main.updateAllComponents();
 			}
 		});
 
@@ -230,6 +239,7 @@ public class PlottableDataMenu extends JPanel {
 
 	/** A label containing linear regression stats. */
 	private JLabel labelTrendline;
+
 	/** 
 	 * A check box to toggle using X against Y regression (instead of Y
 	 * against X).
@@ -242,15 +252,10 @@ public class PlottableDataMenu extends JPanel {
 	/** A button to change the colour this data is plotted in. */
 	private JButton buttonChooseColour;
 
-	// Getters and setters
-	public PlottableData getData() {
-		return plottableData;
-	}
-
-	public PlottableTable getTable() {
-		return table;
-	}
-
+	/**
+	 * Updates the label attached to this data set, according to the template
+	 * y = ax + b.
+	 */
 	public void updateTrendlineLabel() {
 		if (this.getData().ixXAgainstY())
 			labelTrendline.setText(String.format(
@@ -266,5 +271,21 @@ public class PlottableDataMenu extends JPanel {
 				this.getData().getB(),
 				this.getData().getR()
 			));
+	}
+
+	// Getters and setters
+	/**
+	 * @return The {@link PlottableData} set of which this is a composite.
+	 */
+	public PlottableData getData() {
+		return plottableData;
+	}
+
+	/**
+	 * @return The {@link PlottableTable} that this menu is linked to, usually
+	 * the global {@link Main#getPlottableTable()}.
+	 */
+	public PlottableTable getTable() {
+		return table;
 	}
 }

@@ -42,7 +42,7 @@ public class SeriesHeader extends JPanel {
 				for (SeriesSelector selector : Main.getSelectors()) {
 					selector.refresh();
 				}
-				Main.getPlottableTable().update();
+				Main.updateAllComponents();
 			}
 		});
 
@@ -52,7 +52,7 @@ public class SeriesHeader extends JPanel {
 				for (SeriesSelector selector : Main.getSelectors()) {
 					selector.refresh();
 				}
-				Main.getPlottableTable().update();
+				Main.updateAllComponents();
 			}
 		});
 

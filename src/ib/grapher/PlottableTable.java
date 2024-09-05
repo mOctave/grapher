@@ -101,9 +101,10 @@ public class PlottableTable extends JFrame {
 
 
 	/**
-	 * Refreshes this panel.
+	 * Refreshes this panel, by calling {@link #invalidate()},
+	 * {@link #validate()}, and {@link #repaint()}.
 	 */
-	public void update() {
+	public void doUpdate() {
 		this.invalidate();
 		this.validate();
 		this.repaint();
@@ -120,7 +121,7 @@ public class PlottableTable extends JFrame {
 		dataSets.add(pd);
 		mainPanel.add(new PlottableDataMenu(pd, this));
 		mainPanel.add(glue);
-		update();
+		Main.updateAllComponents();
 	}
 
 	/**
@@ -133,7 +134,7 @@ public class PlottableTable extends JFrame {
 		// last element which corresponds to a data set.
 		dataSets.remove(pdm.getData());
 		mainPanel.remove(pdm);
-		update();
+		Main.updateAllComponents();
 	}
 
 	// Getters and setters

@@ -99,7 +99,7 @@ public class MenuBar extends JMenuBar {
 				for (Cell c : dt.getActiveCells()) {
 					c.insertCellBefore(new Cell());
 				}
-				dt.update();
+				Main.updateAllComponents();
 			}
 		});
 		menuInsert.add(insertRowAbove);
@@ -116,7 +116,7 @@ public class MenuBar extends JMenuBar {
 				for (Cell c : dt.getActiveCells()) {
 					c.insertCellAfter(new Cell());
 				}
-				dt.update();
+				Main.updateAllComponents();
 			}
 		});
 		menuInsert.add(insertRowBelow);
@@ -133,7 +133,7 @@ public class MenuBar extends JMenuBar {
 					dt.indexOf(dt.getSelectedCell().getSeries()),
 					new Series(dt.getData().get(0).length())
 				);
-				dt.update();
+				Main.updateAllComponents();
 			}
 		});
 		menuInsert.add(insertColumnLeft);
@@ -150,7 +150,7 @@ public class MenuBar extends JMenuBar {
 					dt.indexOf(dt.getSelectedCell().getSeries()) + 1,
 					new Series(dt.getData().get(0).length())
 				);
-				dt.update();
+				Main.updateAllComponents();
 			}
 		});
 		menuInsert.add(insertColumnRight);

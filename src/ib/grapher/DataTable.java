@@ -119,9 +119,12 @@ public class DataTable extends JFrame {
 
 	/**
 	 * Updates the main data table. Called whenever the window is resized or
-	 * scrolled, or when the data in it changes.
+	 * scrolled, or when the data in it changes. Resets the
+	 * {@link GridBagConstraints} on all elements, updates series statistics,
+	 * and then calls {@link #invalidate()}, {@link #validate()}, and
+	 * {@link #repaint()}.
 	 */
-	public void update() {
+	public void doUpdate() {
 		GridBagConstraints constraints;
 		for (Series r : data) {
 			constraints = new GridBagConstraints();
@@ -137,7 +140,7 @@ public class DataTable extends JFrame {
 				constraints.anchor = GridBagConstraints.FIRST_LINE_START;
 				tableLayout.setConstraints(c, constraints);
 
-				c.update();
+				c.doUpdate();
 			}
 		}
 		if (data.size() > 0) {
@@ -189,7 +192,7 @@ public class DataTable extends JFrame {
 
 	public void addCell(Cell c) {
 		table.add(c);
-		update();
+		Main.updateAllComponents();
 	}
 
 	// Data utility methods
@@ -232,8 +235,7 @@ public class DataTable extends JFrame {
 		for (SeriesSelector selector : Main.getSelectors()) {
 			selector.refresh();
 		}
-		Main.getPlottableTable().update();
-		update();
+		Main.updateAllComponents();
 	}
 
 	/**
@@ -248,8 +250,7 @@ public class DataTable extends JFrame {
 		for (SeriesSelector selector : Main.getSelectors()) {
 			selector.refresh();
 		}
-		Main.getPlottableTable().update();
-		update();
+		Main.updateAllComponents();
 	}
 
 	/**
@@ -263,8 +264,7 @@ public class DataTable extends JFrame {
 		for (SeriesSelector selector : Main.getSelectors()) {
 			selector.refresh();
 		}
-		Main.getPlottableTable().update();
-		update();
+		Main.updateAllComponents();
 	}
 
 	/**
@@ -349,7 +349,7 @@ public class DataTable extends JFrame {
 	 */
 	public void setSelectedCell(Cell c) {
 		selectedCell = c;
-		update();
+		Main.updateAllComponents();
 	}
 
 	/**

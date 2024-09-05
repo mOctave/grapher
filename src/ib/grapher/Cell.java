@@ -101,9 +101,13 @@ public class Cell extends JPanel {
 
 	/**
 	 * Standard update loop, called whenever the {@link DataTable} updates.
+	 * Calls {@link #invalidate()}, {@link #validate()}, and
+	 * {@link #repaint()} to refresh the cell element.
 	 */
-	public void update() {
-
+	public void doUpdate() {
+		invalidate();
+		validate();
+		repaint();
 	}
 
 

@@ -74,7 +74,7 @@ public class Main {
 				dataTable.setSize(400, 300);
 				dataTable.addSeries(new Series(1));
 				dataTable.setVisible(true);
-				dataTable.update();
+				dataTable.doUpdate();
 
 				plottableTable.setSize(400, 300);
 				plottableTable.setVisible(true);
@@ -85,6 +85,16 @@ public class Main {
 		});
 
 		//saveAllData();
+	}
+
+	/**
+	 * Updates the {@link #dataTable}, {@link #plottableTable}, and
+	 * {@link #graph}.
+	 */
+	public static void updateAllComponents() {
+		dataTable.doUpdate();
+		plottableTable.doUpdate();
+		graph.doUpdate();
 	}
 
 	/**
