@@ -57,6 +57,7 @@ public class Graph extends JFrame {
 		fieldGraphTitle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Graph.this.setGraphTitle(fieldGraphTitle.getText());
+				Main.updateAllComponents();
 			}
 		});
 		fieldGraphTitle.addFocusListener(new FocusListener() {
@@ -64,6 +65,7 @@ public class Graph extends JFrame {
 
 			public void focusLost(FocusEvent e) {
 				Graph.this.setGraphTitle(fieldGraphTitle.getText());
+				Main.updateAllComponents();
 			};
 		});
 		panelGraph.add(fieldGraphTitle, BorderLayout.NORTH);
@@ -80,6 +82,7 @@ public class Graph extends JFrame {
 				Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
 				Graphics2D graphics = (Graphics2D) g;
 				FontMetrics metrics = graphics.getFontMetrics(font);
+				getYLabelWidth(metrics);
 
 				graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_ON);
@@ -360,9 +363,33 @@ public class Graph extends JFrame {
 				graphics.dispose();
 			}
 
+			private int yLabelWidth = 30;
+
+			private void getYLabelWidth(FontMetrics metrics) {
+				int maxWidth = 30;
+
+				try {
+					Cell c = stepY.getFirst().getNext().getNext();
+					while (c != null) {
+						int w = metrics.stringWidth(c.getValue()) + 5;
+						if (w > maxWidth)
+							maxWidth = w;
+						
+						c = c.getNext();
+					}
+				} catch (NullPointerException e) {
+					// Presumably uses default Y-coordinates.
+				}
+
+				yLabelWidth = maxWidth;
+				System.out.println(yLabelWidth);
+			}
+
 			private int getRelativeX(double x) {
 				int labelOffset = axisTitleY.length() == 0 ? 0 : 20;
-				labelOffset += (stepX != null && stepX.length() <= 2) ? 0 : 30;
+
+				labelOffset += (stepX != null && stepX.length() <= 2)
+					? 0 : yLabelWidth;
 				return (int) ((x - xLower) / (xUpper - xLower) * 
 					(getWidth() - (20 + labelOffset))) + (10 + labelOffset);
 			}
@@ -443,6 +470,7 @@ public class Graph extends JFrame {
 		selectorGridlineX.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Graph.this.setGridlinesX((Series) selectorGridlineX.getSelectedItem());
+				Main.updateAllComponents();
 			}
 		});
 		panelMenu.add(selectorGridlineX, constraints);
@@ -458,6 +486,7 @@ public class Graph extends JFrame {
 		selectorGridlineY.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Graph.this.setGridlinesY((Series) selectorGridlineY.getSelectedItem());
+				Main.updateAllComponents();
 			}
 		});
 		panelMenu.add(selectorGridlineY, constraints);
@@ -473,6 +502,7 @@ public class Graph extends JFrame {
 		fieldGraphHorizontalAxis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Graph.this.setAxisTitleX(fieldGraphHorizontalAxis.getText());
+				Main.updateAllComponents();
 			}
 		});
 		fieldGraphHorizontalAxis.addFocusListener(new FocusListener() {
@@ -495,6 +525,7 @@ public class Graph extends JFrame {
 		fieldGraphVerticalAxis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Graph.this.setAxisTitleY(fieldGraphVerticalAxis.getText());
+				Main.updateAllComponents();
 			}
 		});
 		fieldGraphVerticalAxis.addFocusListener(new FocusListener() {
@@ -502,6 +533,7 @@ public class Graph extends JFrame {
 
 			public void focusLost(FocusEvent e) {
 				Graph.this.setAxisTitleY(fieldGraphVerticalAxis.getText());
+				Main.updateAllComponents();
 			};
 		});
 		panelMenu.add(fieldGraphVerticalAxis, constraints);
