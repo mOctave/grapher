@@ -258,20 +258,21 @@ public class PlottableDataMenu extends JPanel {
 	 * y = ax + b.
 	 */
 	public void updateTrendlineLabel() {
-		if (getData().ixXAgainstY())
+		if (plottableData.getB() < 0) {
 			labelTrendline.setText(String.format(
-				"x = %fy + %f • r = %f",
-				getData().getA(),
-				getData().getB(),
-				getData().getR()
+				"y = %fy - %f • r = %f",
+				plottableData.getA(),
+				Math.abs(plottableData.getB()),
+				plottableData.getR()
 			));
-		else
+		} else {
 			labelTrendline.setText(String.format(
-				"y = %fx + %f • r = %f",
-				getData().getA(),
-				getData().getB(),
-				getData().getR()
+				"y = %fy + %f • r = %f",
+				plottableData.getA(),
+				plottableData.getB(),
+				plottableData.getR()
 			));
+		}
 	}
 
 	// Getters and setters
