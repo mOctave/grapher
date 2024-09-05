@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
@@ -233,7 +233,7 @@ public class FileDataManager {
 	 * @param bytes A map of positions to insert, and bytes to insert.
 	 * Note that all positions are relative to the FINAL, not initial, file.
 	 */
-	public static void insertBytes(HashMap<Long, Byte> bytes) {
+	public static void insertBytes(Map<Long, Byte> bytes) {
 		try {
 			long shift = bytes.keySet().size();
 			long filePointer;
