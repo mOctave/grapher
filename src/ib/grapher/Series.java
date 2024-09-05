@@ -22,12 +22,12 @@ public class Series implements Iterable<Cell> {
 	 */
 	public Series(int cells) {
 		// Non-GUI initialization
-		this.name = "Untitled Series";
-		this.statistics = new HashMap<>();
+		name = "Untitled Series";
+		statistics = new HashMap<>();
 
 		Cell c = new Cell();
-		this.firstCell = c;
-		this.lastCell = c;
+		firstCell = c;
+		lastCell = c;
 		c.setSeries(this);
 		c.setIndex(0);
 

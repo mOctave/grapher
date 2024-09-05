@@ -25,13 +25,14 @@ public class PlottableDataMenu extends JPanel {
 	public PlottableDataMenu(PlottableData plottableData, PlottableTable table) {
 		this.plottableData = plottableData;
 		this.plottableData.setMenu(this);
+
 		this.table = table;
 
-		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		this.fieldName = new JTextField();
+		fieldName = new JTextField();
 		fieldName.setPreferredSize(new Dimension(120, 20));
-		this.selectorXAxis = new SeriesSelector();
+		selectorXAxis = new SeriesSelector();
 		selectorXAxis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
@@ -39,7 +40,7 @@ public class PlottableDataMenu extends JPanel {
 				Main.updateAllComponents();
 			}
 		});
-		this.selectorYAxis = new SeriesSelector();
+		selectorYAxis = new SeriesSelector();
 		selectorYAxis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
@@ -53,7 +54,7 @@ public class PlottableDataMenu extends JPanel {
 		errorBarLabel.setPreferredSize(new Dimension(120, 20));
 		
 
-		this.selectorXErrorBars = new SeriesSelector();
+		selectorXErrorBars = new SeriesSelector();
 		selectorXErrorBars.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
@@ -61,7 +62,7 @@ public class PlottableDataMenu extends JPanel {
 				Main.updateAllComponents();
 			}
 		});
-		this.selectorYErrorBars = new SeriesSelector();
+		selectorYErrorBars = new SeriesSelector();
 		selectorYErrorBars.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
@@ -70,7 +71,7 @@ public class PlottableDataMenu extends JPanel {
 			}
 		});
 
-		this.toggleVisible = new JCheckBox("Visibility", true);
+		toggleVisible = new JCheckBox("Visibility", true);
 		toggleVisible.setPreferredSize(new Dimension(120, 20));
 		toggleVisible.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -80,7 +81,7 @@ public class PlottableDataMenu extends JPanel {
 			}
 		});
 
-		this.toggleTrendline = new JCheckBox("Trendline");
+		toggleTrendline = new JCheckBox("Trendline");
 		toggleTrendline.setPreferredSize(new Dimension(120, 20));
 		toggleTrendline.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -92,7 +93,7 @@ public class PlottableDataMenu extends JPanel {
 			}
 		});
 
-		this.buttonRemove = new JButton("X");
+		buttonRemove = new JButton("X");
 		buttonRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getTable()
@@ -102,12 +103,12 @@ public class PlottableDataMenu extends JPanel {
 		});
 		buttonRemove.setPreferredSize(new Dimension(60, 20));
 
-		this.buttonChooseColour = new JButton("<html>&#127912;&#xFE0E;</html>");
-		int colourChoice = this.getTable().getDataSets().indexOf(this.getData()) % 7;
+		buttonChooseColour = new JButton("<html>&#127912;&#xFE0E;</html>");
+		int colourChoice = getTable().getDataSets().indexOf(getData()) % 7;
 		buttonChooseColour.setBackground(Main.WONG_COLORS[colourChoice]);
 		buttonChooseColour.setOpaque(true);
 		buttonChooseColour.setBorderPainted(false);
-		this.getData().setColour(Main.WONG_COLORS[colourChoice]);
+		getData().setColour(Main.WONG_COLORS[colourChoice]);
 		buttonChooseColour.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Color newColour = JColorChooser.showDialog(
@@ -129,7 +130,7 @@ public class PlottableDataMenu extends JPanel {
 		labelTrendline.setPreferredSize(new Dimension(200, 20));
 		labelTrendline.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
 
-		this.toggleXAgainstY = new JCheckBox(
+		toggleXAgainstY = new JCheckBox(
 			"Regress X against Y (minimize horizontal distance)"
 		);
 		toggleXAgainstY.setPreferredSize(new Dimension(300, 20));
@@ -146,7 +147,7 @@ public class PlottableDataMenu extends JPanel {
 		// Set up main panel
 		panelMain = new JPanel();
 		panelMain.setLayout(new GridBagLayout());
-		this.add(panelMain);
+		add(panelMain);
 
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridx = 0;
@@ -190,7 +191,7 @@ public class PlottableDataMenu extends JPanel {
 		// Set up the trendline panel
 		panelTrendline = new JPanel(new GridBagLayout());
 		panelTrendline.setVisible(false);
-		this.add(panelTrendline);
+		add(panelTrendline);
 
 		constraints = new GridBagConstraints();
 		constraints.gridx = 0;
@@ -257,19 +258,19 @@ public class PlottableDataMenu extends JPanel {
 	 * y = ax + b.
 	 */
 	public void updateTrendlineLabel() {
-		if (this.getData().ixXAgainstY())
+		if (getData().ixXAgainstY())
 			labelTrendline.setText(String.format(
 				"x = %fy + %f • r = %f",
-				this.getData().getA(),
-				this.getData().getB(),
-				this.getData().getR()
+				getData().getA(),
+				getData().getB(),
+				getData().getR()
 			));
 		else
 			labelTrendline.setText(String.format(
 				"y = %fx + %f • r = %f",
-				this.getData().getA(),
-				this.getData().getB(),
-				this.getData().getR()
+				getData().getA(),
+				getData().getB(),
+				getData().getR()
 			));
 	}
 

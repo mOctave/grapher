@@ -8,9 +8,9 @@ import java.awt.Color;
 public class PlottableData {
 	/** Sole constructor. Sets up visibility and placeholders. */
 	public PlottableData() {
-		this.name = "Unnamed Data Set";
-		this.active = true;
-		this.linRegActive = false;
+		name = "Unnamed Data Set";
+		active = true;
+		linRegActive = false;
 	}
 
 	/** The menu this data set is linked to. */

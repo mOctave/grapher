@@ -27,10 +27,10 @@ import javax.swing.Box.Filler;
 public class PlottableTable extends JFrame {
 	public PlottableTable() {
 		super();
-		this.setTitle("Data to Plot");
+		setTitle("Data to Plot");
 
 		// Initialize attributes.
-		this.dataSets = new ArrayList<>();
+		dataSets = new ArrayList<>();
 
 		// Set up GUI.
 
@@ -64,7 +64,7 @@ public class PlottableTable extends JFrame {
 		constraints.gridx++;
 		constraints.weightx = 0.2;
 		heading.add(labelBuffer);
-		this.add(heading, BorderLayout.NORTH);
+		add(heading, BorderLayout.NORTH);
 
 		glue = (Filler) Box.createVerticalGlue();
 		glue.changeShape(
@@ -77,7 +77,7 @@ public class PlottableTable extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(mainPanel);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-		this.add(scrollPane, BorderLayout.CENTER);
+		add(scrollPane, BorderLayout.CENTER);
 
 		JButton addButton = new JButton("Add Dataset");
 		addButton.addActionListener(new ActionListener() {
@@ -85,9 +85,9 @@ public class PlottableTable extends JFrame {
 				PlottableTable.this.addPlottableData(new PlottableData());
 			}
 		});
-		this.add(addButton, BorderLayout.SOUTH);
+		add(addButton, BorderLayout.SOUTH);
 
-		this.setMinimumSize(new Dimension(600, 200));
+		setMinimumSize(new Dimension(600, 200));
 	}
 
 	/** A list of plottable data sets. */
@@ -105,9 +105,9 @@ public class PlottableTable extends JFrame {
 	 * {@link #validate()}, and {@link #repaint()}.
 	 */
 	public void doUpdate() {
-		this.invalidate();
-		this.validate();
-		this.repaint();
+		invalidate();
+		validate();
+		repaint();
 	}
 
 

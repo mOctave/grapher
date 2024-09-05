@@ -16,9 +16,9 @@ public class SeriesSelector extends JComboBox<Series> {
 	public SeriesSelector() {
 		super();
 		DefaultComboBoxModel<Series> model = new DefaultComboBoxModel<Series>(Main.getDataTable().getData().toArray(new Series[0]));
-		this.setModel(model);
-		this.setPreferredSize(new Dimension(120, 20));
-		this.setSelectedItem(null);
+		setModel(model);
+		setPreferredSize(new Dimension(120, 20));
+		setSelectedItem(null);
 		Main.getSelectors().add(this);
 	}
 
@@ -28,14 +28,14 @@ public class SeriesSelector extends JComboBox<Series> {
 	 * data table, it will also reset the combo box.
 	 */
 	public void refresh() {
-		Object selected = this.getSelectedItem();
+		Object selected = getSelectedItem();
 
 		DefaultComboBoxModel<Series> model = new DefaultComboBoxModel<Series>(Main.getDataTable().getData().toArray(new Series[0]));
-		this.setModel(model);
+		setModel(model);
 
 		if (selected == null || model.getIndexOf(selected) < 0)
-			this.setSelectedItem(null);
+			setSelectedItem(null);
 		else
-			this.setSelectedItem(selected);
+			setSelectedItem(selected);
 	}
 }

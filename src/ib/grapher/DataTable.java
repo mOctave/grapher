@@ -32,29 +32,29 @@ public class DataTable extends JFrame {
 	 */
 	public DataTable() {
 		super();
-		this.setTitle("Grapher");
+		setTitle("Grapher");
 		// Initialize non-GUI attributes
-		this.data = new ArrayList<>();
-		this.activeCells = new ArrayList<>();
+		data = new ArrayList<>();
+		activeCells = new ArrayList<>();
 
 		// Initialize GUI
-		this.setLayout(new BorderLayout());
+		setLayout(new BorderLayout());
 
-		this.tableLayout = new GridBagLayout();
-		this.table = new JPanel(tableLayout);
+		tableLayout = new GridBagLayout();
+		table = new JPanel(tableLayout);
 		JScrollPane tableView = new JScrollPane(table);
 
-		this.headerLayout = new GridBagLayout();
-		this.header = new JPanel(headerLayout);
+		headerLayout = new GridBagLayout();
+		header = new JPanel(headerLayout);
 		tableView.setColumnHeaderView(header);
 		header.setVisible(true);
 
-		this.rowNumbers = new JPanel();
-		this.rowNumbers.setLayout(new GridBagLayout());
+		rowNumbers = new JPanel();
+		rowNumbers.setLayout(new GridBagLayout());
 		tableView.setRowHeaderView(rowNumbers);
 		rowNumbers.setVisible(true);
 
-		this.add(tableView, BorderLayout.CENTER);
+		add(tableView, BorderLayout.CENTER);
 
 		fillerT = new JPanel();
 		fillerT.setOpaque(false);
@@ -68,19 +68,19 @@ public class DataTable extends JFrame {
 		rnFiller.setOpaque(false);
 		rowNumbers.add(rnFiller);
 
-		this.statView = new JTextArea(6, 80);
+		statView = new JTextArea(6, 80);
 		statView.setEditable(false);
 		statView.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
 		statView.setMargin(new Insets(0, 5, 0, 5));
-		this.add(statView, BorderLayout.SOUTH);
+		add(statView, BorderLayout.SOUTH);
 
-		this.title = new JLabel("<html><i>Unsaved File</i></html>");
+		title = new JLabel("<html><i>Unsaved File</i></html>");
 		title.setHorizontalAlignment(SwingConstants.CENTER);
-		this.add(title, BorderLayout.NORTH);
+		add(title, BorderLayout.NORTH);
 
-		this.setPreferredSize(new Dimension(800, 600));
-		this.setMinimumSize(new Dimension(400, 300));
-		this.setJMenuBar(Main.getMenuBar());
+		setPreferredSize(new Dimension(800, 600));
+		setMinimumSize(new Dimension(400, 300));
+		setJMenuBar(Main.getMenuBar());
 	}
 
 	/** All the base data for this project. */
@@ -185,9 +185,9 @@ public class DataTable extends JFrame {
 			));
 		}
 
-		this.invalidate();
-		this.validate();
-		this.repaint();
+		invalidate();
+		validate();
+		repaint();
 	}
 
 	public void addCell(Cell c) {
@@ -409,13 +409,13 @@ public class DataTable extends JFrame {
 		data.clear();
 		
 		// Remove components
-		for (Component comp : this.getComponents()) {
+		for (Component comp : getComponents()) {
 			if (
 				comp instanceof SeriesHeader
 				|| comp instanceof Cell
 				|| comp instanceof ColumnNumber
 			) {
-				this.remove(comp);
+				remove(comp);
 			}
 		}
 	}
@@ -428,8 +428,8 @@ class ColumnNumber extends JLabel {
 	 * @param s The text to put on the label.
 	 */
 	public ColumnNumber(String s) {
-		this.setText(s);
-		this.setPreferredSize(new Dimension(20, 30));
+		setText(s);
+		setPreferredSize(new Dimension(20, 30));
 	}
 
 }

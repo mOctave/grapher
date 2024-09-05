@@ -25,22 +25,22 @@ public class Cell extends JPanel {
 	 * handles graphical layout.
 	 */
 	public Cell() {
-		this.previousCell = null;
-		this.nextCell = null;
-		this.value = "";
-		this.textField = new JTextField(8);
-		this.index = -1;
-		this.series = null;
+		previousCell = null;
+		nextCell = null;
+		value = "";
+		textField = new JTextField(8);
+		index = -1;
+		series = null;
 
-		this.setBackground(Main.WHITE);
+		setBackground(Main.WHITE);
 		FlowLayout layout = new FlowLayout();
 		layout.setHgap(0);
 		layout.setVgap(0);
 
 		textField.setMargin(new Insets(0,0,0,0));
-		this.setBorder(new EtchedBorder(EtchedBorder.RAISED));
-		this.add(textField);
-		this.setLayout(layout);
+		setBorder(new EtchedBorder(EtchedBorder.RAISED));
+		add(textField);
+		setLayout(layout);
 		Main.getDataTable().addCell(this);
 
 		textField.addFocusListener(new FocusAdapter() {
@@ -79,8 +79,8 @@ public class Cell extends JPanel {
 	 */
 	public Cell(String s) {
 		this();
-		this.setValue(s);
-		this.textField.setText(s);
+		setValue(s);
+		textField.setText(s);
 	}
 
 
@@ -91,7 +91,7 @@ public class Cell extends JPanel {
 	/** The textual value of this cell. */
 	private String value;
 	/** A graphical text field to allow for data entry. */
-	private JTextField textField;
+	private final JTextField textField;
 	/** The index of this cell in its series. */
 	private int index;
 	/** The series this cell belongs to. */

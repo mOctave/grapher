@@ -33,24 +33,24 @@ public class Graph extends JFrame {
 	// Sole constructor. Creates a new graph.
 	public Graph() {
 		// Initialize non-GUI attributes
-		this.graphTitle = "New Graph";
-		this.axisTitleX = "";
-		this.axisTitleY = "";
-		this.graphType = SCATTERPLOT;
+		graphTitle = "New Graph";
+		axisTitleX = "";
+		axisTitleY = "";
+		graphType = SCATTERPLOT;
 
 		// Set up GUI
-		this.setLayout(new BorderLayout());
-		this.setMinimumSize(new Dimension(400, 200));
+		setLayout(new BorderLayout());
+		setMinimumSize(new Dimension(400, 200));
 
-		this.panelGraph = new JPanel();
+		panelGraph = new JPanel();
 		panelGraph.setPreferredSize(new Dimension(400, 300));
 		panelGraph.setBorder(new EtchedBorder(EtchedBorder.RAISED));
 		panelGraph.setBackground(Main.WHITE);
 		panelGraph.setLayout(new BorderLayout());
-		this.add(panelGraph, BorderLayout.CENTER);
+		add(panelGraph, BorderLayout.CENTER);
 
 		// Set up graph
-		this.fieldGraphTitle = new JTextField("Untitled Graph");
+		fieldGraphTitle = new JTextField("Untitled Graph");
 		fieldGraphTitle.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18));
 		fieldGraphTitle.setHorizontalAlignment(SwingConstants.CENTER);
 		fieldGraphTitle.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
@@ -68,7 +68,7 @@ public class Graph extends JFrame {
 		});
 		panelGraph.add(fieldGraphTitle, BorderLayout.NORTH);
 
-		this.drawingPanel = new JPanel() {
+		drawingPanel = new JPanel() {
 			private double xLower = 0;
 			private double yLower = 0;
 			private double xUpper = 0;
@@ -89,8 +89,8 @@ public class Graph extends JFrame {
 				// Draw X-axis title
 				graphics.drawString(
 					axisTitleX,
-					(this.getWidth() - metrics.stringWidth(axisTitleX)) / 2,
-					this.getHeight() - 5
+					(getWidth() - metrics.stringWidth(axisTitleX)) / 2,
+					getHeight() - 5
 				);
 
 				// Draw Y-axis title
@@ -98,13 +98,13 @@ public class Graph extends JFrame {
 				rotatedGraphics.rotate(
 					-0.5 * Math.PI,
 					metrics.getHeight() + 5,
-					(this.getHeight() + metrics.stringWidth(axisTitleY)) / 2
+					(getHeight() + metrics.stringWidth(axisTitleY)) / 2
 				);
 
 				rotatedGraphics.drawString(
 					axisTitleY,
 					metrics.getHeight() + 5,
-					(this.getHeight() + metrics.stringWidth(axisTitleY)) / 2
+					(getHeight() + metrics.stringWidth(axisTitleY)) / 2
 				);
 
 				rotatedGraphics.dispose();
@@ -364,14 +364,14 @@ public class Graph extends JFrame {
 				int labelOffset = axisTitleY.length() == 0 ? 0 : 20;
 				labelOffset += (stepX != null && stepX.length() <= 2) ? 0 : 30;
 				return (int) ((x - xLower) / (xUpper - xLower) * 
-					(this.getWidth() - (20 + labelOffset))) + (10 + labelOffset);
+					(getWidth() - (20 + labelOffset))) + (10 + labelOffset);
 			}
 
 			private int getRelativeY(double y) {
 				int labelOffset = axisTitleX.length() == 0 ? 0 : 20;
 				labelOffset += (stepY != null && stepY.length() <= 2) ? 0 : 15;
-				return this.getHeight() - (int) ((y - yLower) / (yUpper - yLower) *
-					(this.getHeight() - (20 + labelOffset))) - (10 + labelOffset);
+				return getHeight() - (int) ((y - yLower) / (yUpper - yLower) *
+					(getHeight() - (20 + labelOffset))) - (10 + labelOffset);
 			}
 
 			private int[] calculateTrendline(double a, double b) {
@@ -410,9 +410,9 @@ public class Graph extends JFrame {
 		drawingPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 		panelGraph.add(drawingPanel, BorderLayout.CENTER);
 
-		this.panelMenu = new JPanel();
+		panelMenu = new JPanel();
 		panelMenu.setLayout(new GridBagLayout());
-		this.add(panelMenu, BorderLayout.EAST);
+		add(panelMenu, BorderLayout.EAST);
 
 		// Set up menu panel
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -422,21 +422,23 @@ public class Graph extends JFrame {
 		constraints.weighty = 0;
 		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
 
-		this.labelType = new JLabel("Graph Type", SwingConstants.CENTER);
+		labelType = new JLabel("Graph Type", SwingConstants.CENTER);
 		labelType.setPreferredSize(new Dimension(180, 20));
 		panelMenu.add(labelType, constraints);
 		constraints.gridy++;
-		this.selectorType = new JComboBox<String>(new String[]{SCATTERPLOT, LINE, BAR});
+
+		selectorType = new JComboBox<String>(new String[]{SCATTERPLOT, LINE, BAR});
 		selectorType.setPreferredSize(new Dimension(180, 20));
 		selectorType.setSelectedItem(SCATTERPLOT);
 		panelMenu.add(selectorType, constraints);
 		constraints.gridy++;
 
-		this.labelGridlineX = new JLabel("Horizontal Gridlines", SwingConstants.CENTER);
+		labelGridlineX = new JLabel("Horizontal Gridlines", SwingConstants.CENTER);
 		labelGridlineX.setPreferredSize(new Dimension(180, 20));
 		panelMenu.add(labelGridlineX, constraints);
 		constraints.gridy++;
-		this.selectorGridlineX = new SeriesSelector();
+
+		selectorGridlineX = new SeriesSelector();
 		selectorGridlineX.setPreferredSize(new Dimension(180, 20));
 		selectorGridlineX.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -446,11 +448,12 @@ public class Graph extends JFrame {
 		panelMenu.add(selectorGridlineX, constraints);
 		constraints.gridy++;
 
-		this.labelGridlineY = new JLabel("Vertical Gridlines", SwingConstants.CENTER);
+		labelGridlineY = new JLabel("Vertical Gridlines", SwingConstants.CENTER);
 		labelGridlineY.setPreferredSize(new Dimension(180, 20));
 		panelMenu.add(labelGridlineY, constraints);
 		constraints.gridy++;
-		this.selectorGridlineY = new SeriesSelector();
+
+		selectorGridlineY = new SeriesSelector();
 		selectorGridlineY.setPreferredSize(new Dimension(180, 20));
 		selectorGridlineY.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -464,7 +467,8 @@ public class Graph extends JFrame {
 		labelXAxisTitle.setPreferredSize(new Dimension(180, 20));
 		panelMenu.add(labelXAxisTitle, constraints);
 		constraints.gridy++;
-		this.fieldGraphHorizontalAxis = new JTextField();
+
+		fieldGraphHorizontalAxis = new JTextField();
 		fieldGraphHorizontalAxis.setPreferredSize(new Dimension(180, 20));
 		fieldGraphHorizontalAxis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -485,7 +489,8 @@ public class Graph extends JFrame {
 		labelYAxisTitle.setPreferredSize(new Dimension(180, 20));
 		panelMenu.add(labelYAxisTitle, constraints);
 		constraints.gridy++;
-		this.fieldGraphVerticalAxis = new JTextField();
+
+		fieldGraphVerticalAxis = new JTextField();
 		fieldGraphVerticalAxis.setPreferredSize(new Dimension(180, 20));
 		fieldGraphVerticalAxis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -508,13 +513,13 @@ public class Graph extends JFrame {
 		constraints.gridy++;
 		constraints.weighty = 0;
 
-		this.labelDimensions = new JLabel("<html><i>###x###</i></html>",
+		labelDimensions = new JLabel("<html><i>###x###</i></html>",
 			SwingConstants.CENTER);
 		labelDimensions.setPreferredSize(new Dimension(180, 20));
 		panelMenu.add(labelDimensions, constraints);
 		constraints.gridy++;
 
-		this.buttonExport = new JButton("Export");
+		buttonExport = new JButton("Export");
 		buttonExport.setPreferredSize(new Dimension(180, 20));
 		buttonExport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -597,15 +602,15 @@ public class Graph extends JFrame {
 			graphics = (Graphics2D) g;
 			graphics.rotate(
 				rotation / 180 * Math.PI,
-				this.getWidth() / 2,
-				this.getHeight() / 2
+				getWidth() / 2,
+				getHeight() / 2
 			);
 		}
 
 		@Override
 		public void paintChildren(Graphics g) {
 			graphics = (Graphics2D) g;
-			graphics.drawString(this.getText(), 10, 10);
+			graphics.drawString(getText(), 10, 10);
 		}
 
 		/**
@@ -620,7 +625,7 @@ public class Graph extends JFrame {
 		 * @param angle The new angle to rotate the text field to.
 		 */
 		public void setRotation(double angle) {
-			this.rotation = angle;
+			rotation = angle;
 		}
 
 	}
