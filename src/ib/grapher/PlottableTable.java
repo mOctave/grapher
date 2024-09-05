@@ -25,6 +25,7 @@ import javax.swing.Box.Filler;
  * A graphical data table which stores all the data to be entered into a graph.
  */
 public class PlottableTable extends JFrame {
+	/** Sole constructor. */
 	public PlottableTable() {
 		super();
 		setTitle("Data to Plot");

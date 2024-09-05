@@ -30,7 +30,7 @@ import javax.imageio.ImageIO;
  * The visual graph associated with a project.
  */
 public class Graph extends JFrame {
-	// Sole constructor. Creates a new graph.
+	/** Sole constructor. */
 	public Graph() {
 		// Initialize non-GUI attributes
 		graphTitle = "New Graph";

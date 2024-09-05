@@ -26,6 +26,17 @@ import javax.swing.border.EtchedBorder;
  * The table which stores all the textual data for a graph.
  */
 public class DataTable extends JFrame {
+	/** A template for the stat view. */
+	private static final String STAT_VIEW_TEMPLATE = """
+	Series Statistics
+	Minimum: %-21s Non-Empty Cells: %-13s
+	Q1: %-26s Numeric Values: %-14s
+	Median: %-22s Sum: %-25s
+	Q3: %-26s Mean: %-24s
+	Maximum: %-21s Variance: %-20s
+	Range: %-23s Standard Deviation: %-10s
+	""";
+
 	/**
 	 * A constructor which initializes the lists of this table, and also adds
 	 * listeners and triggers for GUI functionality.
@@ -93,17 +104,6 @@ public class DataTable extends JFrame {
 	private Cell selectedCell;
 	/** A text panel which displays statistics about the selected cell. */
 	private JTextArea statView;
-
-	/** A template for the stat view. */
-	private static final String STAT_VIEW_TEMPLATE = """
-	Series Statistics
-	Minimum: %-21s Non-Empty Cells: %-13s
-	Q1: %-26s Numeric Values: %-14s
-	Median: %-22s Sum: %-25s
-	Q3: %-26s Mean: %-24s
-	Maximum: %-21s Variance: %-20s
-	Range: %-23s Standard Deviation: %-10s
-	""";
 
 	/** "Filler" panels to keep the GridBagLayouts aligned with the top left. */
 	private JPanel fillerT;

@@ -13,6 +13,11 @@ import javax.swing.border.EtchedBorder;
 
 /** A class that allows for editing the name of a series. */
 public class SeriesHeader extends JPanel {
+	/**
+	 * Sole constructor. Creates a header object that is tied to a
+	 * {@link Series} and can be placed on a {@link DataTable}.
+	 * @param series The series this header is linked to.
+	 */
 	public SeriesHeader(Series series) {
 		this.series = series;
 

@@ -22,6 +22,13 @@ import javax.swing.SwingConstants;
  * {@link PlottableData} set.
  */
 public class PlottableDataMenu extends JPanel {
+	/**
+	 * Sole constructor. Sets up a menu and links it back to its data set and
+	 * menu.
+	 * @param plottableData The plottable data series to permanently link this
+	 * menu to.
+	 * @param table The overarching data table that this menu is part of.
+	 */
 	public PlottableDataMenu(PlottableData plottableData, PlottableTable table) {
 		this.plottableData = plottableData;
 		this.plottableData.setMenu(this);
