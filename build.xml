@@ -1,4 +1,6 @@
-<project default="compile">
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Grapher" default="compile">
+
 	<path id="umlDoclet.classpath">
 		<fileset dir=".">
 			<include name="umldoclet-*.jar"/>

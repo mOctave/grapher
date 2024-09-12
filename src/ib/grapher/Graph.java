@@ -11,6 +11,8 @@ import java.awt.GridBagLayout;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
@@ -559,6 +561,12 @@ public class Graph extends JFrame {
 			}
 		});
 		panelMenu.add(buttonExport, constraints);
+
+		this.addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent e) {
+				doUpdate();
+			}
+		});
 	}
 
 	// String constants that are used for choosing .

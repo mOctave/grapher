@@ -409,15 +409,19 @@ public class DataTable extends JFrame {
 		data.clear();
 		
 		// Remove components
-		for (Component comp : getComponents()) {
-			if (
-				comp instanceof SeriesHeader
-				|| comp instanceof Cell
-				|| comp instanceof ColumnNumber
-			) {
-				remove(comp);
+		for (Component comp : table.getComponents()) {
+			if (comp instanceof Cell) {
+				table.remove(comp);
 			}
 		}
+
+		for (Component comp : header.getComponents()) {
+			if (comp instanceof SeriesHeader) {
+				header.remove(comp);
+			}
+		}
+
+		doUpdate();
 	}
 }
 
