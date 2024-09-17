@@ -192,7 +192,6 @@ public class DataTable extends JFrame {
 
 	public void addCell(Cell c) {
 		table.add(c);
-		Main.updateAllComponents();
 	}
 
 	// Data utility methods
