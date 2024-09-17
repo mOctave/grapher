@@ -1,25 +1,16 @@
 package ib.grapher;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.FlowLayout;
-import java.awt.Insets;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.EtchedBorder;
 
 /**
  * A class which represents a single cell in the data table. An object of this
  * class both functions as a node in a doubly linked list and provides a
  * graphical representation of its data, along with the means to edit it.
  */
-public class Cell extends JPanel {
+public class Cell {
 	/**
 	 * A basic constructor for a cell, which initializes the text field and
 	 * handles graphical layout.
@@ -28,49 +19,8 @@ public class Cell extends JPanel {
 		previousCell = null;
 		nextCell = null;
 		value = "";
-		textField = new JTextField(8);
 		index = -1;
 		series = null;
-
-		setBackground(Main.WHITE);
-		FlowLayout layout = new FlowLayout();
-		layout.setHgap(0);
-		layout.setVgap(0);
-
-		textField.setMargin(new Insets(0,0,0,0));
-		setBorder(new EtchedBorder(EtchedBorder.RAISED));
-		add(textField);
-		setLayout(layout);
-		Main.getDataTable().addCell(this);
-
-		textField.addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent e) {
-				Cell.this.setBackground(Main.YELLOW);
-				Cell.this.textField.setBackground(Main.LIGHT_YELLOW);
-				Cell.this.series.getHeader().setBackground(Main.GREY);
-				Main.getDataTable().setSelectedCell(Cell.this);
-				Main.getDataTable().setRowNumberBackground(Cell.this.getIndex(), Main.GREY);
-			}
-
-			public void focusLost(FocusEvent e) {
-				Cell.this.setBackground(Main.WHITE);
-				Cell.this.textField.setBackground(Main.WHITE);
-				Cell.this.series.getHeader().setBackground(Main.SILVER);
-				Main.getDataTable().setSelectedCell(Cell.this);
-				Main.getDataTable().setRowNumberBackground(Cell.this.getIndex(), Main.SILVER);
-
-				// Losing focus also does data entry
-				Cell.this.setValue(Cell.this.textField.getText());
-				Cell.this.getSeries().calculateStatistics();
-			}
-		});
-
-		textField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Cell.this.setValue(Cell.this.textField.getText());
-				Cell.this.getSeries().calculateStatistics();
-			}
-		});
 	}
 
 	/**
@@ -81,7 +31,6 @@ public class Cell extends JPanel {
 	public Cell(String s) {
 		this();
 		setValue(s);
-		textField.setText(s);
 	}
 
 
@@ -91,25 +40,10 @@ public class Cell extends JPanel {
 	private Cell nextCell;
 	/** The textual value of this cell. */
 	private String value;
-	/** A graphical text field to allow for data entry. */
-	private final JTextField textField;
 	/** The index of this cell in its series. */
 	private int index;
 	/** The series this cell belongs to. */
 	private Series series;
-
-
-
-	/**
-	 * Standard update loop, called whenever the {@link DataTable} updates.
-	 * Calls {@link #invalidate()}, {@link #validate()}, and
-	 * {@link #repaint()} to refresh the cell element.
-	 */
-	public void doUpdate() {
-		invalidate();
-		validate();
-		repaint();
-	}
 
 
 
@@ -285,7 +219,6 @@ public class Cell extends JPanel {
 	 */
 	public void setValue(String s) {
 		value = s;
-		textField.setText(s);
 	}
 
 	// textField has no getters or setters, as it is intended to be used

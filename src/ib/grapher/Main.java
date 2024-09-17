@@ -72,7 +72,7 @@ public class Main {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				dataTable.setSize(400, 300);
-				dataTable.addSeries(new Series(1));
+				dataTable.getModel().addSeries(new Series(1, dataTable.getModel()));
 				dataTable.setVisible(true);
 				dataTable.doUpdate();
 

@@ -94,12 +94,12 @@ public class MenuBar extends JMenuBar {
 		));
 		insertRowAbove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DataTable dt = Main.getDataTable();
-				dt.matchActiveToSelected();
-				for (Cell c : dt.getActiveCells()) {
+				/*DataTableModel dtm = Main.getDataTable().getModel();
+				dtm.matchActiveToSelected();
+				for (Cell c : dtm.getActiveCells()) {
 					c.insertCellBefore(new Cell());
 				}
-				Main.updateAllComponents();
+				Main.updateAllComponents();*/
 			}
 		});
 		menuInsert.add(insertRowAbove);
@@ -111,12 +111,12 @@ public class MenuBar extends JMenuBar {
 		));
 		insertRowBelow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DataTable dt = Main.getDataTable();
+				/*DataTable dt = Main.getDataTable();
 				dt.matchActiveToSelected();
 				for (Cell c : dt.getActiveCells()) {
 					c.insertCellAfter(new Cell());
 				}
-				Main.updateAllComponents();
+				Main.updateAllComponents();*/
 			}
 		});
 		menuInsert.add(insertRowBelow);
@@ -128,10 +128,10 @@ public class MenuBar extends JMenuBar {
 		));
 		insertColumnLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DataTable dt = Main.getDataTable();
-				dt.insertSeries(
-					dt.indexOf(dt.getSelectedCell().getSeries()),
-					new Series(dt.getData().get(0).length())
+				DataTableModel dtm = Main.getDataTable().getModel();
+				dtm.insertSeries(
+					dtm.indexOf(dtm.getSelectedCell().getSeries()),
+					new Series(dtm.getData().get(0).length(), dtm)
 				);
 				Main.updateAllComponents();
 			}
@@ -145,10 +145,10 @@ public class MenuBar extends JMenuBar {
 		));
 		insertColumnRight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DataTable dt = Main.getDataTable();
-				dt.insertSeries(
-					dt.indexOf(dt.getSelectedCell().getSeries()) + 1,
-					new Series(dt.getData().get(0).length())
+				DataTableModel dtm = Main.getDataTable().getModel();
+				dtm.insertSeries(
+					dtm.indexOf(dtm.getSelectedCell().getSeries()) + 1,
+					new Series(dtm.getData().get(0).length(), dtm)
 				);
 				Main.updateAllComponents();
 			}

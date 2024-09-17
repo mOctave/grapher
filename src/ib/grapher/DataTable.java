@@ -9,18 +9,29 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 /**
  * The table which stores all the textual data for a graph.
@@ -44,15 +55,14 @@ public class DataTable extends JFrame {
 	public DataTable() {
 		super();
 		setTitle("Grapher");
-		// Initialize non-GUI attributes
-		data = new ArrayList<>();
-		activeCells = new ArrayList<>();
+		tableModel = new DataTableModel();
 
 		// Initialize GUI
 		setLayout(new BorderLayout());
 
-		tableLayout = new GridBagLayout();
-		table = new JPanel(tableLayout);
+		table = new JTable(new DataTableModel());
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
 		JScrollPane tableView = new JScrollPane(table);
 
 		headerLayout = new GridBagLayout();
@@ -60,24 +70,7 @@ public class DataTable extends JFrame {
 		tableView.setColumnHeaderView(header);
 		header.setVisible(true);
 
-		rowNumbers = new JPanel();
-		rowNumbers.setLayout(new GridBagLayout());
-		tableView.setRowHeaderView(rowNumbers);
-		rowNumbers.setVisible(true);
-
 		add(tableView, BorderLayout.CENTER);
-
-		fillerT = new JPanel();
-		fillerT.setOpaque(false);
-		table.add(fillerT);
-
-		fillerH = new JPanel();
-		fillerH.setOpaque(false);
-		header.add(fillerH);
-
-		rnFiller = new JPanel();
-		rnFiller.setOpaque(false);
-		rowNumbers.add(rnFiller);
 
 		statView = new JTextArea(6, 80);
 		statView.setEditable(false);
@@ -94,26 +87,13 @@ public class DataTable extends JFrame {
 		setJMenuBar(Main.getMenuBar());
 	}
 
-	/** All the base data for this project. */
-	private List<Series> data;
-	/** The current row of cells to manipulate. */
-	private List<Cell> activeCells;
-	/** The row numbers which make up the sidebar. */
-	private JPanel rowNumbers;
-	/** The current selected cell. */
-	private Cell selectedCell;
 	/** A text panel which displays statistics about the selected cell. */
 	private JTextArea statView;
 
-	/** "Filler" panels to keep the GridBagLayouts aligned with the top left. */
-	private JPanel fillerT;
-	private JPanel fillerH;
-	private JPanel rnFiller;
-
 	private JLabel title;
 
-	private JPanel table;
-	private GridBagLayout tableLayout;
+	private JTable table;
+	private DataTableModel tableModel;
 	private JPanel header;
 	private GridBagLayout headerLayout;
 
@@ -125,49 +105,40 @@ public class DataTable extends JFrame {
 	 * {@link #repaint()}.
 	 */
 	public void doUpdate() {
-		GridBagConstraints constraints;
-		for (Series r : data) {
-			constraints = new GridBagConstraints();
-			constraints.gridx = indexOf(r);
-			constraints.gridy = 0;
-			constraints.anchor = GridBagConstraints.FIRST_LINE_START;
-			headerLayout.setConstraints(r.getHeader(), constraints);
+		int sc = table.getSelectedColumn();
+		System.out.println("Selected Column: " + sc);
 
-			for (Cell c : r) {
-				constraints = new GridBagConstraints();
-				constraints.gridx = indexOf(c.getSeries());
-				constraints.gridy = c.getIndex();
-				constraints.anchor = GridBagConstraints.FIRST_LINE_START;
-				tableLayout.setConstraints(c, constraints);
+		TableColumnModel columnModel = table.getColumnModel();
+		for (int i = 0; i < columnModel.getColumnCount(); i++) {
+			TableColumn col = columnModel.getColumn(i);
+			JTextField field = new JTextField();
 
-				c.doUpdate();
-			}
+			final int j = i;
+
+			field.setText(tableModel.getColumnName(i));
+			field.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					DataTable.this.getModel().getData().get(j)
+						.setName(field.getText());
+					field.setBackground(Color.RED);
+				}
+			});
+			field.addFocusListener(new FocusAdapter() {
+				@Override
+				public void focusLost(FocusEvent e) {
+					DataTable.this.getModel().getData().get(j)
+						.setName(field.getText());
+				}
+			});
+			col.setHeaderRenderer(new HeaderCell(field));
 		}
-		if (data.size() > 0) {
-			constraints = new GridBagConstraints();
-			constraints.gridx = data.size();
-			constraints.gridy = data.get(0).getLast().getIndex() + 1;
-			constraints.weightx = 1.0;
-			constraints.weighty = 1.0;
 
-			tableLayout.setConstraints(fillerT, constraints);
-			headerLayout.setConstraints(fillerH, constraints);
-		}
-
-		int len = 0;
-		try {
-			len = data.get(0).length();
-		} catch (IndexOutOfBoundsException e) {}
-		while (len > rowNumbers.getComponentCount() - 1)
-			addRowNumber();
-		while (rowNumbers.getComponentCount() - 1 > len)
-			removeRowNumber();
-
-		if (selectedCell == null) {
+		if (sc < 1) {
 			statView.setText("Select a cell to view series statistics.");
 		} else {
 			System.out.println("A cell has been selected!");
-			Series currentSeries = selectedCell.getSeries();
+			Series currentSeries = tableModel.getData().get(sc - 1);
 			statView.setText(String.format(
 				STAT_VIEW_TEMPLATE,
 				currentSeries.getStatistic("Minimum"),
@@ -190,238 +161,14 @@ public class DataTable extends JFrame {
 		repaint();
 	}
 
-	public void addCell(Cell c) {
-		table.add(c);
-		Main.updateAllComponents();
-	}
-
-	// Data utility methods
+	// Getters
 
 	/**
-	 * Gets all the base data for the project.
-	 * @return A reference to {@link #data}
+	 * Get the currently used data table model.
+	 * @return The current {@link DataTableModel}.
 	 */
-	public List<Series> getData() {
-		return data;
-	}
-
-	/**
-	 * Gets a single series from the base data.
-	 * @param i The index of the series to get
-	 * @return A reference to the desired {@link Series} object
-	 */
-	public Series getSeries(int i) {
-		return data.get(i);
-	}
-
-	/**
-	 * Gets the index of the specified series.
-	 * @param r The {@link Series} object to search for
-	 * @return The index of the the series in the data list, or -1 if it is not
-	 * contained in the data list
-	 */
-	public int indexOf(Series r) {
-		return data.indexOf(r);
-	}
-
-	/**
-	 * Adds the specified series to the data list.
-	 * @param r The {@link Series} object to add
-	 */
-	public void addSeries(Series r) {
-		header.add(r.getHeader());
-		data.add(r);
-		resetActiveCells();
-		for (SeriesSelector selector : Main.getSelectors()) {
-			selector.refresh();
-		}
-		Main.updateAllComponents();
-	}
-
-	/**
-	 * Inserts a series at a specific position in the data list.
-	 * @param i The index to insert the series at
-	 * @param r The {@link Series} object to insert
-	 */
-	public void insertSeries(int i, Series r) {
-		header.add(r.getHeader());
-		data.add(i, r);
-		resetActiveCells();
-		for (SeriesSelector selector : Main.getSelectors()) {
-			selector.refresh();
-		}
-		Main.updateAllComponents();
-	}
-
-	/**
-	 * Removes the specified series from the data list.
-	 * @param r The {@link Series} object to remove
-	 */
-	public void removeSeries(Series r) {
-		header.remove(r.getHeader());
-		data.remove(r);
-		resetActiveCells();
-		for (SeriesSelector selector : Main.getSelectors()) {
-			selector.refresh();
-		}
-		Main.updateAllComponents();
-	}
-
-	/**
-	 * Creates a new {@link javax.swing.JLabel} with the proper formatting for
-	 * a row number object, then adds it to the list of row numbers.
-	 */
-	private void addRowNumber() {
-		// Remove filler
-		rowNumbers.remove(rowNumbers.getComponentCount() - 1);
-
-		GridBagConstraints rnConstraints = new GridBagConstraints();
-		rnConstraints.fill = GridBagConstraints.HORIZONTAL;
-		rnConstraints.weightx = 1;
-		rnConstraints.gridx = 1;
-		rnConstraints.weighty = 0;
-		rnConstraints.gridy = rowNumbers.getComponentCount();
-
-		JLabel rowNumber = new JLabel();
-		rowNumber.setText(Integer.toString(rowNumbers.getComponentCount() + 1));
-		rowNumber.setBorder(BorderFactory.createCompoundBorder(
-			new EmptyBorder(new Insets(5, 2, 5, 2)),
-			new EtchedBorder(EtchedBorder.RAISED)
-		));
-		rowNumber.setMinimumSize(new Dimension(20, 30));
-		rowNumber.setPreferredSize(new Dimension(20, 30));
-	
-		rowNumbers.add(rowNumber, rnConstraints);
-
-		// Re-add filler
-		rnConstraints.weighty = 1;
-		rnConstraints.gridy ++;
-		rowNumbers.add(rnFiller, rnConstraints);
-	}
-
-	/**
-	 * Removes the last row number, updating the filler in doing so.
-	 */
-	private void removeRowNumber() {
-		try {
-			// Remove filler
-			rowNumbers.remove(rowNumbers.getComponentCount() - 1);
-
-			// Remove actual number
-			rowNumbers.remove(rowNumbers.getComponentCount() - 1);
-
-			// Re-add filler
-			GridBagConstraints rnConstraints = new GridBagConstraints();
-			rnConstraints.weighty = 1;
-			rnConstraints.gridy = rowNumbers.getComponentCount();
-			rowNumbers.add(rnFiller, rnConstraints);
-		} catch (IndexOutOfBoundsException e) {
-			System.out.println(
-				"Could not remove row number: no row number to remove");
-		}
-	}
-
-	/**
-	 * Changes the background colour of a specified row number label.
-	 * @param i The row number to change (starting at 0).
-	 * @param c The {@link java.awt.Color} to change it to.
-	 */
-	public void setRowNumberBackground(int i, Color c) {
-		rowNumbers.getComponent(i).setBackground(c);
-	}
-
-
-
-	// Active Cell Utility Methods
-
-	/**
-	 * Gets the currently selected cell.
-	 * @return The selected cell.
-	 */
-	public Cell getSelectedCell() {
-		return selectedCell;
-	}
-
-	/**
-	 * Changes the cell which is marked as selected, without reformatting the
-	 * cell.
-	 * @param c The newly selected cell.
-	 */
-	public void setSelectedCell(Cell c) {
-		selectedCell = c;
-		Main.updateAllComponents();
-	}
-
-	/**
-	 * Gets the currently active row of cells.
-	 * @return A reference to the list of {@link #activeCells}
-	 */
-	public List<Cell> getActiveCells() {
-		return activeCells;
-	}
-
-	/**
-	 * Resets the currently active row of cells, moving them to the first row of
-	 * the data table.
-	 */
-	public void resetActiveCells() {
-		activeCells = new ArrayList<>();
-		for (Series r : data) {
-			activeCells.add(r.getFirst());
-		}
-	}
-
-	/**
-	 * Rolls the currently active row of cells forward (down) one row.
-	 */
-	public void rollActiveCellsForward() {
-		for (int i = 0; i < activeCells.size(); i++) {
-			activeCells.set(i, activeCells.get(i).getNext());
-		}
-	}
-
-	/**
-	 * Rolls the currently active row of cells backward (up) one row.
-	 */
-	public void rollActiveCellsBackward() {
-		for (int i = 0; i < activeCells.size(); i++) {
-			activeCells.set(i, activeCells.get(i).getPrevious());
-		}
-	}
-
-	/**
-	 * Moves the row of active cells until it aligns with the selected cell.
-	 */
-	public void matchActiveToSelected() {
-		while (activeCells.get(0).getIndex() > selectedCell.getIndex())
-			rollActiveCellsBackward();
-		while (activeCells.get(0).getIndex() < selectedCell.getIndex())
-			rollActiveCellsForward();
-	}
-
-	/**
-	 * Clears both the logical and graphical parts of the data table.
-	 * Every {@link Series}, {@link Cell}, and {@link ColumnNumber} is removed.
-	 * The {@link #selectedCell} is reset to null.
-	 */
-	public void clear() {
-		selectedCell = null;
-		data.clear();
-		
-		// Remove components
-		for (Component comp : table.getComponents()) {
-			if (comp instanceof Cell) {
-				table.remove(comp);
-			}
-		}
-
-		for (Component comp : header.getComponents()) {
-			if (comp instanceof SeriesHeader) {
-				header.remove(comp);
-			}
-		}
-
-		doUpdate();
+	public DataTableModel getModel() {
+		return tableModel;
 	}
 }
 
@@ -434,6 +181,97 @@ class ColumnNumber extends JLabel {
 	public ColumnNumber(String s) {
 		setText(s);
 		setPreferredSize(new Dimension(20, 30));
+	}
+
+}
+
+class HeaderCell implements TableCellRenderer {
+	public HeaderCell(JTextField field) {
+		this.field = field;
+		this.field.setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+	}
+
+	private JTable table;
+	private MouseAdapter adapter;
+	private JTextField field;
+	
+	private int column = -1;
+
+	@Override
+	public Component getTableCellRendererComponent(
+		JTable table, Object value,
+		boolean isSelected, boolean hasFocus,
+		int row, int col
+	) {
+		if (table != null && this.table != table) {
+			this.table = table;
+			JTableHeader header = table.getTableHeader();
+			if (header != null) {
+				field.setForeground(header.getForeground());
+				field.setBackground(header.getBackground());
+				field.setFont(header.getFont());
+				adapter = new MouseAdapter() {
+					private JTableHeader h = header;
+					private Component target;
+
+					@Override
+					public void mousePressed(MouseEvent e) {
+						if (h.getResizingColumn() == null) {
+							// Get point of touch
+							Point p = e.getPoint();
+
+							// Get selected column
+							int c = h.getTable().columnAtPoint(p);
+							if (c != column || c == -1)
+								return;
+							
+							// Gets the associated model?
+							int i = h.getColumnModel().getColumnIndexAtX(p.x);
+							if (i == -1)
+								return;
+							
+							field.setBounds(header.getHeaderRect(i));
+							header.add(field);
+							field.validate();
+							
+							// Set targeted text field
+							Point convertedPoint = SwingUtilities.convertPoint(
+								header, p, field);
+							
+							target = SwingUtilities.getDeepestComponentAt(
+								field, convertedPoint.x, convertedPoint.y);
+							
+							// Repost event to text field
+							repost(e);
+						}
+					}
+
+					@Override
+					public void mouseReleased(MouseEvent e) {
+						repost(e);
+						target = null;
+						header.remove(field);
+					}
+
+					public void repost(MouseEvent e) {
+						if (target == null) {
+							System.out.println(
+								"Error posting MouseEvent to header field.");
+							return;
+						}
+
+						MouseEvent convertedEvent = SwingUtilities
+							.convertMouseEvent(header, e, target);
+						target.dispatchEvent(convertedEvent);
+					}
+				};
+				field.addMouseListener(adapter);
+			}
+		}
+
+		column = col;
+
+		return field;
 	}
 
 }

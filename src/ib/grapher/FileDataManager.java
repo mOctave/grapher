@@ -94,33 +94,35 @@ public class FileDataManager {
 	public static void importCSV(File f) {
 		try {
 			// Opens in RWD mode because the file is supposed to autosave
-			Main.getDataTable().clear();
+			Main.getDataTable().getModel().getData().clear();
 			Scanner s = new Scanner(f);
 
 			int lnum = 0;
+			DataTableModel dtm = Main.getDataTable().getModel();
 
 			while (s.hasNextLine()) {
 				String line = s.nextLine();
 
 				List<String> sublines = splitCSVLine(line);
 
+
 				if (lnum == 0) {
 					// Add series, and set header names
 					for (String subline : sublines) {
-						Series r = new Series(1);
-						Main.getDataTable().addSeries(r);
+						Series r = new Series(1, dtm);
+						Main.getDataTable().getModel().addSeries(r);
 						r.setName(subline.trim());
 					}
 				} else if (lnum == 1) {
 					// Fill in single empty cell
 					for (int i = 0; i < sublines.size(); i++) {
-						Main.getDataTable().getSeries(i).getFirst()
+						Main.getDataTable().getModel().getSeries(i).getFirst()
 							.setValue(sublines.get(i).trim());
 					}
 				} else {
 					// Add a new cell
 					for (int i = 0; i < sublines.size(); i++) {
-						Main.getDataTable().getSeries(i).getLast()
+						dtm.getSeries(i).getLast()
 							.insertCellAfter(new Cell(sublines.get(i).trim()));
 					}
 				}

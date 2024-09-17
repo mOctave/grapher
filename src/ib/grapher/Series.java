@@ -20,7 +20,7 @@ public class Series implements Iterable<Cell> {
 	 * @param cells The number of cells to be added. This should be at least
 	 * 1. If it is 0 or less, it will be ignored.
 	 */
-	public Series(int cells) {
+	public Series(int cells, DataTableModel model) {
 		// Non-GUI initialization
 		name = "Untitled Series";
 		statistics = new HashMap<>();
@@ -98,6 +98,22 @@ public class Series implements Iterable<Cell> {
 	}
 
 	/**
+	 * Iterates through this series until a certain index is reached, and
+	 * returns the cell at that index.
+	 * @param index The index of the cell, where 0 indicates the first item,
+	 * and {@code length() - 1} indicates the last.
+	 * @return The first cell that has an index equal to or greater than the
+	 * selected value. In practice, this is the cell with the specified index.
+	 */
+	public Cell get(int index) {
+		Cell selectedCell = getFirst();
+		while (selectedCell.getIndex() < index) {
+			selectedCell = selectedCell.getNext();
+		}
+		return selectedCell;
+	}
+
+	/**
 	 * Gets the length of the series based off of the index of the last cell in
 	 * it.
 	 * @return The length of this series.
@@ -159,7 +175,7 @@ public class Series implements Iterable<Cell> {
 
 	@Override
 	public String toString() {
-		int index = Main.getDataTable().indexOf(this);
+		int index = Main.getDataTable().getModel().indexOf(this);
 		if (index > -1) {
 			return String.format("%s (#%d)", name, index + 1);
 		} else {
