@@ -9,12 +9,16 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -53,7 +57,12 @@ public class DataTable extends JFrame {
 
 		tableLayout = new GridBagLayout();
 		table = new JPanel(tableLayout);
-		JScrollPane tableView = new JScrollPane(table);
+		table.setOpaque(false);
+		table.setVisible(true);
+		tableLayeredPane = new JLayeredPane();
+		tableLayeredPane.add(table, Integer.valueOf(0), 0);
+
+		JScrollPane tableView = new JScrollPane(tableLayeredPane);
 
 		headerLayout = new GridBagLayout();
 		header = new JPanel(headerLayout);
@@ -64,6 +73,57 @@ public class DataTable extends JFrame {
 		rowNumbers.setLayout(new GridBagLayout());
 		tableView.setRowHeaderView(rowNumbers);
 		rowNumbers.setVisible(true);
+
+		// Overlay
+		overlay = new JPanel();
+		overlay.setOpaque(false);
+		overlay.setVisible(true);
+		overlay.setLayout(null);
+		tableLayeredPane.add(overlay, Integer.valueOf(1), 0);
+
+		insertLeft = new JButton("+");
+		insertLeft.setFont(Main.SMALL);
+		insertLeft.setHorizontalAlignment(SwingConstants.CENTER);
+		insertLeft.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				insertSeriesLeft();
+			}
+		});
+		overlay.add(insertLeft);
+
+		insertRight = new JButton("+");
+		insertRight.setFont(Main.SMALL);
+		insertRight.setHorizontalAlignment(SwingConstants.CENTER);
+		insertRight.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				insertSeriesRight();
+			}
+		});
+		overlay.add(insertRight);
+
+		insertUp = new JButton("+");
+		insertUp.setFont(Main.SMALL);
+		insertUp.setHorizontalAlignment(SwingConstants.CENTER);
+		insertUp.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				insertRowAbove();
+			}
+		});
+		overlay.add(insertUp);
+
+		insertDown = new JButton("+");
+		insertDown.setFont(Main.SMALL);
+		insertDown.setHorizontalAlignment(SwingConstants.CENTER);
+		insertDown.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				insertRowBelow();
+			}
+		});
+		overlay.add(insertDown);
 
 		add(tableView, BorderLayout.CENTER);
 
@@ -116,6 +176,18 @@ public class DataTable extends JFrame {
 	private GridBagLayout tableLayout;
 	private JPanel header;
 	private GridBagLayout headerLayout;
+
+	/** A layered pane to enable an overlay. */
+	private JLayeredPane tableLayeredPane;
+
+	/** An overlay panel. */
+	private JPanel overlay;
+
+	/** Buttons to insert new rows/columns. */
+	private JButton insertLeft;
+	private JButton insertRight;
+	private JButton insertUp;
+	private JButton insertDown;
 
 	/**
 	 * Updates the main data table. Called whenever the window is resized or
@@ -183,6 +255,53 @@ public class DataTable extends JFrame {
 				currentSeries.getStatistic("Range"),
 				currentSeries.getStatistic("Standard Deviation")
 			));
+		}
+
+		table.setBounds(0, 0, 110 * data.size(), 30 * len);
+		overlay.setBounds(0, 0, 110 * data.size(), 30 * len);
+		tableLayeredPane.setPreferredSize(
+			new Dimension(110 * data.size(), 30 * len));
+
+		// Update button position
+		if (selectedCell == null) {
+			insertLeft.setVisible(false);
+			insertRight.setVisible(false);
+			insertUp.setVisible(false);
+			insertDown.setVisible(false);
+		} else {
+			System.out.println("Adding insertion buttons");
+			insertLeft.setBounds(
+				indexOf(selectedCell.getSeries()) * 110,
+				(selectedCell.getIndex() * 30) + 10,
+				10,
+				10
+			);
+
+			insertRight.setBounds(
+				indexOf(selectedCell.getSeries()) * 110 + 102,
+				(selectedCell.getIndex() * 30) + 10,
+				10,
+				10
+			);
+
+			insertUp.setBounds(
+				indexOf(selectedCell.getSeries()) * 110 + 50,
+				(selectedCell.getIndex() * 30),
+				10,
+				10
+			);
+
+			insertDown.setBounds(
+				indexOf(selectedCell.getSeries()) * 110 + 50,
+				(selectedCell.getIndex() * 30) + 20,
+				10,
+				10
+			);
+
+			insertLeft.setVisible(true);
+			insertRight.setVisible(true);
+			insertUp.setVisible(true);
+			insertDown.setVisible(true);
 		}
 
 		invalidate();
@@ -421,6 +540,50 @@ public class DataTable extends JFrame {
 		}
 
 		doUpdate();
+	}
+
+	/**
+	 * Inserts a new {@link Series} to the left of the selected {@link Cell}.
+	 */
+	public void insertSeriesLeft() {
+		insertSeries(
+			indexOf(getSelectedCell().getSeries()),
+			new Series(getData().get(0).length())
+		);
+		Main.updateAllComponents();
+	}
+
+	/**
+	 * Inserts a new {@link Series} to the right of the selected {@link Cell}.
+	 */
+	public void insertSeriesRight() {
+		insertSeries(
+			indexOf(getSelectedCell().getSeries()) + 1,
+			new Series(getData().get(0).length())
+		);
+		Main.updateAllComponents();
+	}
+
+	/**
+	 * Inserts a new row of {@link Cell}s above the selected {@link Cell}.
+	 */
+	public void insertRowAbove() {
+		matchActiveToSelected();
+		for (Cell c : getActiveCells()) {
+			c.insertCellBefore(new Cell());
+		}
+		Main.updateAllComponents();
+	}
+
+	/**
+	 * Inserts a new row of {@link Cell}s below the selected {@link Cell}.
+	 */
+	public void insertRowBelow() {
+		matchActiveToSelected();
+		for (Cell c : getActiveCells()) {
+			c.insertCellAfter(new Cell());
+		}
+		Main.updateAllComponents();
 	}
 }
 

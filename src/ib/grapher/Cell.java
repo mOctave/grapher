@@ -2,6 +2,7 @@ package ib.grapher;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.FocusAdapter;
@@ -41,6 +42,7 @@ public class Cell extends JPanel {
 		setBorder(new EtchedBorder(EtchedBorder.RAISED));
 		add(textField);
 		setLayout(layout);
+		setMinimumSize(new Dimension(110, 30));
 		Main.getDataTable().addCell(this);
 
 		textField.addFocusListener(new FocusAdapter() {

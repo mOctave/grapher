@@ -2,6 +2,7 @@ package ib.grapher;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ public class Main {
 	public static final Color GREY = new Color(200, 200, 200);
 	public static final Color SILVER = new Color(220, 220, 220);
 	public static final Color TRANSPARENT = new Color(0, 0, 0,0);
+
+	public static final Font SMALL = new Font("Monospaced", Font.BOLD, 8);
 
 	/**
 	 * These are the colours that will be selected by default for the graph.
