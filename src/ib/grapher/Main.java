@@ -3,13 +3,10 @@ package ib.grapher;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The main class of the grapher, in charge of managing other windows.
@@ -60,15 +57,6 @@ public class Main {
 		System.out.println("Launching Grapher");
 		menuBar = new MenuBar();
 
-		FileDataManager.openFile(new File("./test.graph"));
-		Byte[] x = {0,1,2,3,5,6,8};
-		FileDataManager.writeByteList(Arrays.asList(x), 0);
-		Map<Long, Byte> h = new HashMap<>();
-		h.put((long) 4,(byte) 4);
-		h.put((long) 7,(byte) 7);
-		h.put((long) 9,(byte) 9);
-		FileDataManager.insertBytes(h);
-
 		dataTable = new DataTable();
 		plottableTable = new PlottableTable();
 		graph = new Graph();
@@ -87,7 +75,6 @@ public class Main {
 			}
 		});
 
-		//saveAllData();
 	}
 
 	/**
@@ -101,37 +88,70 @@ public class Main {
 	}
 
 	/**
+	 * Copies a series name.
+	 */
+	public static void seriesCopy(Series r, Byte[] destination, int pos) {
+		try {
+			System.arraycopy(
+				stringToByteArray(r.getName(), 64),
+				0, destination, pos, 64
+			);
+		} catch (NullPointerException e) {
+			Byte[] empty = new Byte[64];
+			for (int i = 0; i < 64; i++)
+				empty[i] = 0;
+			System.arraycopy(
+				empty,
+				0, destination, pos, 64
+			);
+		}
+	}
+
+	/**
 	 * Saves all data to the project file.
 	 */
 	public static void saveAllData() {
+
 		// General metadata
 		Byte[] metadata = new Byte[933];
 		System.arraycopy(
-			stringToByteArray("GRAPH TITLE - 200 CHARS", 400),
+			stringToByteArray(graph.getGraphTitle(), 400),
 			0, metadata, 0, 400
 		);
 		System.arraycopy(
-			stringToByteArray("X AXIS TITLE - 100 CHARS", 200),
+			stringToByteArray(graph.getAxisTitleX(), 200),
 			0, metadata, 400, 200
 		);
 		System.arraycopy(
-			stringToByteArray("Y AXIS TITLE - 100 CHARS", 200),
+			stringToByteArray(graph.getAxisTitleY(), 200),
 			0, metadata, 600, 200
 		);
+		seriesCopy(graph.getGridlinesX(), metadata, 800);
+		seriesCopy(graph.getGridlinesY(), metadata, 864);
+		if (graph.getGraphType().equals(Graph.SCATTERPLOT)) {
+			metadata[928] = 1;
+		} else if (graph.getGraphType().equals(Graph.LINE)) {
+			metadata[928] = 2;
+		} else if (graph.getGraphType().equals(Graph.BAR)) {
+			metadata[928] = 3;
+		}
 		System.arraycopy(
-			stringToByteArray("X GRIDLINE SERIES - 32 CHARS", 64),
-			0, metadata, 800, 64
-		);
-		System.arraycopy(
-			stringToByteArray("Y GRIDLINE SERIES - 32 CHARS", 64),
-			0, metadata, 864, 64
-		);
-		metadata[928] = (byte) (true ? 1 : 0);
-		System.arraycopy(
-			intToByteArray(7618354),
+			intToByteArray(plottableTable.getDataSets().size()),
 			0, metadata, 929, 4
 		);
 		FileDataManager.writeByteList(Arrays.asList(metadata), 0);
+
+		for (PlottableData pd : plottableTable.getDataSets()) {
+			pd.save();
+		}
+
+		System.out.println(dataTable.getData().size());
+		for (Series r : dataTable.getData()) {
+			r.save();
+			for (Cell c : r) {
+				c.save();
+			}
+		}
 	}
 
 	/**
@@ -152,14 +172,18 @@ public class Main {
 			return null;
 		}
 
-		int i = 0;
-		while (i < byteArray.length) {
-			ba[i] = byteArray[i];
-			i++;
-		}
-		while (i < size) {
-			ba[i] = 0;
-			i++;
+		try {
+			int i = 0;
+			while (i < byteArray.length && i < size) {
+				ba[i] = byteArray[i];
+				i++;
+			}
+			while (i < ba.length) {
+				ba[i] = 0;
+				i++;
+			}
+		} catch (IndexOutOfBoundsException e) {
+			System.err.printf("Out of bounds (\"%s\" -> %d)%n", s, size);
 		}
 
 		return ba;

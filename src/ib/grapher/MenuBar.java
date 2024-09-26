@@ -30,7 +30,8 @@ public class MenuBar extends JMenuBar {
 		));
 		projectSaveAs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FileDataManager.chooseFile(".graph", "Grapher Files", true);
+				FileDataManager.openFile(FileDataManager.chooseFile(
+					".graph", "Grapher Files", true));
 				Main.saveAllData();
 			}
 		});

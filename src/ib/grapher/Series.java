@@ -1,6 +1,7 @@
 package ib.grapher;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -80,6 +81,25 @@ public class Series implements Iterable<Cell> {
 		};
 		return iterator;
 	}
+
+
+	
+	/** Saves this series header to the output file. */
+	public void save() {
+		System.out.println("Saving series " + name);
+		int index = Main.getDataTable().indexOf(this);
+
+		int offset = FileDataManager.getOffset(
+			FileDataManager.SERIES,
+			index
+		);
+
+		Byte[] ba = Main.stringToByteArray(name, 64);
+
+		FileDataManager.writeByteList(Arrays.asList(ba), offset);
+	}
+
+
 
 	/**
 	 * Searches this series for cells with a particular value, returning a

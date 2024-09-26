@@ -1,6 +1,7 @@
 package ib.grapher;
 
 import java.awt.Color;
+import java.util.Arrays;
 
 /**
  * A class which stores a single set of plottable data.
@@ -44,6 +45,38 @@ public class PlottableData {
 	private double b;
 	/** Pearson correlation coefficient. */
 	private double r;
+
+	/** Saves this plottable data set to the output file. */
+	public void save() {
+		int index = Main.getPlottableTable().getDataSets().indexOf(this);
+
+		int offset = FileDataManager.getOffset(
+			FileDataManager.PLOTTABLE,
+			index
+		);
+
+		Byte[] ba = new Byte[321];
+		System.arraycopy(
+			Main.stringToByteArray(name, 64),
+			0, ba, 0, 64
+		);
+		Main.seriesCopy(dataX, ba, 64);
+		Main.seriesCopy(dataY, ba, 128);
+		Main.seriesCopy(errorBarsX, ba, 192);
+		Main.seriesCopy(errorBarsY, ba, 256);
+
+		byte options = 0;
+		if (isActive())
+			options |= 1;
+		if (isLinRegActive())
+			options |= 2;
+		if (ixXAgainstY())
+			options |= 4;
+
+		ba[320] = options;
+
+		FileDataManager.writeByteList(Arrays.asList(ba), offset);
+	}
 
 	/**
 	 * Does linear regression on this data set, storing the results in

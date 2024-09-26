@@ -24,6 +24,35 @@ public class FileDataManager {
 	/** The currently open project file, as a RandomAccessFile. */
 	private static RandomAccessFile currentProject;
 
+	public static final int METADATA_LENGTH = 933;
+	public static final int PLOTTABLE_LENGTH = 321;
+	public static final int SERIES_LENGTH = 64;
+	public static final int CELL_LENGTH = 128;
+
+	public static final int PLOTTABLE = 0;
+	public static final int SERIES = 1;
+	public static final int CELL = 2;
+
+	/** Gets the offset for a given type and index. */
+	public static int getOffset(int dataType, int index) {
+		int offset = METADATA_LENGTH;
+		if (dataType == PLOTTABLE)
+			return offset + (PLOTTABLE_LENGTH * index);
+		
+		offset += PLOTTABLE_LENGTH * Main.getPlottableTable().getDataSets().size();
+
+		if (dataType == SERIES)
+			return offset + (SERIES_LENGTH * index);
+		
+		offset += SERIES_LENGTH * Main.getDataTable().getData().size();
+		
+		if (dataType == CELL)
+			return offset + (CELL_LENGTH * index);
+		
+		System.err.println("Invalid data type.");
+		return -1;
+	}
+
 	/**
 	 * Displays a file selection menu, and opens the file chosen by it.
 	 * @param ext The desired file extension.
@@ -78,7 +107,7 @@ public class FileDataManager {
 		try {
 			// Opens in RWD mode because the file is supposed to autosave
 			currentFile = f;
-			currentProject = new RandomAccessFile(f, "rwd");
+			currentProject = new RandomAccessFile(f, "rw");
 		} catch (FileNotFoundException e) {
 			System.err.printf("No such file as \"%s\".%n", f.getName());
 			e.printStackTrace();
@@ -213,7 +242,6 @@ public class FileDataManager {
 	 * @param pos A pointer to the first byte to overwrite
 	 */
 	public static void writeByteList(List<Byte> byteList, long pos) {
-		System.out.println("WRITING...");
 		System.out.println(byteList);
 		try {
 			currentProject.seek(pos);
@@ -223,6 +251,13 @@ public class FileDataManager {
 		} catch (IOException e) {
 			System.err.println("An I/O error occured writing a byte list.");
 			e.printStackTrace();
+		}
+
+		// Should be marginally faster this way than with rwd mode.
+		try {
+			currentProject.getFD().sync();
+		} catch (IOException e) {
+			System.err.println("Sync failed when writing a byte list.");
 		}
 	}
 

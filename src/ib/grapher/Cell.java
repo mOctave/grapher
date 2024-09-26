@@ -9,6 +9,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Locale;
 
 import javax.swing.JPanel;
@@ -111,6 +112,24 @@ public class Cell extends JPanel {
 		invalidate();
 		validate();
 		repaint();
+	}
+
+
+
+	/** Saves this cell to the output file. */
+	public void save() {
+		System.out.println("Saving cell " + value);
+		int seriesIndex = Main.getDataTable().indexOf(series);
+		int dataLength = Main.getDataTable().getData().size();
+
+		int offset = FileDataManager.getOffset(
+			FileDataManager.CELL,
+			dataLength * index + seriesIndex
+		);
+
+		Byte[] ba = Main.stringToByteArray(value, 128);
+
+		FileDataManager.writeByteList(Arrays.asList(ba), offset);
 	}
 
 
