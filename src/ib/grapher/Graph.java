@@ -512,6 +512,7 @@ public class Graph extends JFrame {
 
 			public void focusLost(FocusEvent e) {
 				Graph.this.setAxisTitleX(fieldGraphHorizontalAxis.getText());
+				Main.updateAllComponents();
 			};
 		});
 		panelMenu.add(fieldGraphHorizontalAxis, constraints);
@@ -710,6 +711,18 @@ public class Graph extends JFrame {
 
 		// Re-add borders
 		fieldGraphTitle.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+	}
+
+	/**
+	 * Syncs the graphical components on the graph with its assigned values.
+	 */
+	public void sync() {
+		fieldGraphTitle.setText(graphTitle);
+		fieldGraphHorizontalAxis.setText(axisTitleX);
+		fieldGraphVerticalAxis.setText(axisTitleY);
+		selectorType.setSelectedItem(graphType);
+		selectorGridlineX.setSelectedItem(stepX);
+		selectorGridlineY.setSelectedItem(stepY);
 	}
 
 	// Getters and setters

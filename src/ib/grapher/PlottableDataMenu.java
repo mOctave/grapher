@@ -282,6 +282,21 @@ public class PlottableDataMenu extends JPanel {
 		}
 	}
 
+	/**
+	 * Syncs the graphical components on this menu with the values of the
+	 * linked {@link PlottableData} set.
+	 */
+	public void sync() {
+		fieldName.setText(plottableData.getName());
+		selectorXAxis.setSelectedItem(plottableData.getDataX());
+		selectorYAxis.setSelectedItem(plottableData.getDataY());
+		selectorXErrorBars.setSelectedItem(plottableData.getErrorBarsX());
+		selectorYErrorBars.setSelectedItem(plottableData.getErrorBarsY());
+		toggleVisible.setSelected(plottableData.isActive());
+		toggleTrendline.setSelected(plottableData.isLinRegActive());
+		toggleXAgainstY.setSelected(plottableData.ixXAgainstY());
+	}
+
 	// Getters and setters
 	/**
 	 * @return The {@link PlottableData} set of which this is a composite.
@@ -296,5 +311,45 @@ public class PlottableDataMenu extends JPanel {
 	 */
 	public PlottableTable getTable() {
 		return table;
+	}
+
+	/**
+	 * @return The {@link JTextField} used to set the name of this
+	 * {@link PlottableData} set.
+	 */
+	public JTextField getNameField() {
+		return fieldName;
+	}
+
+	/**
+	 * @return The {@link SeriesSelector} used to set what series is plotted
+	 * on the x-axis in this {@link PlottableData} set.
+	 */
+	public SeriesSelector getSelectorX() {
+		return selectorXAxis;
+	}
+
+	/**
+	 * @return The {@link SeriesSelector} used to set what series is plotted
+	 * on the y-axis in this {@link PlottableData} set.
+	 */
+	public SeriesSelector getSelectorY() {
+		return selectorYAxis;
+	}
+
+	/**
+	 * @return The {@link SeriesSelector} used to set the horizontal error
+	 * bars that are used for this {@link PlottableData} set.
+	 */
+	public SeriesSelector getSelectorXError() {
+		return selectorXErrorBars;
+	}
+
+	/**
+	 * @return The {@link SeriesSelector} used to set the vertical error
+	 * bars that are used for this {@link PlottableData} set.
+	 */
+	public SeriesSelector getSelectorYError() {
+		return selectorYErrorBars;
 	}
 }

@@ -22,6 +22,8 @@ public class Main {
 
 	public static final Font SMALL = new Font("Monospaced", Font.BOLD, 8);
 
+	public static final String CHARSET = "UTF-16LE";
+
 	/**
 	 * These are the colours that will be selected by default for the graph.
 	 * They are specifically designed to be high contrast, including for
@@ -113,7 +115,7 @@ public class Main {
 	public static void saveAllData() {
 
 		// General metadata
-		Byte[] metadata = new Byte[933];
+		Byte[] metadata = new Byte[937];
 		System.arraycopy(
 			stringToByteArray(graph.getGraphTitle(), 400),
 			0, metadata, 0, 400
@@ -136,8 +138,12 @@ public class Main {
 			metadata[928] = 3;
 		}
 		System.arraycopy(
-			intToByteArray(plottableTable.getDataSets().size()),
+			FileDataManager.intToByteArray(plottableTable.getDataSets().size()),
 			0, metadata, 929, 4
+		);
+		System.arraycopy(
+			FileDataManager.intToByteArray(dataTable.getData().size()),
+			0, metadata, 933, 4
 		);
 		FileDataManager.writeByteList(Arrays.asList(metadata), 0);
 
@@ -166,7 +172,7 @@ public class Main {
 		Byte[] ba = new Byte[size];
 		byte[] byteArray;
 		try {
-			byteArray = s.getBytes("UTF-16LE");
+			byteArray = s.getBytes(CHARSET);
 		} catch (UnsupportedEncodingException e) {
 			System.err.println("Unsuported encoding!");
 			return null;
@@ -187,20 +193,6 @@ public class Main {
 		}
 
 		return ba;
-	}
-
-	/**
-	 * Converts an integer into an array of four bytes.
-	 * @param i The integer to convert.
-	 * @return The byte array.
-	 */
-	public static Byte[] intToByteArray(int i) {
-		return new Byte[] {
-			(byte) (i >>> 24),
-			(byte) (i >>> 16),
-			(byte) (i >>> 8),
-			(byte) i
-		};
 	}
 
 	// Getters and setters

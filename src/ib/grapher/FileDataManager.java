@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class FileDataManager {
 	/** The currently open project file, as a RandomAccessFile. */
 	private static RandomAccessFile currentProject;
 
-	public static final int METADATA_LENGTH = 933;
+	public static final int METADATA_LENGTH = 937;
 	public static final int PLOTTABLE_LENGTH = 321;
 	public static final int SERIES_LENGTH = 64;
 	public static final int CELL_LENGTH = 128;
@@ -207,6 +207,161 @@ public class FileDataManager {
 		entries.add(currentEntry);
 
 		return entries;
+	}
+
+	/**
+	 * Loads all the data from an opened project, overwriting current data.
+	 */
+	public static void load() {
+		DataTable dt = Main.getDataTable();
+		PlottableTable pt = Main.getPlottableTable();
+		Graph g = Main.getGraph();
+
+		dt.clear();
+		pt.clear();
+
+
+		g.setGraphTitle(byteListToString(readByteList(0, 400)));
+		g.setAxisTitleX(byteListToString(readByteList(400, 200)));
+		g.setAxisTitleY(byteListToString(readByteList(600, 200)));
+
+		byte mode = readByteList(928, 1).get(0);
+		if (mode == 1)
+			g.setGraphType(Graph.SCATTERPLOT);
+		else if (mode == 2)
+			g.setGraphType(Graph.LINE);
+		else if (mode == 3)
+			g.setGraphType(Graph.BAR);
+		else
+			System.err.println("Invalid graph type when loading.");
+
+		int plottableSize = byteArrayToInt(readByteList(929, 4)
+			.toArray(new Byte[4]));
+
+		int columns = byteArrayToInt(readByteList(933, 4)
+			.toArray(new Byte[4]));
+
+		int offset = METADATA_LENGTH + PLOTTABLE_LENGTH * plottableSize;
+
+		long len = 0;
+		try {
+			len = currentProject.length();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		for (int i = 0; i < columns; i++) {
+			Series r = new Series(1);
+			r.setName(byteListToString(readByteList(offset, 64)));
+			dt.addSeries(r);
+
+			offset += SERIES_LENGTH;
+		}
+
+		for (int i = 0; i < columns; i++) {
+			dt.getSeries(i).getFirst().setValue(
+				byteListToString(readByteList(offset, 128)));
+
+			offset += CELL_LENGTH;
+		}
+
+		for (int i = 0; offset < len - 128; i++) {
+			dt.getSeries(i % columns).getLast().insertCellAfter(
+				new Cell(byteListToString(readByteList(offset, 128))));
+
+			offset += CELL_LENGTH;
+		}
+
+		// Plottable data and some graph data updated last because they require series.
+
+		// Gridline series
+		g.setGridlinesX(dt.getSeriesByName(
+			byteListToString(readByteList(800, 64))));
+		g.setGridlinesY(dt.getSeriesByName(
+			byteListToString(readByteList(864, 64))));
+
+		// Plottable data
+		offset = METADATA_LENGTH;
+		for (int i = 0; i < plottableSize; i++) {
+			PlottableData plottable = new PlottableData();
+			plottable.setName(byteListToString(readByteList(offset, 64)));
+			plottable.setDataX(dt.getSeriesByName(
+				byteListToString(readByteList(offset + 64, 64))));
+			plottable.setDataY(dt.getSeriesByName(
+				byteListToString(readByteList(offset + 128, 64))));
+			plottable.setErrorBarsX(dt.getSeriesByName(
+				byteListToString(readByteList(offset + 192, 64))));
+			plottable.setErrorBarsY(dt.getSeriesByName(
+				byteListToString(readByteList(offset + 256, 64))));
+
+			byte options = readByteList(offset + 320, 1).get(0);
+			if ((options & 1) > 0)
+				plottable.setActive(true);
+			if ((options & 2) > 0)
+				plottable.setLinReg(true);
+			if ((options & 4) > 0)
+				plottable.setXAgainstY(true);
+			
+			pt.addPlottableData(plottable);
+			plottable.getMenu().sync();
+			
+			offset += PLOTTABLE_LENGTH;
+		}
+
+		Main.getGraph().sync();
+
+		Main.updateAllComponents();
+	}
+
+	/**
+	 * Converts an integer into an array of four bytes.
+	 * @param i The integer to convert.
+	 * @return The byte array.
+	 */
+	public static Byte[] intToByteArray(int i) {
+		return new Byte[] {
+			(byte) (i >>> 24),
+			(byte) (i >>> 16),
+			(byte) (i >>> 8),
+			(byte) i
+		};
+	}
+
+	/**
+	 * Converts a four-byte array into an integer.
+	 * @param i The byte array to convert.
+	 * @return The integer value of the array.
+	 */
+	public static int byteArrayToInt(Byte[] ba) {
+		return (
+			((ba[0] & 0xFF) << 24)
+			| ((ba[1] & 0xFF) << 16)
+			| ((ba[2] & 0xFF) << 8)
+			| (ba[3] & 0xFF)
+		);
+	}
+
+	/**
+	 * Converts a list of bytes into a string, following the {@code UTF-16LE}
+	 * charset.
+	 * @param bytes The list of bytes to convert.
+	 * @return The final converted string.
+	 */
+	public static String byteListToString(List<Byte> bytes) {
+		if (bytes == null)
+			return "";
+		
+		byte[] ba = new byte[bytes.size()];
+		for (int i = 0; i < bytes.size(); i++) {
+			ba[i] = bytes.get(i);
+		}
+
+		try {
+			return new String(ba, Main.CHARSET);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**

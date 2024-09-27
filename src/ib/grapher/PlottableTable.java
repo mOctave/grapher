@@ -111,6 +111,13 @@ public class PlottableTable extends JFrame {
 		repaint();
 	}
 
+	/**
+	 * Clears every {@link PlottableData} set from this project.
+	 */
+	public void clear() {
+		dataSets.clear();
+	}
+
 
 	/**
 	 * Adds a new plottable data set to the project, along with a GUI element

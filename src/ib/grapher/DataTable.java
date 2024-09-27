@@ -333,6 +333,24 @@ public class DataTable extends JFrame {
 	}
 
 	/**
+	 * Gets a series from the data based on its name.
+	 * @param s The name of the series to get
+	 * @return A reference to the desired {@link Series} object, or null if no
+	 * such series was found.
+	 */
+	public Series getSeriesByName(String s) {
+		for (Series r : data) {
+			if (r.getName().equals(s)) {
+				System.out.printf("%s = %s%n",r.getName(), s);
+				return r;
+			}
+		}
+
+		System.out.printf("No match for series \"%s\".%n", s);
+		return null;
+	}
+
+	/**
 	 * Gets the index of the specified series.
 	 * @param r The {@link Series} object to search for
 	 * @return The index of the the series in the data list, or -1 if it is not

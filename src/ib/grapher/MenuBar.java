@@ -44,7 +44,9 @@ public class MenuBar extends JMenuBar {
 		));
 		projectOpen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FileDataManager.chooseFile(".graph", "Grapher Files", false);
+				FileDataManager.openFile(FileDataManager.chooseFile(
+					".graph", "Grapher Files", false));
+				FileDataManager.load();
 			}
 		});
 		menuProject.add(projectOpen);
