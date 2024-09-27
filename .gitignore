@@ -1,3 +1,9 @@
 .DS_Store
+
+# Ignore Java files
 *.class
 *.jar
+
+# Ignore testing files
+*.graph
+*.png
