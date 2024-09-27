@@ -42,7 +42,7 @@ public class Graph extends JFrame {
 
 		// Set up GUI
 		setLayout(new BorderLayout());
-		setMinimumSize(new Dimension(400, 200));
+		setMinimumSize(new Dimension(400, 300));
 
 		panelGraph = new JPanel();
 		panelGraph.setPreferredSize(new Dimension(400, 300));
