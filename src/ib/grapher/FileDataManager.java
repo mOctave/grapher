@@ -265,7 +265,7 @@ public class FileDataManager {
 			offset += CELL_LENGTH;
 		}
 
-		for (int i = 0; offset < len - 128; i++) {
+		for (int i = 0; offset < len; i++) {
 			dt.getSeries(i % columns).getLast().insertCellAfter(
 				new Cell(byteListToString(readByteList(offset, 128))));
 
