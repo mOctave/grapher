@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -14,7 +15,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,8 +23,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 
 /**
  * The table which stores all the textual data for a graph.
@@ -419,13 +417,15 @@ public class DataTable extends JFrame {
 		rnConstraints.gridy = rowNumbers.getComponentCount();
 
 		JLabel rowNumber = new JLabel();
-		rowNumber.setText(Integer.toString(rowNumbers.getComponentCount() + 1));
-		rowNumber.setBorder(BorderFactory.createCompoundBorder(
-			new EmptyBorder(new Insets(5, 2, 5, 2)),
-			new EtchedBorder(EtchedBorder.RAISED)
+		rowNumber.setText(Integer.toString(rowNumbers.getComponentCount() + 1) + " ");
+		rowNumber.setHorizontalAlignment(SwingConstants.RIGHT);
+		FontMetrics metrics = rowNumber.getFontMetrics(rowNumber.getFont());
+		rowNumber.setPreferredSize(new Dimension(
+			(int) metrics.getStringBounds(rowNumber.getText(), getGraphics())
+				.getWidth() + 5,
+			30
 		));
-		rowNumber.setMinimumSize(new Dimension(20, 30));
-		rowNumber.setPreferredSize(new Dimension(20, 30));
+		rowNumber.setMinimumSize(rowNumber.getPreferredSize());
 	
 		rowNumbers.add(rowNumber, rnConstraints);
 
@@ -603,17 +603,4 @@ public class DataTable extends JFrame {
 		}
 		Main.updateAllComponents();
 	}
-}
-
-class ColumnNumber extends JLabel {
-	/**
-	 * A constructor that allows for the creation of a label with specific
-	 * text.
-	 * @param s The text to put on the label.
-	 */
-	public ColumnNumber(String s) {
-		setText(s);
-		setPreferredSize(new Dimension(20, 30));
-	}
-
 }
