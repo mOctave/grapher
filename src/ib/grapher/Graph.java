@@ -17,6 +17,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -231,6 +233,8 @@ public class Graph extends JFrame {
 					}
 				}
 
+				List<GraphPoint> points = new ArrayList<>();
+
 				// Draw plottable data sets
 				for (PlottableData pd : Main.getPlottableTable().getDataSets()) {
 					graphics.setColor(pd.getColour());
@@ -254,88 +258,41 @@ public class Graph extends JFrame {
 
 					while (true) {
 						try {
-							double x = activeX.getNumeric();
-							double y = activeY.getNumeric();
-							if (
-								x >= xLower
-								&& x <= xUpper
-								&& y >= yLower
-								&& y <= yUpper
-							) {
-								graphics.drawOval(
-									getRelativeX(x) - 3,
-									getRelativeY(y) - 3,
-									6,
-									6
-								);
-								graphics.drawOval(
-									getRelativeX(x) - 2,
-									getRelativeY(y) - 2,
-									4,
-									4
-								);
-								if (ebX != null) {
-									// Add horizontal error bars
-									try {
-										graphics.drawLine(
-											getRelativeX(x - ebX.getNumeric()),
-											getRelativeY(y),
-											getRelativeX(x + ebX.getNumeric()),
-											getRelativeY(y)
-										);
-										// Draw caps
-										graphics.drawLine(
-											getRelativeX(x - ebX.getNumeric()),
-											getRelativeY(y) - 4,
-											getRelativeX(x - ebX.getNumeric()),
-											getRelativeY(y) + 4
-										);
-										graphics.drawLine(
-											getRelativeX(x + ebX.getNumeric()),
-											getRelativeY(y) - 4,
-											getRelativeX(x + ebX.getNumeric()),
-											getRelativeY(y) + 4
-										);
-									} catch (NumberFormatException e) {
-										// Non-numeric data. Not actually an error,
-										// but no trendline will be drawn
-										System.out.println("Non-numeric error bar skipped.");
-									}
-								}
-								if (ebY != null) {
-									// Add horizontal error bars
-									try {
-										graphics.drawLine(
-											getRelativeX(x),
-											getRelativeY(y - ebY.getNumeric()),
-											getRelativeX(x),
-											getRelativeY(y + ebY.getNumeric())
-										);
-										// Draw caps
-										graphics.drawLine(
-											getRelativeX(x) - 4,
-											getRelativeY(y - ebY.getNumeric()),
-											getRelativeX(x) + 4,
-											getRelativeY(y - ebY.getNumeric())
-										);
-										graphics.drawLine(
-											getRelativeX(x) - 4,
-											getRelativeY(y + ebY.getNumeric()),
-											getRelativeX(x) + 4,
-											getRelativeY(y + ebY.getNumeric())
-										);
-									} catch (NumberFormatException e) {
-										// Non-numeric data. Not actually an error,
-										// but no trendline will be drawn
-										System.out.println("Non-numeric error bar skipped.");
-									}
+							GraphPoint newPoint = new GraphPoint(
+								activeX.getNumeric(),
+								activeY.getNumeric(),
+								Double.MIN_VALUE,
+								Double.MIN_VALUE
+							);
+
+							if (ebX != null) {
+								try {
+									newPoint.setErrorX(ebX.getNumeric());
+								} catch (NumberFormatException e) {
+									// Non-numeric data. Not actually an error,
+									// but no trendline will be drawn
+									System.out.println("Non-numeric error bar skipped.");
 								}
 							}
+
+							if (ebY != null) {
+								try {
+									newPoint.setErrorY(ebY.getNumeric());
+								} catch (NumberFormatException e) {
+									// Non-numeric data. Not actually an error,
+									// but no trendline will be drawn
+									System.out.println("Non-numeric error bar skipped.");
+								}
+							}
+
+							points.add(newPoint);
+
 						} catch (NumberFormatException e) {
 							// Non-numeric data. Not actually an error, but
 							// it'll skip the pair of cells
 							System.out.println("Non-numeric data pair skipped.");
 						}
+
 						if (activeX.getNext() == null || activeY.getNext() == null)
 							break;
 
@@ -347,16 +304,27 @@ public class Graph extends JFrame {
 							ebY = ebY.getNext();
 					}
 
+					GraphPoint lastPoint = null;
+					for (GraphPoint point : points) {
+						drawPoint(point, graphics);
+						if (graphType == LINE && lastPoint != null) {
+							graphics.drawLine(
+								getRelativeX(point.getX()),
+								getRelativeY(point.getY()),
+								getRelativeX(lastPoint.getX()),
+								getRelativeY(lastPoint.getY())
+							);
+						}
+						lastPoint = point;
+					}
+
 					// Draw trendline
 					if (pd.isLinRegActive()) {
-						System.out.println("Linear Regression Active");
 						pd.doLinearRegression();
-						System.out.println(pd.getA());
-						System.out.println(pd.getB());
 						if (pd.getA() != Double.MIN_VALUE && pd.getB() != Double.MIN_VALUE) {
-							int[] points = calculateTrendline(pd.getA(), pd.getB());
-							System.out.printf("[(%d, %d), (%d, %d)]%n", points[0], points[1], points[2], points[3]);
-							graphics.drawLine(points[0], points[1], points[2], points[3]);
+							int[] lineCoords = calculateTrendline(pd.getA(), pd.getB());
+							System.out.printf("[(%d, %d), (%d, %d)]%n", lineCoords[0], lineCoords[1], lineCoords[2], lineCoords[3]);
+							graphics.drawLine(lineCoords[0], lineCoords[1], lineCoords[2], lineCoords[3]);
 						}
 					}
 				}
@@ -384,7 +352,6 @@ public class Graph extends JFrame {
 				}
 
 				yLabelWidth = maxWidth;
-				System.out.println(yLabelWidth);
 			}
 
 			private int getRelativeX(double x) {
@@ -401,6 +368,81 @@ public class Graph extends JFrame {
 				labelOffset += (stepY != null && stepY.length() <= 2) ? 0 : 15;
 				return getHeight() - (int) ((y - yLower) / (yUpper - yLower) *
 					(getHeight() - (20 + labelOffset))) - (10 + labelOffset);
+			}
+
+			private void drawPoint(GraphPoint point, Graphics2D graphics) {
+				double x = point.getX();
+				double y = point.getY();
+
+				// Don't draw points outside the graph's bounds.
+				if (
+					x < xLower
+					|| x > xUpper
+					|| y < yLower
+					|| y > yUpper
+				) return;
+
+				// Draw the point itself.
+				graphics.drawOval(
+					getRelativeX(x) - 3,
+					getRelativeY(y) - 3,
+					6,
+					6
+				);
+				graphics.drawOval(
+					getRelativeX(x) - 2,
+					getRelativeY(y) - 2,
+					4,
+					4
+				);
+
+				if (point.drawErrorX()) {
+					double err = point.getErrorX();
+
+					graphics.drawLine(
+						getRelativeX(x - err),
+						getRelativeY(y),
+						getRelativeX(x + err),
+						getRelativeY(y)
+					);
+					// Draw caps
+					graphics.drawLine(
+						getRelativeX(x - err),
+						getRelativeY(y) - 4,
+						getRelativeX(x - err),
+						getRelativeY(y) + 4
+					);
+					graphics.drawLine(
+						getRelativeX(x + err),
+						getRelativeY(y) - 4,
+						getRelativeX(x + err),
+						getRelativeY(y) + 4
+					);
+				}
+
+				if (point.drawErrorY()) {
+					double err = point.getErrorY();
+
+					graphics.drawLine(
+						getRelativeX(x),
+						getRelativeY(y - err),
+						getRelativeX(x),
+						getRelativeY(y + err)
+					);
+					// Draw caps
+					graphics.drawLine(
+						getRelativeX(x) - 4,
+						getRelativeY(y - err),
+						getRelativeX(x) + 4,
+						getRelativeY(y - err)
+					);
+					graphics.drawLine(
+						getRelativeX(x) - 4,
+						getRelativeY(y + err),
+						getRelativeX(x) + 4,
+						getRelativeY(y + err)
+					);
+				}
 			}
 
 			private int[] calculateTrendline(double a, double b) {
@@ -461,6 +503,12 @@ public class Graph extends JFrame {
 		selectorType.setSelectedItem(SCATTERPLOT);
 		panelMenu.add(selectorType, constraints);
 		constraints.gridy++;
+		selectorType.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Graph.this.setGraphType((String) selectorType.getSelectedItem());
+				Main.updateAllComponents();
+			}
+		});
 
 		labelGridlineX = new JLabel("Horizontal Gridlines", SwingConstants.CENTER);
 		labelGridlineX.setPreferredSize(new Dimension(180, 20));
