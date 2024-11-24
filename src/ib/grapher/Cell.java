@@ -22,6 +22,7 @@ import javax.swing.border.EtchedBorder;
  * graphical representation of its data, along with the means to edit it.
  */
 public class Cell extends JPanel {
+	// MARK: Constructors
 	/**
 	 * A basic constructor for a cell, which initializes the text field and
 	 * handles graphical layout.
@@ -30,22 +31,19 @@ public class Cell extends JPanel {
 		previousCell = null;
 		nextCell = null;
 		value = "";
-		textField = new JTextField(8);
 		index = -1;
 		series = null;
 
+
+		// GUI
 		setBackground(Main.WHITE);
 		FlowLayout layout = new FlowLayout();
 		layout.setHgap(0);
 		layout.setVgap(0);
 
+		textField = new JTextField(8);
 		textField.setMargin(new Insets(0,0,0,0));
 		setBorder(new EtchedBorder(EtchedBorder.RAISED));
-		add(textField);
-		setLayout(layout);
-		setMinimumSize(new Dimension(110, 30));
-		Main.getDataTable().addCell(this);
-
 		textField.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent e) {
 				Cell.this.setBackground(Main.YELLOW);
@@ -67,14 +65,20 @@ public class Cell extends JPanel {
 				Cell.this.getSeries().calculateStatistics();
 			}
 		});
-
 		textField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Cell.this.setValue(Cell.this.textField.getText());
 				Cell.this.getSeries().calculateStatistics();
 			}
 		});
+		add(textField);
+
+		setLayout(layout);
+		setMinimumSize(new Dimension(110, 30));
+		Main.getDataTable().addCell(this);
 	}
+
+
 
 	/**
 	 * A slightly more advanced constructor, which allows for the value of the
@@ -88,21 +92,27 @@ public class Cell extends JPanel {
 	}
 
 
+
+	// MARK: Properties
 	/** The cell that comes before this one in its series. */
 	private Cell previousCell;
 	/** The cell that comes after this one in its series. */
 	private Cell nextCell;
 	/** The textual value of this cell. */
 	private String value;
-	/** A graphical text field to allow for data entry. */
-	private final JTextField textField;
 	/** The index of this cell in its series. */
 	private int index;
 	/** The series this cell belongs to. */
 	private Series series;
 
 
+	// GUI
+	/** A graphical text field to allow for data entry. */
+	private final JTextField textField;
 
+
+
+	// MARK: Update
 	/**
 	 * Standard update loop, called whenever the {@link DataTable} updates.
 	 * Calls {@link #invalidate()}, {@link #validate()}, and
@@ -116,6 +126,7 @@ public class Cell extends JPanel {
 
 
 
+	// MARK: Methods
 	/** Saves this cell to the output file. */
 	public void save() {
 		System.out.println("Saving cell " + value);
@@ -258,91 +269,102 @@ public class Cell extends JPanel {
 
 
 
-	// Getters and setters
-
+	// MARK: Getters / Setters
 	/**
-	 * Gets the previous cell in this series.
-	 * @return A reference to the previous Cell object
+	 * Getter: Gets the previous cell in this cell's series.
+	 * @return {@link #previousCell}
 	 */
 	public Cell getPrevious() {
 		return previousCell;
 	}
 
 	/**
-	 * Changes which cell comes before this one in this series.
-	 * @param c The Cell to make previous
+	 * Setter: Changes which cell comes before this one in this cell's series.
+	 * @param previousCell The new value for {@link #previousCell}
 	 */
-	public void setPrevious(Cell c) {
-		previousCell = c;
+	public void setPrevious(Cell previousCell) {
+		this.previousCell = previousCell;
 	}
 
+
+
 	/**
-	 * Gets the next cell in this series.
-	 * @return A reference to the next Cell object
+	 * Getter: Gets the next cell in this cell's series.
+	 * @return {@link #nextCell}
 	 */
 	public Cell getNext() {
 		return nextCell;
 	}
 
 	/**
-	 * Changes which cell comes after this one in this series.
-	 * @param c The Cell to make next
+	 * Setter: Changes which cell comes after this one in this cell's series.
+	 * @param nextCell The new value for {@link #nextCell}
 	 */
-	public void setNext(Cell c) {
-		nextCell = c;
+	public void setNext(Cell nextCell) {
+		this.nextCell = nextCell;
 	}
 
+
+
 	/**
-	 * Gets the textual value of this cell.
-	 * @return The {@link java.lang.String} value
+	 * Getter: Gets the textual value of this cell.
+	 * @return {@link #value}
 	 */
 	public String getValue() {
 		return value;
 	}
 
 	/**
-	 * Sets the textual value of this cell to a new value.
-	 * @param s The {@link java.lang.String} to set as the new value
+	 * Setter: Changes the textual value of this cell.
+	 * Also updates this cell's {@link #textField} to match.
+	 * @param value The new {@link #value} of this cell
 	 */
-	public void setValue(String s) {
-		value = s;
-		textField.setText(s);
+	public void setValue(String value) {
+		this.value = value;
+		textField.setText(value);
 	}
+
+
 
 	// textField has no getters or setters, as it is intended to be used
 	// purely by its parent object.
 
+
+
 	/**
-	 * Gets the index of this cell in its series, where 0 represents the first
-	 * cell in the series, and n-1 represents the nth.
-	 * @return The integer index of this cell
+	 * Getter: Gets the index of this cell in its series,
+	 * where 0 represents the first cell in the series,
+	 * and {@code n-1} represents the nth.
+	 * @return {@link #index}
 	 */
 	public int getIndex() {
 		return index;
 	}
 
 	/**
-	 * Sets the index of this cell to a new value.
-	 * @param i The new index of this cell
+	 * Setter: Changes the index of this cell.
+	 * @param index The new {@link #index} for this cell
 	 */
-	public void setIndex(int i) {
-		index = i;
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
+
+
 	/**
-	 * Gets the series this cell belongs to.
-	 * @return The {@link Series} of this cell, or null if it does not belong to a
-	 * series.
+	 * Getter: Gets the series this cell belongs to, or null if it does
+	 * not belong to a series.
+	 * @return {@link #series}
 	 */
 	public Series getSeries() {
 		return series;
 	}
 
 	/**
-	 * Changes which series this cell belongs to.
-	 * @param r The {@link Series} to link this cell to
+	 * Setter: Changes which series this cell belongs to.
+	 * @param previousCell The new {@link #series} for this cell
 	 */
-	public void setSeries(Series r) {
-		series = r;
+	public void setSeries(Series series) {
+		this.series = series;
 	}
 }

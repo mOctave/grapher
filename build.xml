@@ -8,7 +8,9 @@
 	</path>
 	<target name="compile">
 		<mkdir dir="bin"/>
-		<javac srcdir="src" destdir="bin"/>
+		<javac srcdir="src" destdir="bin">
+			<exclude name="**/_Template.java"/>
+		</javac>
 	</target>
 	<target name="jar" depends="compile">
 		<jar destfile="Grapher.jar">
@@ -21,6 +23,7 @@
 	<target name="javadoc">
 		<mkdir dir="docs"/>
 		<javadoc destdir="docs" sourcepath="src" access="private">
+			<exclude name="**/_Template.java"/>
 			<!--<doclet name="nl.talsmasoftware.umldoclet.UMLDoclet" pathref="umlDoclet.classpath">
 			</doclet>-->
 		</javadoc>

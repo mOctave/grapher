@@ -19,21 +19,46 @@ import javax.swing.filechooser.FileFilter;
  * intended to handle one project at a time.
  */
 public class FileDataManager {
+	// MARK: Constructor
+	/** Sole constructor. */
+	public FileDataManager() {};
+
+
+	// MARK: Constants
+	/** The number of bytes to allocate to metadata. */
+	public static final int METADATA_LENGTH = 937;
+	/** The number of bytes to allocate to each {@link PlottableData} object. */
+	public static final int PLOTTABLE_LENGTH = 321;
+	/** The number of bytes to allocate to each {@link Series} object. */
+	public static final int SERIES_LENGTH = 64;
+	/** The number of bytes to allocate to {@link Cell} object. */
+	public static final int CELL_LENGTH = 128;
+
+	/** Flag to mark an object as {@link PlottableData} for {@link #getOffset()}. */
+	public static final int PLOTTABLE = 0;
+	/** Flag to mark an object as a {@link Series} for {@link #getOffset()}. */
+	public static final int SERIES = 1;
+	/** Flag to mark an object as a {@link Cell} for {@link #getOffset()}. */
+	public static final int CELL = 2;
+
+
+	// MARK: Properties
 	/** The currently open project file. */
 	private static File currentFile;
 	/** The currently open project file, as a RandomAccessFile. */
 	private static RandomAccessFile currentProject;
 
-	public static final int METADATA_LENGTH = 937;
-	public static final int PLOTTABLE_LENGTH = 321;
-	public static final int SERIES_LENGTH = 64;
-	public static final int CELL_LENGTH = 128;
 
-	public static final int PLOTTABLE = 0;
-	public static final int SERIES = 1;
-	public static final int CELL = 2;
 
-	/** Gets the offset for a given type and index. */
+	// MARK: Methods
+	/**
+	 * Calculates the appropriate offset (in bytes) for a data block with a
+	 * specified index.
+	 * @param dataType One of {@link #PLOTTABLE}, {@link #SERIES}, or {@link #CELL}
+	 * @param index The index of the data block relative to other blocks of the
+	 * same type.
+	 * @return The offset, in bytes, of the data block
+	 */
 	public static int getOffset(int dataType, int index) {
 		int offset = METADATA_LENGTH;
 		if (dataType == PLOTTABLE)
@@ -52,6 +77,8 @@ public class FileDataManager {
 		System.err.println("Invalid data type.");
 		return -1;
 	}
+
+
 
 	/**
 	 * Displays a file selection menu, and opens the file chosen by it.
@@ -99,6 +126,8 @@ public class FileDataManager {
 		
 	}
 
+
+
 	/**
 	 * Opens the specified file as the project file.
 	 * @param f The file to open.
@@ -113,6 +142,8 @@ public class FileDataManager {
 			e.printStackTrace();
 		}
 	}
+
+
 
 	/**
 	 * Opens the specified CSV file, overwriting the current data table's
@@ -166,6 +197,7 @@ public class FileDataManager {
 	}
 
 
+
 	/**
 	 * Splits a CSV line. This method usually splits on commas, but will work
 	 * properly with quoted text. Escaped double quotes are properly added to
@@ -208,6 +240,8 @@ public class FileDataManager {
 
 		return entries;
 	}
+
+
 
 	/**
 	 * Loads all the data from an opened project, overwriting current data.
@@ -313,33 +347,7 @@ public class FileDataManager {
 		Main.updateAllComponents();
 	}
 
-	/**
-	 * Converts an integer into an array of four bytes.
-	 * @param i The integer to convert.
-	 * @return The byte array.
-	 */
-	public static Byte[] intToByteArray(int i) {
-		return new Byte[] {
-			(byte) (i >>> 24),
-			(byte) (i >>> 16),
-			(byte) (i >>> 8),
-			(byte) i
-		};
-	}
 
-	/**
-	 * Converts a four-byte array into an integer.
-	 * @param i The byte array to convert.
-	 * @return The integer value of the array.
-	 */
-	public static int byteArrayToInt(Byte[] ba) {
-		return (
-			((ba[0] & 0xFF) << 24)
-			| ((ba[1] & 0xFF) << 16)
-			| ((ba[2] & 0xFF) << 8)
-			| (ba[3] & 0xFF)
-		);
-	}
 
 	/**
 	 * Converts a list of bytes into a string, following the {@code UTF-16LE}
@@ -363,6 +371,8 @@ public class FileDataManager {
 			return null;
 		}
 	}
+
+
 
 	/**
 	 * Gets a list of bytes from the specified location in the project file.
@@ -390,6 +400,8 @@ public class FileDataManager {
 		}
 	}
 
+
+
 	/**
 	 * Overwrites the bytes in a specified location of the project file
 	 * with new content.
@@ -415,6 +427,8 @@ public class FileDataManager {
 			System.err.println("Sync failed when writing a byte list.");
 		}
 	}
+
+
 
 	/**
 	 * Inserts new bytes at specified locations in the project file.
@@ -459,4 +473,62 @@ public class FileDataManager {
 			e.printStackTrace();
 		}
 	}
+
+
+
+	// MARK: Convenience
+	/**
+	 * Converts an integer into an array of four bytes.
+	 * @param i The integer to convert.
+	 * @return The byte array.
+	 */
+	public static Byte[] intToByteArray(int i) {
+		return new Byte[] {
+			(byte) (i >>> 24),
+			(byte) (i >>> 16),
+			(byte) (i >>> 8),
+			(byte) i
+		};
+	}
+
+
+
+	/**
+	 * Converts a four-byte array into an integer.
+	 * @param i The byte array to convert.
+	 * @return The integer value of the array.
+	 */
+	public static int byteArrayToInt(Byte[] ba) {
+		return (
+			((ba[0] & 0xFF) << 24)
+			| ((ba[1] & 0xFF) << 16)
+			| ((ba[2] & 0xFF) << 8)
+			| (ba[3] & 0xFF)
+		);
+	}
+
+
+
+	// MARK: Getters / Setters
+	/**
+	 * Getter: Gets the currently opened file.
+	 * @return {@link #currentFile}
+	 */
+	public File getCurrentFile() {
+		return currentFile;
+	}
+
+	// currentFile has no setter. It should be set with openFile().
+
+
+
+	/**
+	 * Getter: Gets the current project file as a RandomAccessFile.
+	 * @return {@link #currentProject}
+	 */
+	public RandomAccessFile getCurrentProject() {
+		return currentProject;
+	}
+
+	// currentProject has no setter. It should be set with openFile().
 }

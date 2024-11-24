@@ -7,3 +7,6 @@
 # Ignore testing files
 *.graph
 *.png
+
+# Ignore personal styleguide file
+_Template.java

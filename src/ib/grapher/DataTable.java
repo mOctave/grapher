@@ -28,29 +28,18 @@ import javax.swing.SwingConstants;
  * The table which stores all the textual data for a graph.
  */
 public class DataTable extends JFrame {
-	/** A template for the stat view. */
-	private static final String STAT_VIEW_TEMPLATE = """
-	Series Statistics
-	Minimum: %-21s Non-Empty Cells: %-13s
-	Q1: %-26s Numeric Values: %-14s
-	Median: %-22s Sum: %-25s
-	Q3: %-26s Mean: %-24s
-	Maximum: %-21s Variance: %-20s
-	Range: %-23s Standard Deviation: %-10s
-	""";
-
+	// MARK: Constructors
 	/**
 	 * A constructor which initializes the lists of this table, and also adds
 	 * listeners and triggers for GUI functionality.
 	 */
 	public DataTable() {
 		super();
-		setTitle("Grapher");
-		// Initialize non-GUI attributes
 		data = new ArrayList<>();
 		activeCells = new ArrayList<>();
 
-		// Initialize GUI
+		// GUI
+		setTitle("Grapher");
 		setLayout(new BorderLayout());
 
 		tableLayout = new GridBagLayout();
@@ -152,41 +141,70 @@ public class DataTable extends JFrame {
 		setJMenuBar(Main.getMenuBar());
 	}
 
+	// MARK: Constants
+	/** A template for the stat view. */
+	private static final String STAT_VIEW_TEMPLATE = """
+	Series Statistics
+	Minimum: %-21s Non-Empty Cells: %-13s
+	Q1: %-26s Numeric Values: %-14s
+	Median: %-22s Sum: %-25s
+	Q3: %-26s Mean: %-24s
+	Maximum: %-21s Variance: %-20s
+	Range: %-23s Standard Deviation: %-10s
+	""";
+
+	// MARK: Properties
 	/** All the base data for this project. */
 	private List<Series> data;
 	/** The current row of cells to manipulate. */
 	private List<Cell> activeCells;
-	/** The row numbers which make up the sidebar. */
-	private JPanel rowNumbers;
 	/** The current selected cell. */
 	private Cell selectedCell;
+
+
+	// GUI
+	/** A label to display the title of the data table. */
+	private JLabel title;
+
+	/** The panel that displays along the top of the table. */
+	private JPanel header;
+	/** Layout information for the data table header. */
+	private GridBagLayout headerLayout;
+	/** Filler to keep the header aligned properly. */
+	private JPanel fillerH;
+
+	/** The panel the data table is graphically displayed on. */
+	private JPanel table;
+	/** Layout information for the data table interface. */
+	private GridBagLayout tableLayout;
+	/** Filler to keep the table aligned to the top left. */
+	private JPanel fillerT;
+
+	/** The row numbers which make up the sidebar. */
+	private JPanel rowNumbers;
+	/** Filler to keep the row numbers aligned properly. */
+	private JPanel rnFiller;
+
 	/** A text panel which displays statistics about the selected cell. */
 	private JTextArea statView;
 
-	/** "Filler" panels to keep the GridBagLayouts aligned with the top left. */
-	private JPanel fillerT;
-	private JPanel fillerH;
-	private JPanel rnFiller;
-
-	private JLabel title;
-
-	private JPanel table;
-	private GridBagLayout tableLayout;
-	private JPanel header;
-	private GridBagLayout headerLayout;
-
 	/** A layered pane to enable an overlay. */
 	private JLayeredPane tableLayeredPane;
-
-	/** An overlay panel. */
+	/** An overlay panel to hold cell insertion buttons. */
 	private JPanel overlay;
 
-	/** Buttons to insert new rows/columns. */
+	/** A button to insert a column to the left of the selected cell. */
 	private JButton insertLeft;
+	/** A button to insert a column to the right of the selected cell. */
 	private JButton insertRight;
+	/** A button to insert a row above the selected cell. */
 	private JButton insertUp;
+	/** A button to insert a row below the selected cell. */
 	private JButton insertDown;
 
+
+
+	// MARK: Update
 	/**
 	 * Updates the main data table. Called whenever the window is resized or
 	 * scrolled, or when the data in it changes. Resets the
@@ -307,28 +325,35 @@ public class DataTable extends JFrame {
 		repaint();
 	}
 
-	public void addCell(Cell c) {
-		table.add(c);
-	}
 
-	// Data utility methods
 
+	// MARK: Methods
 	/**
-	 * Gets all the base data for the project.
-	 * @return A reference to {@link #data}
+	 * Clears both the logical and graphical parts of the data table.
+	 * Every {@link Series}, {@link Cell}, and {@link ColumnNumber} is removed.
+	 * The {@link #selectedCell} is reset to null.
 	 */
-	public List<Series> getData() {
-		return data;
+	public void clear() {
+		selectedCell = null;
+		data.clear();
+		
+		// Remove components
+		for (Component comp : table.getComponents()) {
+			if (comp instanceof Cell) {
+				table.remove(comp);
+			}
+		}
+
+		for (Component comp : header.getComponents()) {
+			if (comp instanceof SeriesHeader) {
+				header.remove(comp);
+			}
+		}
+
+		doUpdate();
 	}
 
-	/**
-	 * Gets a single series from the base data.
-	 * @param i The index of the series to get
-	 * @return A reference to the desired {@link Series} object
-	 */
-	public Series getSeries(int i) {
-		return data.get(i);
-	}
+
 
 	/**
 	 * Gets a series from the data based on its name.
@@ -348,23 +373,15 @@ public class DataTable extends JFrame {
 		return null;
 	}
 
-	/**
-	 * Gets the index of the specified series.
-	 * @param r The {@link Series} object to search for
-	 * @return The index of the the series in the data list, or -1 if it is not
-	 * contained in the data list
-	 */
-	public int indexOf(Series r) {
-		return data.indexOf(r);
-	}
+
 
 	/**
-	 * Adds the specified series to the data list.
-	 * @param r The {@link Series} object to add
+	 * Adds a series to the data table.
+	 * @param series The {@link Series} object to add
 	 */
-	public void addSeries(Series r) {
-		header.add(r.getHeader());
-		data.add(r);
+	public void addSeries(Series series) {
+		header.add(series.getHeader());
+		data.add(series);
 		resetActiveCells();
 		for (SeriesSelector selector : Main.getSelectors()) {
 			selector.refresh();
@@ -372,14 +389,16 @@ public class DataTable extends JFrame {
 		Main.updateAllComponents();
 	}
 
+
+
 	/**
-	 * Inserts a series at a specific position in the data list.
+	 * Inserts a series at a specific position in the data table.
 	 * @param i The index to insert the series at
-	 * @param r The {@link Series} object to insert
+	 * @param series The {@link Series} object to insert
 	 */
-	public void insertSeries(int i, Series r) {
-		header.add(r.getHeader());
-		data.add(i, r);
+	public void insertSeries(int i, Series series) {
+		header.add(series.getHeader());
+		data.add(i, series);
 		resetActiveCells();
 		for (SeriesSelector selector : Main.getSelectors()) {
 			selector.refresh();
@@ -387,19 +406,23 @@ public class DataTable extends JFrame {
 		Main.updateAllComponents();
 	}
 
+
+
 	/**
-	 * Removes the specified series from the data list.
-	 * @param r The {@link Series} object to remove
+	 * Removes the specified series from the data table.
+	 * @param series The {@link Series} object to remove
 	 */
-	public void removeSeries(Series r) {
-		header.remove(r.getHeader());
-		data.remove(r);
+	public void removeSeries(Series series) {
+		header.remove(series.getHeader());
+		data.remove(series);
 		resetActiveCells();
 		for (SeriesSelector selector : Main.getSelectors()) {
 			selector.refresh();
 		}
 		Main.updateAllComponents();
 	}
+
+
 
 	/**
 	 * Creates a new {@link javax.swing.JLabel} with the proper formatting for
@@ -435,6 +458,8 @@ public class DataTable extends JFrame {
 		rowNumbers.add(rnFiller, rnConstraints);
 	}
 
+
+
 	/**
 	 * Removes the last row number, updating the filler in doing so.
 	 */
@@ -457,48 +482,11 @@ public class DataTable extends JFrame {
 		}
 	}
 
+
+	// Active cell movement
 	/**
-	 * Changes the background colour of a specified row number label.
-	 * @param i The row number to change (starting at 0).
-	 * @param c The {@link java.awt.Color} to change it to.
-	 */
-	public void setRowNumberBackground(int i, Color c) {
-		rowNumbers.getComponent(i).setBackground(c);
-	}
-
-
-
-	// Active Cell Utility Methods
-
-	/**
-	 * Gets the currently selected cell.
-	 * @return The selected cell.
-	 */
-	public Cell getSelectedCell() {
-		return selectedCell;
-	}
-
-	/**
-	 * Changes the cell which is marked as selected, without reformatting the
-	 * cell.
-	 * @param c The newly selected cell.
-	 */
-	public void setSelectedCell(Cell c) {
-		selectedCell = c;
-		Main.updateAllComponents();
-	}
-
-	/**
-	 * Gets the currently active row of cells.
-	 * @return A reference to the list of {@link #activeCells}
-	 */
-	public List<Cell> getActiveCells() {
-		return activeCells;
-	}
-
-	/**
-	 * Resets the currently active row of cells, moving them to the first row of
-	 * the data table.
+	 * Resets the currently active row of cells,
+	 * moving them to the first row of the data table.
 	 */
 	public void resetActiveCells() {
 		activeCells = new ArrayList<>();
@@ -506,6 +494,8 @@ public class DataTable extends JFrame {
 			activeCells.add(r.getFirst());
 		}
 	}
+
+
 
 	/**
 	 * Rolls the currently active row of cells forward (down) one row.
@@ -516,6 +506,8 @@ public class DataTable extends JFrame {
 		}
 	}
 
+
+
 	/**
 	 * Rolls the currently active row of cells backward (up) one row.
 	 */
@@ -524,6 +516,8 @@ public class DataTable extends JFrame {
 			activeCells.set(i, activeCells.get(i).getPrevious());
 		}
 	}
+
+
 
 	/**
 	 * Moves the row of active cells until it aligns with the selected cell.
@@ -535,31 +529,9 @@ public class DataTable extends JFrame {
 			rollActiveCellsForward();
 	}
 
-	/**
-	 * Clears both the logical and graphical parts of the data table.
-	 * Every {@link Series}, {@link Cell}, and {@link ColumnNumber} is removed.
-	 * The {@link #selectedCell} is reset to null.
-	 */
-	public void clear() {
-		selectedCell = null;
-		data.clear();
-		
-		// Remove components
-		for (Component comp : table.getComponents()) {
-			if (comp instanceof Cell) {
-				table.remove(comp);
-			}
-		}
 
-		for (Component comp : header.getComponents()) {
-			if (comp instanceof SeriesHeader) {
-				header.remove(comp);
-			}
-		}
 
-		doUpdate();
-	}
-
+	// Insertion
 	/**
 	 * Inserts a new {@link Series} to the left of the selected {@link Cell}.
 	 */
@@ -570,6 +542,8 @@ public class DataTable extends JFrame {
 		);
 		Main.updateAllComponents();
 	}
+
+
 
 	/**
 	 * Inserts a new {@link Series} to the right of the selected {@link Cell}.
@@ -582,6 +556,8 @@ public class DataTable extends JFrame {
 		Main.updateAllComponents();
 	}
 
+
+
 	/**
 	 * Inserts a new row of {@link Cell}s above the selected {@link Cell}.
 	 */
@@ -593,6 +569,8 @@ public class DataTable extends JFrame {
 		Main.updateAllComponents();
 	}
 
+
+
 	/**
 	 * Inserts a new row of {@link Cell}s below the selected {@link Cell}.
 	 */
@@ -601,6 +579,103 @@ public class DataTable extends JFrame {
 		for (Cell c : getActiveCells()) {
 			c.insertCellAfter(new Cell());
 		}
+		Main.updateAllComponents();
+	}
+
+
+
+	// MARK: Convenience
+	public void addCell(Cell cell) {
+		table.add(cell);
+	}
+
+
+
+	/**
+	 * Gets a single series from the base data.
+	 * @param i The index of the series to get
+	 * @return A reference to the desired {@link Series} object
+	 */
+	public Series getSeries(int i) {
+		return data.get(i);
+	}
+
+
+	
+	/**
+	 * Gets the index of the specified series.
+	 * @param r The {@link Series} object to search for
+	 * @return The index of the the series in the data list, or -1 if it is not
+	 * contained in the data list
+	 */
+	public int indexOf(Series r) {
+		return data.indexOf(r);
+	}
+
+
+
+	/**
+	 * Changes the background colour of a specified row number label.
+	 * @param i The index of the label to change (starting at 0)
+	 * @param colour The {@link java.awt.Color} to change it to
+	 */
+	public void setRowNumberBackground(int i, Color colour) {
+		rowNumbers.getComponent(i).setBackground(colour);
+	}
+
+
+
+	// MARK: Getters / Setters
+	/**
+	 * Getter: Gets all the base data for the project.
+	 * @return {@link #data}
+	 */
+	public List<Series> getData() {
+		return data;
+	}
+
+	/**
+	 * Setter: Overwrites all the base data for the project.
+	 * @param data The new value for {@link #data}
+	 */
+	public void setData(List<Series> data) {
+		this.data = data;
+	}
+
+
+
+	/**
+	 * Getter: Gets the currently active row of cells.
+	 * @return {@link #activeCells}
+	 */
+	public List<Cell> getActiveCells() {
+		return activeCells;
+	}
+
+	/**
+	 * Setter: Overwrites the currently active cell list.
+	 * @param activeCells The new value for {@link #activeCells}
+	 */
+	public void setActiveCells(List<Cell> activeCells) {
+		this.activeCells = activeCells;
+	}
+
+
+	/**
+	 * Getter: Gets the currently selected cell.
+	 * @return {@link #selectedCell}
+	 */
+	public Cell getSelectedCell() {
+		return selectedCell;
+	}
+
+	/**
+	 * Setter: Changes which cell is marked as selected,
+	 * then calls {@link Main#updateAllComponents()}.
+	 * @param selectedCell The new {@link #selectedCell} for this table
+	 */
+	public void setSelectedCell(Cell selectedCell) {
+		this.selectedCell = selectedCell;
 		Main.updateAllComponents();
 	}
 }
