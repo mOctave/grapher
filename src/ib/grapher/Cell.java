@@ -83,12 +83,12 @@ public class Cell extends JPanel {
 	/**
 	 * A slightly more advanced constructor, which allows for the value of the
 	 * cell to be set at initialization.
-	 * @param s The desired value of the cell.
+	 * @param value The desired value of the cell.
 	 */
-	public Cell(String s) {
+	public Cell(String value) {
 		this();
-		setValue(s);
-		textField.setText(s);
+		setValue(value);
+		textField.setText(value);
 	}
 
 
