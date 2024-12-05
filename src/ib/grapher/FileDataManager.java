@@ -332,7 +332,7 @@ public class FileDataManager {
 			if ((options & 1) > 0)
 				plottable.setActive(true);
 			if ((options & 2) > 0)
-				plottable.setLinReg(true);
+				plottable.setLinRegActive(true);
 			if ((options & 4) > 0)
 				plottable.setXAgainstY(true);
 			

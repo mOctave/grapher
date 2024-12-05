@@ -25,16 +25,15 @@ import javax.swing.Box.Filler;
  * A graphical data table which stores all the data to be entered into a graph.
  */
 public class PlottableTable extends JFrame {
+	// MARK: Constructor
 	/** Sole constructor. */
 	public PlottableTable() {
 		super();
-		setTitle("Data to Plot");
-
-		// Initialize attributes.
 		dataSets = new ArrayList<>();
 
-		// Set up GUI.
-
+	
+		// GUI
+		setTitle("Data to Plot");
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
@@ -91,16 +90,22 @@ public class PlottableTable extends JFrame {
 		setMinimumSize(new Dimension(600, 200));
 	}
 
+
+
+	// MARK: Properties
 	/** A list of plottable data sets. */
 	private List<PlottableData> dataSets;
 
+
+	// GUI
 	/** The main panel that all of the menus are stored in. */
-	private JPanel mainPanel;
-
+	private final JPanel mainPanel;
 	/** Glue which keeps all the JPanels grouped together in the mainPanel. */
-	private Filler glue;
+	private final Filler glue;
 
 
+
+	// MARK: Update
 	/**
 	 * Refreshes this panel, by calling {@link #invalidate()},
 	 * {@link #validate()}, and {@link #repaint()}.
@@ -111,12 +116,16 @@ public class PlottableTable extends JFrame {
 		repaint();
 	}
 
+
+
+	// MARK: Convenience
 	/**
 	 * Clears every {@link PlottableData} set from this project.
 	 */
 	public void clear() {
 		dataSets.clear();
 	}
+
 
 
 	/**
@@ -132,9 +141,11 @@ public class PlottableTable extends JFrame {
 		Main.updateAllComponents();
 	}
 
+
+
 	/**
-	 * Removes a specific plottable data menu from the GUI, along with its
-	 * corresponding data set.
+	 * Removes a plotable data set from the project, as well as its assigned
+	 * GUI component.
 	 * @param pdm The plottable data menu to remove.
 	 */
 	public void removePlottableData(PlottableDataMenu pdm) {
@@ -145,19 +156,42 @@ public class PlottableTable extends JFrame {
 		Main.updateAllComponents();
 	}
 
-	// Getters and setters
+
+
+	// MARK: Getters / Setters
 	/**
-	 * @return The plottable data.
+	 * Getter: Gets the plottable data for this table.
+	 * @return {@link #dataSets}
 	 */
 	public List<PlottableData> getDataSets() {
 		return dataSets;
 	}
 
 	/**
-	 * Overwrites the list of plottable data.
-	 * @param data The new list of plottable data sets.
+	 * Setter: Overwrites this table's list of plottable data.
+	 * @param dataSets The new {@link #dataSets} for this table
 	 */
-	public void setDataSets(List<PlottableData> data) {
-		dataSets = data;
+	public void setDataSets(List<PlottableData> dataSets) {
+		this.dataSets = dataSets;
+	}
+
+
+	// MARK: GUI
+	/**
+	 * Getter: Gets the main GUI panel for this table.
+	 * @return {@link #mainPanel}
+	 */
+	public JPanel getMainPanel() {
+		return mainPanel;
+	}
+
+
+
+	/**
+	 * Getter: Gets the filler glue for this table.
+	 * @return {@link #glue}
+	 */
+	public Filler getGlue() {
+		return glue;
 	}
 }

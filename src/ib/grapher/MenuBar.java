@@ -17,9 +17,10 @@ import javax.swing.KeyStroke;
  * easier manipulation of the project.
  */
 public class MenuBar extends JMenuBar {
+	// MARK: Constructor
 	/** Sole constructor. */
 	public MenuBar() {
-		// Project menu
+		// GUI
 		JMenu menuProject = new JMenu("Project");
 		add(menuProject);
 

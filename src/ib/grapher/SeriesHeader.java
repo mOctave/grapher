@@ -13,6 +13,7 @@ import javax.swing.border.EtchedBorder;
 
 /** A class that allows for editing the name of a series. */
 public class SeriesHeader extends JPanel {
+	// MARK: Constructor
 	/**
 	 * Sole constructor. Creates a header object that is tied to a
 	 * {@link Series} and can be placed on a {@link DataTable}.
@@ -21,7 +22,7 @@ public class SeriesHeader extends JPanel {
 	public SeriesHeader(Series series) {
 		this.series = series;
 
-		// GUI initialization
+		// GUI
 		setBackground(Main.SILVER);
 		setBorder(new EtchedBorder(EtchedBorder.RAISED));
 
@@ -66,23 +67,38 @@ public class SeriesHeader extends JPanel {
 		add(textField);
 	}
 
-	/** The series this header is linked to. */
+
+
+	// MARK: Properties
+	/** The series that composites this header. */
 	private final Series series;
 
 	/** A text field which allows this series' name to be edited. */
-	private JTextField textField;
+	private final JTextField textField;
 
-	// Getters and setters
+
+
+	// MARK: Getters / Setters
 	/**
-	 * @return The {@link Series} object this header is linked to.
+	 * Getter: Gets the series that composites this header.
+	 * @return {@link #series}
 	 */
 	public Series getSeries() {
 		return series;
 	}
+
+	// series is final, and so has no setter
+
+
+
+	// GUI
 	/**
-	 * @return The text field in this header.
+	 * Getter: This header's text field.
+	 * @return {@link #textField}
 	 */
 	public JTextField getTextField() {
 		return textField;
 	}
+
+	// textField is final, and so has no setter
 }

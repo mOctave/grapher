@@ -10,6 +10,7 @@ import javax.swing.JComboBox;
  * the {@link DataTable}.
  */
 public class SeriesSelector extends JComboBox<Series> {
+	// MARK: Constructor
 	/**
 	 * Sole constructor. Adds all series in the data table to the combo box.
 	 */
@@ -22,6 +23,9 @@ public class SeriesSelector extends JComboBox<Series> {
 		Main.getSelectors().add(this);
 	}
 
+
+
+	// MARK: Methods
 	/**
 	 * Refreshes the combo box so that series match those in the data table.
 	 * If this is called after the selected series has been removed from the

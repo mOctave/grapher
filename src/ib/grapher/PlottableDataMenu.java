@@ -22,6 +22,7 @@ import javax.swing.SwingConstants;
  * {@link PlottableData} set.
  */
 public class PlottableDataMenu extends JPanel {
+	// MARK: Constructor
 	/**
 	 * Sole constructor. Sets up a menu and links it back to its data set and
 	 * menu.
@@ -32,9 +33,10 @@ public class PlottableDataMenu extends JPanel {
 	public PlottableDataMenu(PlottableData plottableData, PlottableTable table) {
 		this.plottableData = plottableData;
 		this.plottableData.setMenu(this);
-
 		this.table = table;
 
+
+		// GUI
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		fieldName = new JTextField();
@@ -93,7 +95,7 @@ public class PlottableDataMenu extends JPanel {
 		toggleTrendline.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
-					.setLinReg(toggleTrendline.isSelected());
+					.setLinRegActive(toggleTrendline.isSelected());
 				PlottableDataMenu.this.panelTrendline
 					.setVisible(toggleTrendline.isSelected());
 				Main.updateAllComponents();
@@ -150,7 +152,6 @@ public class PlottableDataMenu extends JPanel {
 		});
 
 
-
 		// Set up main panel
 		panelMain = new JPanel();
 		panelMain.setLayout(new GridBagLayout());
@@ -195,6 +196,7 @@ public class PlottableDataMenu extends JPanel {
 		constraints.weightx = 0.1;
 		panelMain.add(buttonChooseColour, constraints);
 
+
 		// Set up the trendline panel
 		panelTrendline = new JPanel(new GridBagLayout());
 		panelTrendline.setVisible(false);
@@ -213,53 +215,61 @@ public class PlottableDataMenu extends JPanel {
 		panelTrendline.add(toggleXAgainstY, constraints);
 	}
 
+
+
+	// MARK: Properties
 	/** The {@link PlottableData} object that this menu is linked to. */
 	private final PlottableData plottableData;
 	/** The {@link PlottableTable} object that this menu is part of. */
 	private final PlottableTable table;
 
+
+	// GUI
 	/** The main menu panel, always shown. */
-	private JPanel panelMain;
+	private final JPanel panelMain;
 
 	/** A text field to change the name of the plottable data. */
-	private JTextField fieldName;
+	private final JTextField fieldName;
 
 	/** A menu to change the series to plot on the X-Axis. */
-	private SeriesSelector selectorXAxis;
+	private final SeriesSelector selectorXAxis;
 	/** A menu to change the series to plot on the Y-Axis. */
-	private SeriesSelector selectorYAxis;
+	private final SeriesSelector selectorYAxis;
 	/** A menu to change the series to use for horizontal error bars. */
-	private SeriesSelector selectorXErrorBars;
+	private final SeriesSelector selectorXErrorBars;
 	/** A menu to change the series to use for vertical error bars. */
-	private SeriesSelector selectorYErrorBars;
+	private final SeriesSelector selectorYErrorBars;
 
 	/** A check box to toggle rendering of this data on the {@link Graph}. */
-	private JCheckBox toggleVisible;
+	private final JCheckBox toggleVisible;
 	/** A check box to toggle rendering of a trendline for this data. */
-	private JCheckBox toggleTrendline;
+	private final JCheckBox toggleTrendline;
 
 	/**
 	 * A JPanel which displays linear regression information.
 	 * Only shown when the trendline is switched on ({@link #toggleTrendline}
 	 * is true).
 	 */
-	private JPanel panelTrendline;
+	private final JPanel panelTrendline;
 
 	/** A label containing linear regression stats. */
-	private JLabel labelTrendline;
+	private final JLabel labelTrendline;
 
 	/** 
 	 * A check box to toggle using X against Y regression (instead of Y
 	 * against X).
 	 */
-	private JCheckBox toggleXAgainstY;
+	private final JCheckBox toggleXAgainstY;
 
 
 	/** A button to remove this field of plottable data. */
-	private JButton buttonRemove;
+	private final JButton buttonRemove;
 	/** A button to change the colour this data is plotted in. */
-	private JButton buttonChooseColour;
+	private final JButton buttonChooseColour;
 
+
+
+	// MARK: Methods
 	/**
 	 * Updates the label attached to this data set, according to the template
 	 * y = ax + b.
@@ -282,6 +292,8 @@ public class PlottableDataMenu extends JPanel {
 		}
 	}
 
+
+
 	/**
 	 * Syncs the graphical components on this menu with the values of the
 	 * linked {@link PlottableData} set.
@@ -294,60 +306,81 @@ public class PlottableDataMenu extends JPanel {
 		selectorYErrorBars.setSelectedItem(plottableData.getErrorBarsY());
 		toggleVisible.setSelected(plottableData.isActive());
 		toggleTrendline.setSelected(plottableData.isLinRegActive());
-		toggleXAgainstY.setSelected(plottableData.ixXAgainstY());
+		toggleXAgainstY.setSelected(plottableData.isXAgainstY());
 	}
 
-	// Getters and setters
+
+
+	// Getters / Setters
 	/**
-	 * @return The {@link PlottableData} set of which this is a composite.
+	 * Getter: Gets the plottable data set of which this is a composite.
+	 * @return {@link #plottableData}
 	 */
 	public PlottableData getData() {
 		return plottableData;
 	}
 
+
+
 	/**
-	 * @return The {@link PlottableTable} that this menu is linked to, usually
-	 * the global {@link Main#getPlottableTable()}.
+	 * Getter: Gets the plottable data table this menu is associated with,
+	 * usually the global {@link Main#getPlottableTable()}.
+	 * @return {@link #table}
 	 */
 	public PlottableTable getTable() {
 		return table;
 	}
 
+
+
+	// GUI
 	/**
-	 * @return The {@link JTextField} used to set the name of this
-	 * {@link PlottableData} set.
+	 * Getter: Gets the text field which stores the name of this data menu.
+	 * @return {@link #fieldName}
 	 */
 	public JTextField getNameField() {
 		return fieldName;
 	}
 
+
+
 	/**
-	 * @return The {@link SeriesSelector} used to set what series is plotted
-	 * on the x-axis in this {@link PlottableData} set.
+	 * Getter: Gets the series selector that sets which series is plotted on
+	 * the x-axis for this menu's associated data set.
+	 * @return {@link #selectorXAxis}
 	 */
 	public SeriesSelector getSelectorX() {
 		return selectorXAxis;
 	}
 
+
+
 	/**
-	 * @return The {@link SeriesSelector} used to set what series is plotted
-	 * on the y-axis in this {@link PlottableData} set.
+	 * Getter: Gets the series selector that sets which series is plotted on
+	 * the y-axis for this menu's associated data set.
+	 * @return {@link #selectorYAxis}
 	 */
 	public SeriesSelector getSelectorY() {
 		return selectorYAxis;
 	}
 
+
+
 	/**
-	 * @return The {@link SeriesSelector} used to set the horizontal error
-	 * bars that are used for this {@link PlottableData} set.
+	 * Getter: Gets the series selector that sets which series controls the
+	 * horizontal error bars for this menu's associated data set.
+	 * @return {@link #selectorXErrorBars}
 	 */
 	public SeriesSelector getSelectorXError() {
 		return selectorXErrorBars;
 	}
 
+
+
 	/**
-	 * @return The {@link SeriesSelector} used to set the vertical error
-	 * bars that are used for this {@link PlottableData} set.
+	 * Getter: Gets the series selector that sets which series controls the
+	 * vertical error bars for this menu's associated data set.
+	 * @return {@link #selectorYErrorBars}
 	 */
 	public SeriesSelector getSelectorYError() {
 		return selectorYErrorBars;

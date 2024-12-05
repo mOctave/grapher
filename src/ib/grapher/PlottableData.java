@@ -7,6 +7,7 @@ import java.util.Arrays;
  * A class which stores a single set of plottable data.
  */
 public class PlottableData {
+	// MARK: Constructor
 	/** Sole constructor. Sets up visibility and placeholders. */
 	public PlottableData() {
 		name = "Unnamed Data Set";
@@ -14,6 +15,9 @@ public class PlottableData {
 		linRegActive = false;
 	}
 
+
+
+	// MARK: Properties
 	/** The menu this data set is linked to. */
 	private PlottableDataMenu menu;
 
@@ -30,9 +34,9 @@ public class PlottableData {
 	private Series errorBarsX;
 	/** The series to use for vertical error bars. */
 	private Series errorBarsY;
+
 	/** Whether or not the data set is currently shown on the graph. */
 	private boolean active;
-
 	/** Whether or not a linear trendline should be calculated for this data. */
 	private boolean linRegActive;
 	/** 
@@ -40,12 +44,16 @@ public class PlottableData {
 	 * than vertical distance.
 	 */
 	private boolean XAgainstY;
+
 	// Linear regression data, for the form y=ax+b
 	private double a;
 	private double b;
 	/** Pearson correlation coefficient. */
 	private double r;
 
+
+
+	// MARK: Methods
 	/** Saves this plottable data set to the output file. */
 	public void save() {
 		int index = Main.getPlottableTable().getDataSets().indexOf(this);
@@ -70,13 +78,15 @@ public class PlottableData {
 			options |= 1;
 		if (isLinRegActive())
 			options |= 2;
-		if (ixXAgainstY())
+		if (isXAgainstY())
 			options |= 4;
 
 		ba[320] = options;
 
 		FileDataManager.writeByteList(Arrays.asList(ba), offset);
 	}
+
+
 
 	/**
 	 * Does linear regression on this data set, storing the results in
@@ -153,188 +163,219 @@ public class PlottableData {
 		menu.updateTrendlineLabel();
 	}
 
-	// Getters and setters
+
+
+	// MARK: Getters / Setters
 	/**
-	 * @return The menu this data set is linked to.
+	 * Getter: Gets this data set's linked menu.
+	 * @return {@link #menu}
 	 */
 	public PlottableDataMenu getMenu() {
 		return menu;
 	}
 
 	/**
-	 * Links this data set to a menu.
-	 * @param pdm The menu to link to.
+	 * Setter: Links this data set to a different menu.
+	 * @param menu The new {@link #menu} for this data set
 	 */
-	public void setMenu(PlottableDataMenu pdm) {
-		menu = pdm;
+	public void setMenu(PlottableDataMenu menu) {
+		this.menu = menu;
 	}
 
+
+
 	/**
-	 * Gets the name of the plottable data set.
-	 * @return {@link #name}.
+	 * Getter: Gets this data set's name.
+	 * @return {@link #name}
 	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
-	 * Changes the name of the plottable data set.
-	 * @param s The new name for the set.
+	 * Setter: Changes the name of this data set.
+	 * @param name The new {@link #name} for this data set
 	 */
-	public void setName(String s) {
-		name = s;
+	public void setName(String name) {
+		this.name = name;
 	}
 
+
+
 	/**
-	 * @return The colour to plot this data set in.
+	 * Getter: Gets the colour to draw this data set in.
+	 * @return {@link #colour}
 	 */
 	public Color getColour() {
 		return colour;
 	}
 
 	/**
-	 * Changes the colour of the data set.
-	 * @param col The new colour to use when graphing.
+	 * Setter: Changes the colour to draw this data set in.
+	 * @param colour The new {@link #colour} for this data set
 	 */
-	public void setColour(Color col) {
-		colour = col;
+	public void setColour(Color colour) {
+		this.colour = colour;
 	}
 
+
+
 	/**
-	 * Gets the series to use for X-coordinates.
-	 * @return {@link #dataX}.
+	 * Getter: Gets the series being used to plot X-coordinates.
+	 * @return {@link #dataX}
 	 */
 	public Series getDataX() {
 		return dataX;
 	}
 
 	/**
-	 * Changes the series to use for X-coordinates.
-	 * @param r The new {@link Series} to use.
+	 * Setter: Changes the series used to plot X-coordinates.
+	 * @param dataX The new value for {@link #dataX}.
 	 */
-	public void setDataX(Series r) {
-		dataX = r;
+	public void setDataX(Series dataX) {
+		this.dataX = dataX;
 	}
 
+
+
 	/**
-	 * Gets the series to use for Y-coordinates.
-	 * @return {@link #dataY}.
+	 * Getter: Gets the series being used to plot Y-coordinates.
+	 * @return {@link #dataY}
 	 */
 	public Series getDataY() {
 		return dataY;
 	}
 
 	/**
-	 * Changes the series to use for Y-coordinates.
-	 * @param r The new {@link Series} to use.
+	 * Setter: Changes the series used to plot Y-coordinates.
+	 * @param dataY The new value for {@link #dataY}.
 	 */
-	public void setDataY(Series r) {
-		dataY = r;
+	public void setDataY(Series dataY) {
+		this.dataY = dataY;
 	}
 
+
+
 	/**
-	 * Gets the series to use for horizontal error bars.
-	 * @return {@link #errorBarsX}.
+	 * Getter: Gets the series being used to plot horizontal error bars.
+	 * @return {@link #errorBarsX}
 	 */
 	public Series getErrorBarsX() {
 		return errorBarsX;
 	}
 
 	/**
-	 * Changes the series to use for horizontal error bars.
-	 * @param r The new {@link Series} to use.
+	 * Setter: Changes the series used to plot horizontal error bars.
+	 * @param errorBarsX The new value for {@link #errorBarsX}.
 	 */
-	public void setErrorBarsX(Series r) {
-		errorBarsX = r;
+	public void setErrorBarsX(Series errorBarsX) {
+		this.errorBarsX = errorBarsX;
 	}
 
+
+
 	/**
-	 * Gets the series to use for vertical error bars.
-	 * @return {@link #errorBarsY}.
+	 * Getter: Gets the series being used to plot vertical error bars.
+	 * @return {@link #errorBarsY}
 	 */
 	public Series getErrorBarsY() {
 		return errorBarsY;
 	}
 
 	/**
-	 * Changes the series to use for vertical error bars.
-	 * @param r The new {@link Series} to use.
+	 * Setter: Changes the series used to plot horizontal error bars.
+	 * @param errorBarsY The new value for {@link #errorBarsY}.
 	 */
-	public void setErrorBarsY(Series r) {
-		errorBarsY = r;
+	public void setErrorBarsY(Series errorBarsY) {
+		this.errorBarsY = errorBarsY;
 	}
 
+
+
 	/**
-	 * Checks whether this data set should be plotted.
-	 * @return {@link #active}.
+	 * Getter: Checks whether or not this series is currently active.
+	 * @return {@link #active}
 	 */
 	public boolean isActive() {
 		return active;
 	}
 
 	/**
-	 * Activates or deactivates this data set.
-	 * @param active Whether or not the data set should be active.
+	 * Setter: Activates or deactivates this data set.
+	 * @param active Whether or not this data set should be active.
 	 */
 	public void setActive(boolean active) {
 		this.active = active;
 	}
 
+
+
 	/**
-	 * Checks whether this data set have a trendline drawn.
-	 * @return {@link #linRegActive}.
+	 * Getter: Checks whether or not linear regression should be done for this
+	 * data set.
+	 * @return {@link #linRegActive}
 	 */
 	public boolean isLinRegActive() {
 		return linRegActive;
 	}
 
 	/**
-	 * Activates or deactivates the trendline for this data set.
-	 * @param active Whether or not the data set should be active.
+	 * Setter: Activates or deactivates linear regression for this data set.
+	 * @param linRegActive Whether or not to do linear regression.
 	 */
-	public void setLinReg(boolean active) {
-		linRegActive = active;
+	public void setLinRegActive(boolean linRegActive) {
+		this.linRegActive = linRegActive;
 	}
 
+
+
 	/**
-	 * Checks what type of distance to minimize in linear regression.
-	 * @return {@link #XAgainstY}.
+	 * Getter: Checks which distance to minimize in linear regression.
+	 * @return {@link #XAgainstY}
 	 */
-	public boolean ixXAgainstY() {
+	public boolean isXAgainstY() {
 		return XAgainstY;
 	}
 
 	/**
-	 * Activates or deactivates X-against-Y regression.
-	 * @param active Whether or not to regress X against Y.
+	 * Setter: Activates or deactivates X-against-Y regression.
+	 * @param XAgainstY Whether or not to regress X against Y.
 	 */
-	public void setXAgainstY(boolean active) {
-		XAgainstY = active;
+	public void setXAgainstY(boolean XAgainstY) {
+		this.XAgainstY = XAgainstY;
 	}
+
+
 
 	// Linear regression data do not have setters, as they are calculated
 	// by an object of this class.
 
+
+
 	/**
-	 * Gets the a-value, or slope, of the linear regression line of best fit
-	 * for this object, in the form y=ax+b.
+	 * Getter: Gets the a-value, or slope, of the linear regression line of
+	 * best fit for this object, in the form y=ax+b.
 	 * @return {@link #a}
 	 */
 	public double getA() {
 		return a;
 	}
 
+
+
 	/**
-	 * Gets the b-value, or y-intercept, of the linear regression line of best
-	 * fit for this object, in the form y=ax+b.
+	 * Getter: Gets the b-value, or y-intercept, of the linear regression line
+	 * of best fit for this object, in the form y=ax+b.
 	 * @return {@link #b}
 	 */
 	public double getB() {
 		return b;
 	}
 
+
+
 	/**
-	 * Gets the Pearson correlation coefficient of the line of best fit.
+	 * Getter: Gets the Pearson correlation coefficient of the line of best fit.
 	 * @return {@link #r}
 	 */
 	public double getR() {

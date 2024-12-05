@@ -11,17 +11,28 @@ import java.util.List;
 /**
  * The main class of the grapher, in charge of managing other windows.
  */
-public class Main {
+public abstract class Main {
+	// MARK: Constants
+	// Colours to use for drawing graphical elements
+	/** Colour: black */
 	public static final Color BLACK = new Color(0, 0, 0);
+	/** Colour: white */
 	public static final Color WHITE = new Color(255, 255, 255);
+	/** Colour: light yellow */
 	public static final Color LIGHT_YELLOW = new Color(255, 255, 200);
+	/** Colour: yellow */
 	public static final Color YELLOW = new Color(255, 255, 150);
+	/** Colour: grey */
 	public static final Color GREY = new Color(200, 200, 200);
+	/** Colour: silver */
 	public static final Color SILVER = new Color(220, 220, 220);
+	/** Colour: transparent */
 	public static final Color TRANSPARENT = new Color(0, 0, 0,0);
 
+	/** The monospaced font to use for small print. */
 	public static final Font SMALL = new Font("Monospaced", Font.BOLD, 8);
 
+	/** The charset used to encode this project's text when saving/loading. */
 	public static final String CHARSET = "UTF-16LE";
 
 	/**
@@ -41,6 +52,9 @@ public class Main {
 		new Color(204, 121, 167)
 	};
 
+
+
+	// MARK: Properties
 	/** The data table being modified. */
 	private static DataTable dataTable;
 	/** The table of plottable data being modified. */
@@ -55,13 +69,19 @@ public class Main {
 	 */
 	private static final List<SeriesSelector> seriesSelectors = new ArrayList<>();
 
+
+
+	// MARK: >Main<
 	public static void main(String[] args) {
 		System.out.println("Launching Grapher");
-		menuBar = new MenuBar();
 
+		// Initialization
+		menuBar = new MenuBar();
 		dataTable = new DataTable();
 		plottableTable = new PlottableTable();
 		graph = new Graph();
+
+		// GUI
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				dataTable.setSize(400, 300);
@@ -76,9 +96,11 @@ public class Main {
 				graph.setVisible(true);
 			}
 		});
-
 	}
 
+
+
+	// MARK: Update
 	/**
 	 * Updates the {@link #dataTable}, {@link #plottableTable}, and
 	 * {@link #graph}.
@@ -89,6 +111,9 @@ public class Main {
 		graph.doUpdate();
 	}
 
+
+
+	// MARK: Methods
 	/**
 	 * Copies a series name.
 	 */
@@ -109,11 +134,13 @@ public class Main {
 		}
 	}
 
+
+
+
 	/**
 	 * Saves all data to the project file.
 	 */
 	public static void saveAllData() {
-
 		// General metadata
 		Byte[] metadata = new Byte[937];
 		System.arraycopy(
@@ -147,10 +174,14 @@ public class Main {
 		);
 		FileDataManager.writeByteList(Arrays.asList(metadata), 0);
 
+
+		// Plottable Data Sets
 		for (PlottableData pd : plottableTable.getDataSets()) {
 			pd.save();
 		}
 
+
+		// Series and Cells
 		System.out.println(dataTable.getData().size());
 		for (Series r : dataTable.getData()) {
 			r.save();
@@ -159,6 +190,9 @@ public class Main {
 			}
 		}
 	}
+
+
+
 
 	/**
 	 * Converts a string to an array of bytes the desired size.
@@ -195,46 +229,58 @@ public class Main {
 		return ba;
 	}
 
-	// Getters and setters
 
+
+	// MARK: Getters / Setters
 	/**
-	 * Gets a reference to the main data table.
-	 * @return The main data table
+	 * Getter: Gets a reference to the main data table.
+	 * @return {@link #dataTable}
 	 */
 	public static DataTable getDataTable() {
 		return dataTable;
 	}
 
+
+
 	/**
-	 * Gets a reference to the table of plottable data.
-	 * @return The plottable data table
+	 * Getter: Gets to the main plottable data table.
+	 * @return {@link #plottableTable}
 	 */
 	public static PlottableTable getPlottableTable() {
 		return plottableTable;
 	}
 
+
+
 	/**
-	 * Gets a reference to the graph object.
-	 * @return The project's graph
+	 * Getter: Gets a reference to the project's graph object.
+	 * @return {@link #graph}
 	 */
 	public static Graph getGraph() {
 		return graph;
 	}
 
+
+
 	/**
-	 * Gets a reference to the global menu bar object.
-	 * @return The project's menu bar
+	 * Getter: Gets a reference to the global menu bar object.
+	 * @return {@link #menuBar}
 	 */
 	public static MenuBar getMenuBar() {
 		return menuBar;
 	}
 
+
+
 	/**
-	 * @return A list of every series selector in the project.
+	 * Getter: Gets a list of every series selector in the project.
+	 * @return {@link #seriesSelectors}
 	 */
 	public static List<SeriesSelector> getSelectors() {
 		return seriesSelectors;
 	}
+
+
 
 	// dataTable, plottableTable, graph, and menuBar have no setters, because
 	// they are intended as composites of the Main class.

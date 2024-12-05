@@ -1,4 +1,4 @@
-package ib.grapher;
+package ib.grapher; // TODO: Transition to new format
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
