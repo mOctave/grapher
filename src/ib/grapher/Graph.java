@@ -1,14 +1,12 @@
-package ib.grapher; // TODO: Transition to new format
+package ib.grapher;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -17,8 +15,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -34,6 +30,7 @@ import javax.imageio.ImageIO;
  * The visual graph associated with a project.
  */
 public class Graph extends JFrame {
+	// MARK: Constructor
 	/** Sole constructor. */
 	public Graph() {
 		// Initialize non-GUI attributes
@@ -74,410 +71,7 @@ public class Graph extends JFrame {
 		});
 		panelGraph.add(fieldGraphTitle, BorderLayout.NORTH);
 
-		drawingPanel = new JPanel() {
-			private double xLower = 0;
-			private double yLower = 0;
-			private double xUpper = 0;
-			private double yUpper = 0;
-
-			@Override
-			protected void paintComponent(Graphics g) {
-				// Set up font and graphics objects 
-				Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
-				Graphics2D graphics = (Graphics2D) g;
-				FontMetrics metrics = graphics.getFontMetrics(font);
-				getYLabelWidth(metrics);
-
-				graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
-				graphics.setRenderingHint(RenderingHints.KEY_RENDERING,
-					RenderingHints.VALUE_RENDER_QUALITY);
-
-				// Draw X-axis title
-				graphics.drawString(
-					axisTitleX,
-					(getWidth() - metrics.stringWidth(axisTitleX)) / 2,
-					getHeight() - 5
-				);
-
-				// Draw Y-axis title
-				Graphics2D rotatedGraphics = (Graphics2D) graphics.create();
-				rotatedGraphics.rotate(
-					-0.5 * Math.PI,
-					metrics.getHeight() + 5,
-					(getHeight() + metrics.stringWidth(axisTitleY)) / 2
-				);
-
-				rotatedGraphics.drawString(
-					axisTitleY,
-					metrics.getHeight() + 5,
-					(getHeight() + metrics.stringWidth(axisTitleY)) / 2
-				);
-
-				rotatedGraphics.dispose();
-
-				// Set up borders and draw gridlines
-				graphics.setColor(Main.BLACK);
-
-				if (stepX == null || stepX.length() < 2) {
-					xLower = -10;
-					xUpper = 10;
-				} else {
-					try {
-						xLower = stepX.getFirst().getNumeric();
-					} catch (NumberFormatException e) {
-						System.err.println("Warning: Undefined Left Bound");
-						xLower = -10;
-					}
-					try {
-						xUpper = stepX.getFirst().getNext().getNumeric();
-					} catch (NumberFormatException e) {
-						System.err.println("Warning: Undefined Right Bound");
-						// Using this instead of 10 because it won't accidentally
-						// flip the graph around or cause other issues if xLower
-						// was properly defined.
-						xUpper = xLower + 20;
-					}
-				}
-
-				if (stepY == null || stepY.length() < 2) {
-					yLower = -10;
-					yUpper = 10;
-					graphics.drawLine(
-						getRelativeX(xLower),
-						getRelativeY(0),
-						getRelativeX(xUpper),
-						getRelativeY(0)
-					);
-					graphics.drawString(
-						"0",
-						getRelativeX(xLower) - 5 - metrics.stringWidth("0"),
-						getRelativeY(0)
-							+ metrics.getHeight() / 3
-					);
-				} else {
-					try {
-						yLower = stepY.getFirst().getNumeric();
-					} catch (NumberFormatException e) {
-						System.err.println("Warning: Undefined Lower Bound");
-						yLower = -10;
-					}
-					try {
-						yUpper = stepY.getFirst().getNext().getNumeric();
-					} catch (NumberFormatException e) {
-						System.err.println("Warning: Undefined Upper Bound");
-						// Using this instead of 10 because it won't accidentally
-						// flip the graph around or cause other issues if yLower
-						// was properly defined.
-						yUpper = yLower + 20;
-					}
-					if (stepY.length() > 2) {
-						for (Cell c : stepY) {
-							try {
-								if (c.getIndex() > 1) {
-									graphics.drawLine(
-										getRelativeX(xLower),
-										getRelativeY(c.getNumeric()),
-										getRelativeX(xUpper),
-										getRelativeY(c.getNumeric())
-									);
-									graphics.drawString(
-										c.getValue(),
-										getRelativeX(xLower) - 5
-											- metrics.stringWidth(c.getValue()),
-										getRelativeY(c.getNumeric())
-											+ metrics.getHeight() / 3
-									);
-								}
-							} catch (NumberFormatException e) {
-								// Usually caused by an empty cell, so nothing
-								// to worry about.
-							}
-						}
-					}
-				}
-
-				if (stepX == null || stepX.length() < 2) {
-					graphics.drawLine(
-						getRelativeX(0),
-						getRelativeY(yLower),
-						getRelativeX(0),
-						getRelativeY(yUpper)
-					);
-					graphics.drawString(
-						"0",
-						getRelativeX(0) - metrics.stringWidth("0") / 2,
-						getRelativeY(yLower) + 15
-					);
-				} else if (stepX.length() > 2) {
-					for (Cell c : stepX) {
-						try {
-							if (c.getIndex() > 1) {
-								graphics.drawLine(
-									getRelativeX(c.getNumeric()),
-									getRelativeY(yLower),
-									getRelativeX(c.getNumeric()),
-									getRelativeY(yUpper)
-								);
-								graphics.drawString(
-									c.getValue(),
-									getRelativeX(c.getNumeric())
-										- metrics.stringWidth(c.getValue()) / 2,
-									getRelativeY(yLower) + 15
-								);
-							}
-						} catch (NumberFormatException e) {
-							// Usually caused by an empty cell, so nothing
-							// to worry about.
-						}
-					}
-				}
-
-				List<GraphPoint> points = new ArrayList<>();
-
-				// Draw plottable data sets
-				for (PlottableData pd : Main.getPlottableTable().getDataSets()) {
-					graphics.setColor(pd.getColour());
-
-					if (
-						(!pd.isActive())
-						|| pd.getDataX() == null
-						|| pd.getDataY() == null
-					)
-						continue;
-
-					Cell activeX = pd.getDataX().getFirst();
-					Cell activeY = pd.getDataY().getFirst();
-					Cell ebX = null;
-					Cell ebY = null;
-
-					if (pd.getErrorBarsX() != null)
-						ebX = pd.getErrorBarsX().getFirst();
-					if (pd.getErrorBarsY() != null)
-						ebY = pd.getErrorBarsY().getFirst();
-
-					while (true) {
-						try {
-							GraphPoint newPoint = new GraphPoint(
-								activeX.getNumeric(),
-								activeY.getNumeric(),
-								Double.MIN_VALUE,
-								Double.MIN_VALUE
-							);
-
-							if (ebX != null) {
-								try {
-									newPoint.setErrorX(ebX.getNumeric());
-								} catch (NumberFormatException e) {
-									// Non-numeric data. Not actually an error,
-									// but no trendline will be drawn
-									System.out.println("Non-numeric error bar skipped.");
-								}
-							}
-
-							if (ebY != null) {
-								try {
-									newPoint.setErrorY(ebY.getNumeric());
-								} catch (NumberFormatException e) {
-									// Non-numeric data. Not actually an error,
-									// but no trendline will be drawn
-									System.out.println("Non-numeric error bar skipped.");
-								}
-							}
-
-							points.add(newPoint);
-
-						} catch (NumberFormatException e) {
-							// Non-numeric data. Not actually an error, but
-							// it'll skip the pair of cells
-							System.out.println("Non-numeric data pair skipped.");
-						}
-
-						if (activeX.getNext() == null || activeY.getNext() == null)
-							break;
-
-						activeX = activeX.getNext();
-						activeY = activeY.getNext();
-						if (ebX != null)
-							ebX = ebX.getNext();
-						if (ebY != null)
-							ebY = ebY.getNext();
-					}
-
-					GraphPoint lastPoint = null;
-					for (GraphPoint point : points) {
-						drawPoint(point, graphics);
-						if (graphType == LINE && lastPoint != null) {
-							graphics.drawLine(
-								getRelativeX(point.getX()),
-								getRelativeY(point.getY()),
-								getRelativeX(lastPoint.getX()),
-								getRelativeY(lastPoint.getY())
-							);
-						}
-						lastPoint = point;
-					}
-
-					// Draw trendline
-					if (pd.isLinRegActive()) {
-						pd.doLinearRegression();
-						if (pd.getA() != Double.MIN_VALUE && pd.getB() != Double.MIN_VALUE) {
-							int[] lineCoords = calculateTrendline(pd.getA(), pd.getB());
-							System.out.printf("[(%d, %d), (%d, %d)]%n", lineCoords[0], lineCoords[1], lineCoords[2], lineCoords[3]);
-							graphics.drawLine(lineCoords[0], lineCoords[1], lineCoords[2], lineCoords[3]);
-						}
-					}
-				}
-
-				// Clean up
-				graphics.dispose();
-			}
-
-			private int yLabelWidth = 30;
-
-			private void getYLabelWidth(FontMetrics metrics) {
-				int maxWidth = 30;
-
-				try {
-					Cell c = stepY.getFirst().getNext().getNext();
-					while (c != null) {
-						int w = metrics.stringWidth(c.getValue()) + 5;
-						if (w > maxWidth)
-							maxWidth = w;
-						
-						c = c.getNext();
-					}
-				} catch (NullPointerException e) {
-					// Presumably uses default Y-coordinates.
-				}
-
-				yLabelWidth = maxWidth;
-			}
-
-			private int getRelativeX(double x) {
-				int labelOffset = axisTitleY.length() == 0 ? 0 : 20;
-
-				labelOffset += (stepX != null && stepX.length() <= 2)
-					? 0 : yLabelWidth;
-				return (int) ((x - xLower) / (xUpper - xLower) * 
-					(getWidth() - (20 + labelOffset))) + (10 + labelOffset);
-			}
-
-			private int getRelativeY(double y) {
-				int labelOffset = axisTitleX.length() == 0 ? 0 : 20;
-				labelOffset += (stepY != null && stepY.length() <= 2) ? 0 : 15;
-				return getHeight() - (int) ((y - yLower) / (yUpper - yLower) *
-					(getHeight() - (20 + labelOffset))) - (10 + labelOffset);
-			}
-
-			private void drawPoint(GraphPoint point, Graphics2D graphics) {
-				double x = point.getX();
-				double y = point.getY();
-
-				// Don't draw points outside the graph's bounds.
-				if (
-					x < xLower
-					|| x > xUpper
-					|| y < yLower
-					|| y > yUpper
-				) return;
-
-				// Draw the point itself.
-				graphics.drawOval(
-					getRelativeX(x) - 3,
-					getRelativeY(y) - 3,
-					6,
-					6
-				);
-				graphics.drawOval(
-					getRelativeX(x) - 2,
-					getRelativeY(y) - 2,
-					4,
-					4
-				);
-
-				if (point.drawErrorX()) {
-					double err = point.getErrorX();
-
-					graphics.drawLine(
-						getRelativeX(x - err),
-						getRelativeY(y),
-						getRelativeX(x + err),
-						getRelativeY(y)
-					);
-					// Draw caps
-					graphics.drawLine(
-						getRelativeX(x - err),
-						getRelativeY(y) - 4,
-						getRelativeX(x - err),
-						getRelativeY(y) + 4
-					);
-					graphics.drawLine(
-						getRelativeX(x + err),
-						getRelativeY(y) - 4,
-						getRelativeX(x + err),
-						getRelativeY(y) + 4
-					);
-				}
-
-				if (point.drawErrorY()) {
-					double err = point.getErrorY();
-
-					graphics.drawLine(
-						getRelativeX(x),
-						getRelativeY(y - err),
-						getRelativeX(x),
-						getRelativeY(y + err)
-					);
-					// Draw caps
-					graphics.drawLine(
-						getRelativeX(x) - 4,
-						getRelativeY(y - err),
-						getRelativeX(x) + 4,
-						getRelativeY(y - err)
-					);
-					graphics.drawLine(
-						getRelativeX(x) - 4,
-						getRelativeY(y + err),
-						getRelativeX(x) + 4,
-						getRelativeY(y + err)
-					);
-				}
-			}
-
-			private int[] calculateTrendline(double a, double b) {
-				// Select first point
-				double x1 = xLower;
-				double y1 = a * x1 + b;
-
-				if (y1 < yLower) {
-					y1 = yLower;
-					x1 = (y1 - b) / a;
-				} else if(y1 > yUpper) {
-					y1 = yUpper;
-					x1 = (y1 - b) / a;
-				}
-
-				// Select second point
-				double x2 = xUpper;
-				double y2 = a * x2 + b;
-
-				if (y2 < yLower) {
-					y2 = yLower;
-					x2 = (y2 - b) / a;
-				} else if(y2 > yUpper) {
-					y2 = yUpper;
-					x2 = (y2 - b) / a;
-				}
-
-				return new int[]{
-					getRelativeX(x1),
-					getRelativeY(y1),
-					getRelativeX(x2),
-					getRelativeY(y2)
-				};
-			}
-		};
+		drawingPanel = new GraphPanel(this);
 		drawingPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 		panelGraph.add(drawingPanel, BorderLayout.CENTER);
 
@@ -618,12 +212,20 @@ public class Graph extends JFrame {
 		});
 	}
 
-	// String constants that are used for choosing .
+
+
+	// MARK: Constants
+	/** Scatterplot graph type. */
 	public static final String SCATTERPLOT = "Scatterplot";
+	/** Line graph type. */
 	public static final String LINE = "Line";
+	/** Bar graph type. */
 	public static final String BAR = "Bar";
 
-	/** The title of the graph. */
+
+
+	// MARK: Properties
+	/** The title of this graph. */
 	private String graphTitle;
 
 	/** The label on the horizontal axis. */
@@ -639,34 +241,34 @@ public class Graph extends JFrame {
 	/** The series holding information about vertical gridlines. */
 	private Series stepY;
 
-	// GUI components
 
+	// GUI 
 	/** The actual panel containing the graph. */
-	private JPanel panelGraph;
+	private final JPanel panelGraph;
 	/** The panel drawn on when graphing, never directly modified by the user. */
-	private JPanel drawingPanel;
+	private final GraphPanel drawingPanel;
 
 	/** The right-hand menu column of the GUI. */
-	private JPanel panelMenu;
+	private final JPanel panelMenu;
 	/** A label for the graph type selector. */
-	private JLabel labelType;
+	private final JLabel labelType;
 	/** A combo box for choosing graph type. */
-	private JComboBox<String> selectorType;
+	private final JComboBox<String> selectorType;
 	/** A label for the horizontal gridline selector. */
-	private JLabel labelGridlineX;
+	private final JLabel labelGridlineX;
 	/** Selector for horizontal gridlines. */
-	private SeriesSelector selectorGridlineX;
+	private final SeriesSelector selectorGridlineX;
 	/** A label for the vertical gridline selector. */
-	private JLabel labelGridlineY;
+	private final JLabel labelGridlineY;
 	/** Selector for vertical gridlines. */
-	private SeriesSelector selectorGridlineY;
+	private final SeriesSelector selectorGridlineY;
 	/** A label describing the dimensions of the graph. */
-	private JLabel labelDimensions;
+	private final JLabel labelDimensions;
 	/** A button to export the graph data. */
-	private JButton buttonExport;
+	private final JButton buttonExport;
 
 	/** A text field for the graph title. */
-	private JTextField fieldGraphTitle;
+	private final JTextField fieldGraphTitle;
 
 	// Axis titles are edited from the sidebar, mainly because that's way easier
 	// in Swing than rotated text fields, but also because it allows empty 
@@ -677,48 +279,9 @@ public class Graph extends JFrame {
 	/** A text field for the verticalAxis title. */
 	private JTextField fieldGraphVerticalAxis;
 
-	class RotatedLabel extends JLabel {
 
-		/** How far to rotate this text field. */
-		private double rotation;
 
-		/** Graphics for this component. */
-		private Graphics2D graphics;
-
-		@Override
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			graphics = (Graphics2D) g;
-			graphics.rotate(
-				rotation / 180 * Math.PI,
-				getWidth() / 2,
-				getHeight() / 2
-			);
-		}
-
-		@Override
-		public void paintChildren(Graphics g) {
-			graphics = (Graphics2D) g;
-			graphics.drawString(getText(), 10, 10);
-		}
-
-		/**
-		 * @return The rotation of this text field.
-		 */
-		public double getRotation() {
-			return rotation;
-		}
-
-		/**
-		 * Changes the rotation of this text field.
-		 * @param angle The new angle to rotate the text field to.
-		 */
-		public void setRotation(double angle) {
-			rotation = angle;
-		}
-
-	}
-
+	// MARK: Update
 	/**
 	 * Called whenever this graph updates. Updates the dimension label,
 	 * refreshes the graph, and then calls {@link #invalidate()},
@@ -737,6 +300,8 @@ public class Graph extends JFrame {
 	}
 	
 
+
+	// MARK: Methods
 	/**
 	 * Exports this graph to a file.
 	 */
@@ -761,6 +326,8 @@ public class Graph extends JFrame {
 		fieldGraphTitle.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 	}
 
+
+
 	/**
 	 * Syncs the graphical components on the graph with its assigned values.
 	 */
@@ -776,94 +343,168 @@ public class Graph extends JFrame {
 	// Getters and setters
 
 	/**
-	 * @return The title of the graph.
+	 * Getter: Gets the title of this graph.
+	 * @return {@link #graphTitle}
 	 */
 	public String getGraphTitle() {
 		return graphTitle;
 	}
 
 	/**
-	 * Changes the graph's title.
-	 * @param s The new title of the graph.
+	 * Setter: Changes this graph's title.
+	 * @param graphTitle The new {@link #graphTitle} for this graph.
 	 */
-	public void setGraphTitle(String s) {
-		graphTitle = s;
+	public void setGraphTitle(String graphTitle) {
+		this.graphTitle = graphTitle;
 	}
 
+
+
 	/**
-	 * @return The horizontal axis title of the graph.
+	 * Getter: Gets the horizontal axis title of this graph.
+	 * @return {@link #axisTitleX}
 	 */
 	public String getAxisTitleX() {
 		return axisTitleX;
 	}
 
 	/**
-	 * Changes the label on the horizontal axis of the graph.
-	 * @param s The new X-axis title of the graph.
+	 * Setter: Changes this graph's horizontal axis title.
+	 * @param axisTitleX The new {@link #axisTitleX} for this graph.
 	 */
-	public void setAxisTitleX(String s) {
-		axisTitleX = s;
+	public void setAxisTitleX(String axisTitleX) {
+		this.axisTitleX = axisTitleX;
 	}
 
+
+
 	/**
-	 * @return The vertical axis title of the graph.
+	 * Getter: Gets the vertical axis title of this graph.
+	 * @return {@link #axisTitleY}
 	 */
 	public String getAxisTitleY() {
 		return axisTitleY;
 	}
 
 	/**
-	 * Changes the label on the vertical axis of the graph.
-	 * @param s The new Y-axis title of the graph.
+	 * Setter: Changes this graph's vertical axis title.
+	 * @param axisTitleY The new {@link #axisTitleY} for this graph.
 	 */
-	public void setAxisTitleY(String s) {
-		axisTitleY = s;
+	public void setAxisTitleY(String axisTitleY) {
+		this.axisTitleY = axisTitleY;
 	}
 
+
+
 	/**
-	 * @return The type of graph currently being drawn.
+	 * Getter: Gets the type of graph currently being drawn.
+	 * @return {@link #graphType}
 	 */
 	public String getGraphType() {
 		return graphType;
 	}
 
 	/**
-	 * Changes the type of graph being drawn.
-	 * @param type The type of graph to draw. Should be one of
+	 * Setter: Changes which type of graph being drawn.
+	 * @param graphType The type of graph to draw. Should be one of
 	 * {@link #SCATTERPLOT}, {@link #LINE}, or {@link #BAR}. Do not use
 	 * "Scatterplot", "Line", or "Bar".
 	 */
-	public void setGraphType(String type) {
-		graphType = type;
+	public void setGraphType(String graphType) {
+		this.graphType = graphType;
 	}
 
+
+
 	/**
-	 * @return The series currently being used for horizontal gridlines.
+	 * Getter: Gets the series being used for horizontal gridlines.
+	 * @return {@link #stepX}
 	 */
 	public Series getGridlinesX() {
 		return stepX;
 	}
 
 	/**
-	 * Changes the series used for horizontal gridlines.
-	 * @param r A reference to the new {@link Series} object to use.
+	 * Setter: Changes the series used to draw horizontal gridlines.
+	 * @param stepX The new {@link #stepX} series for this graph.
 	 */
-	public void setGridlinesX(Series r) {
-		stepX = r;
+	public void setGridlinesX(Series stepX) {
+		this.stepX = stepX;
 	}
 
+
+
 	/**
-	 * @return The series currently being used for vertical gridlines.
+	 * Getter: Gets the series being used for vertical gridlines.
+	 * @return {@link #stepY}
 	 */
 	public Series getGridlinesY() {
 		return stepY;
 	}
 
 	/**
-	 * Changes the series used for vertical gridlines.
-	 * @param r A reference to the new {@link Series} object to use.
+	 * Setter: Changes the series used to draw vertical gridlines.
+	 * @param stepY The new {@link #stepY} series for this graph.
 	 */
-	public void setGridlinesY(Series r) {
-		stepY = r;
+	public void setGridlinesY(Series stepY) {
+		this.stepY = stepY;
+	}
+}
+
+
+
+
+// MARK: RotatedLabel
+/** A class storing a JLabel rotated by an arbitrary amount. */
+class RotatedLabel extends JLabel {
+	// MARK: Constructor
+	/** Sole constructor. */
+	public RotatedLabel() {}
+
+
+
+	// MARK: Properties
+	/** How far to rotate this text field. */
+	private double rotation;
+
+
+
+	// MARK: Methods
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		Graphics2D graphics = (Graphics2D) g;
+		graphics.rotate(
+			rotation / 180 * Math.PI,
+			getWidth() / 2,
+			getHeight() / 2
+		);
+	}
+
+
+
+	@Override
+	public void paintChildren(Graphics g) {
+		Graphics2D graphics = (Graphics2D) g;
+		graphics.drawString(getText(), 10, 10);
+	}
+
+
+
+	// MARK: Getters / Setters
+	/**
+	 * Getter: Gets the rotation angle of this text field.
+	 * @return {@link #rotation}
+	 */
+	public double getRotation() {
+		return rotation;
+	}
+
+	/**
+	 * Setter: Changes how far this text field is rotated by.
+	 * @param rotation The new {@link #rotation} angle for this label.
+	 */
+	public void setRotation(double rotation) {
+		this.rotation = rotation;
 	}
 }
