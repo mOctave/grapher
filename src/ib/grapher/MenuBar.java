@@ -76,6 +76,11 @@ public class MenuBar extends JMenuBar {
 			KeyEvent.VK_R,
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
 		));
+		dataSort.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Main.getDataTable().sortBySelectedColumn();
+			}
+		});
 		menuData.add(dataSort);
 
 		JMenuItem dataSearch = new JMenuItem("Search");

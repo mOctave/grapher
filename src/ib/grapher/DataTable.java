@@ -356,6 +356,56 @@ public class DataTable extends JFrame {
 
 
 	/**
+	 * Sorts the table in ascending order by the selected column, then runs
+	 * the update method.
+	 */
+	public void sortBySelectedColumn() {
+		Series sortSeries = getSelectedCell().getSeries();
+		int passLength = Integer.MAX_VALUE;
+
+		resetActiveCells();
+		Cell currentCell = sortSeries.getFirst();
+
+		while (passLength > 0) {
+			int comparisonCounter = 0;
+
+			while (passLength != comparisonCounter) {
+				Cell nextCell = currentCell.getNext();
+				if (nextCell == null) {
+					passLength = comparisonCounter;
+					break;
+				} else {
+					double currentNumeric = 0;
+					double nextNumeric = 0;
+					try {
+						currentNumeric = currentCell.getNumeric();
+					} catch (NumberFormatException e) {}
+					try {
+						nextNumeric = nextCell.getNumeric();
+					} catch (NumberFormatException e) {}
+
+					if (currentNumeric > nextNumeric) {
+						for (Cell c : getActiveCells()) {
+							c.swapWithNext();
+						}
+					} else {
+						try {
+							rollActiveCellsForward();
+						} catch (Exception e) {}
+					}
+
+					comparisonCounter++;
+				}
+			}
+			passLength--;
+		}
+
+		doUpdate();
+	}
+
+
+
+	/**
 	 * Gets a series from the data based on its name.
 	 * @param s The name of the series to get
 	 * @return A reference to the desired {@link Series} object, or null if no
