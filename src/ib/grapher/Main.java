@@ -1,12 +1,13 @@
 package ib.grapher;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.swing.SwingUtilities;
 
 /**
  * The main class of the grapher, in charge of managing other windows.
@@ -82,7 +83,7 @@ public abstract class Main {
 		graph = new Graph();
 
 		// GUI
-		EventQueue.invokeLater(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				dataTable.setSize(400, 300);
 				dataTable.addSeries(new Series(1));
@@ -227,6 +228,26 @@ public abstract class Main {
 		}
 
 		return ba;
+	}
+
+
+
+	/**
+	 * Debug method that prints the method that calls it and whether or not that
+	 * method is running on the Event Dispatch Thread.
+	 */
+	static void whereAmI() {
+		if (SwingUtilities.isEventDispatchThread()) {
+			System.out.printf(
+				"Currently executing %s as EDT%n",
+				Thread.currentThread().getStackTrace()[2].getMethodName()
+			);
+		} else {
+			System.out.printf(
+				"Currently executing %s (not EDT)%n",
+				Thread.currentThread().getStackTrace()[2].getMethodName()
+			);
+		}
 	}
 
 

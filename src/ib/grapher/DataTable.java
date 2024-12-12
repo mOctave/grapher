@@ -213,6 +213,8 @@ public class DataTable extends JFrame {
 	 * {@link #repaint()}.
 	 */
 	public void doUpdate() {
+		System.out.println("Doing data table update...");
+
 		GridBagConstraints constraints;
 		for (Series r : data) {
 			constraints = new GridBagConstraints();
@@ -320,9 +322,13 @@ public class DataTable extends JFrame {
 			insertDown.setVisible(true);
 		}
 
+		System.out.println("IVR Cycle...");
+
 		invalidate();
 		validate();
 		repaint();
+
+		System.out.println("Done data table update.");
 	}
 
 
@@ -361,15 +367,15 @@ public class DataTable extends JFrame {
 	 */
 	public void sortBySelectedColumn() {
 		Series sortSeries = getSelectedCell().getSeries();
-		int passLength = Integer.MAX_VALUE;
+		int passLength = sortSeries.length() - 1;
 
-		resetActiveCells();
-		Cell currentCell = sortSeries.getFirst();
 
 		while (passLength > 0) {
 			int comparisonCounter = 0;
+			resetActiveCells();
+			Cell currentCell = sortSeries.getFirst();
 
-			while (passLength != comparisonCounter) {
+			while (comparisonCounter < passLength) {
 				Cell nextCell = currentCell.getNext();
 				if (nextCell == null) {
 					passLength = comparisonCounter;
@@ -389,18 +395,14 @@ public class DataTable extends JFrame {
 							c.swapWithNext();
 						}
 					} else {
-						try {
-							rollActiveCellsForward();
-						} catch (Exception e) {}
+						rollActiveCellsForward();
+						currentCell = nextCell;
 					}
-
 					comparisonCounter++;
 				}
 			}
 			passLength--;
 		}
-
-		doUpdate();
 	}
 
 

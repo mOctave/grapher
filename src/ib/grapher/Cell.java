@@ -256,15 +256,34 @@ public class Cell extends JPanel {
 	 * Swaps this cell with the next one in its series.
 	 */
 	public void swapWithNext() {
+		Cell oldPrevious = this.previousCell;
 		Cell oldNext = this.nextCell;
 
-		this.setNext(oldNext.getNext());
-		oldNext.setPrevious(this.previousCell);
+		if (oldNext == null) {
+			System.out.println("Null next cell!");
+			return;
+		}
+
+		Cell newNext = oldNext.getNext();
+
+		oldNext.setPrevious(oldPrevious);
+		if (oldPrevious == null)
+			this.getSeries().setFirst(oldNext);
+		else
+			oldPrevious.setNext(oldNext);
+	
 		this.setPrevious(oldNext);
 		oldNext.setNext(this);
 
-		this.index ++;
+		this.setNext(newNext);
+		if (newNext == null)
+			this.getSeries().setLast(this);
+		else
+			newNext.setPrevious(this);
+
 		oldNext.setIndex(oldNext.getIndex() - 1);
+
+		this.index ++;
 	}
 
 
