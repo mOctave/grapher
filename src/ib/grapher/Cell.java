@@ -46,19 +46,15 @@ public class Cell extends JPanel {
 		setBorder(new EtchedBorder(EtchedBorder.RAISED));
 		textField.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent e) {
-				Cell.this.setBackground(Main.YELLOW);
-				Cell.this.textField.setBackground(Main.LIGHT_YELLOW);
-				Cell.this.series.getHeader().setBackground(Main.GREY);
+				Cell.this.paintSelected();
 				Main.getDataTable().setSelectedCell(Cell.this);
-				Main.getDataTable().setRowNumberBackground(Cell.this.getIndex(), Main.GREY);
 			}
 
 			public void focusLost(FocusEvent e) {
-				Cell.this.setBackground(Main.WHITE);
-				Cell.this.textField.setBackground(Main.WHITE);
-				Cell.this.series.getHeader().setBackground(Main.SILVER);
-				Main.getDataTable().setSelectedCell(Cell.this);
-				Main.getDataTable().setRowNumberBackground(Cell.this.getIndex(), Main.SILVER);
+				if (Main.getDataTable().getSearchMatches().contains(Cell.this))
+					Cell.this.paintSearched();
+				else
+					Cell.this.paintDeselected();
 
 				// Losing focus also does data entry
 				Cell.this.setValue(Cell.this.textField.getText());
@@ -141,6 +137,43 @@ public class Cell extends JPanel {
 		Byte[] ba = Main.stringToByteArray(value, 128);
 
 		FileDataManager.writeByteList(Arrays.asList(ba), offset);
+	}
+
+
+
+	/**
+	 * GUI: Selects this cell, painting it yellow and its headers grey.
+	 */
+	public void paintSelected() {
+		Cell.this.setBackground(Main.YELLOW);
+		Cell.this.textField.setBackground(Main.LIGHT_YELLOW);
+		Cell.this.series.getHeader().setBackground(Main.GREY);
+		Main.getDataTable().setRowNumberBackground(Cell.this.getIndex(), Main.GREY);
+	}
+
+
+
+	/**
+	 * GUI: Deselects this cell, painting it grey and its headers silver.
+	 */
+	public void paintDeselected() {
+		Cell.this.setBackground(Main.WHITE);
+		Cell.this.textField.setBackground(Main.WHITE);
+		Cell.this.series.getHeader().setBackground(Main.SILVER);
+		Main.getDataTable().setRowNumberBackground(Cell.this.getIndex(), Main.SILVER);
+	}
+
+
+
+	/**
+	 * GUI: Marks this cell as a search result, painting it blue and its
+	 * headers silver.
+	 */
+	public void paintSearched() {
+		Cell.this.setBackground(Main.BLUE);
+		Cell.this.textField.setBackground(Main.LIGHT_BLUE);
+		Cell.this.series.getHeader().setBackground(Main.SILVER);
+		Main.getDataTable().setRowNumberBackground(Cell.this.getIndex(), Main.SILVER);
 	}
 
 

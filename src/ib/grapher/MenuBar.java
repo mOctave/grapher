@@ -89,6 +89,11 @@ public class MenuBar extends JMenuBar {
 			KeyEvent.VK_F,
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
 		));
+		dataSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Main.getDataTable().searchAndHighlight();
+			}
+		});
 		menuData.add(dataSearch);
 
 		menuData.addSeparator();

@@ -15,19 +15,23 @@ import javax.swing.SwingUtilities;
 public abstract class Main {
 	// MARK: Constants
 	// Colours to use for drawing graphical elements
-	/** Colour: black */
+	/** Colour: black (#000000) */
 	public static final Color BLACK = new Color(0, 0, 0);
-	/** Colour: white */
+	/** Colour: white (#FFFFFF) */
 	public static final Color WHITE = new Color(255, 255, 255);
-	/** Colour: light yellow */
+	/** Colour: light yellow (#FFFFC8) */
 	public static final Color LIGHT_YELLOW = new Color(255, 255, 200);
-	/** Colour: yellow */
+	/** Colour: yellow (#FFFF96) */
 	public static final Color YELLOW = new Color(255, 255, 150);
-	/** Colour: grey */
+	/** Colour: light blue (#AAD2FF) */
+	public static final Color LIGHT_BLUE = new Color(170, 210, 255);
+	/** Colour: blue (#96BEFF) */
+	public static final Color BLUE = new Color(150, 190, 255);
+	/** Colour: grey (#C8C8C8) */
 	public static final Color GREY = new Color(200, 200, 200);
-	/** Colour: silver */
+	/** Colour: silver (#DCBEFF) */
 	public static final Color SILVER = new Color(220, 220, 220);
-	/** Colour: transparent */
+	/** Colour: transparent (0 alpha) */
 	public static final Color TRANSPARENT = new Color(0, 0, 0,0);
 
 	/** The monospaced font to use for small print. */

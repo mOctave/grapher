@@ -19,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -37,6 +38,7 @@ public class DataTable extends JFrame {
 		super();
 		data = new ArrayList<>();
 		activeCells = new ArrayList<>();
+		searchMatches = new ArrayList<>();
 
 		// GUI
 		setTitle("Grapher");
@@ -112,6 +114,55 @@ public class DataTable extends JFrame {
 		});
 		overlay.add(insertDown);
 
+		panelSearch = new JPanel(new BorderLayout());
+		tableView.setCorner(JScrollPane.UPPER_LEADING_CORNER, panelSearch);
+		
+		searchInit = new JButton("🔎");
+		searchInit.setFont(Main.SMALL);
+		searchInit.setHorizontalAlignment(SwingConstants.CENTER);
+		searchInit.setPreferredSize(new Dimension(getPreferredSize().width, 16));
+		searchInit.setBackground(Main.LIGHT_BLUE);
+		searchInit.setBorder(null);
+		searchInit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchAndHighlight();
+			}
+		});
+		searchInit.setEnabled(true);
+		panelSearch.add(searchInit, BorderLayout.NORTH);
+		
+		searchNext = new JButton(">");
+		searchNext.setFont(Main.SMALL);
+		searchNext.setHorizontalAlignment(SwingConstants.CENTER);
+		searchNext.setPreferredSize(new Dimension(getPreferredSize().width, 12));
+		searchNext.setBackground(Main.LIGHT_BLUE);
+		searchNext.setBorder(null);
+		searchNext.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				scrollToNextSearchResult();
+			}
+		});
+		searchNext.setEnabled(false);
+		panelSearch.add(searchNext, BorderLayout.CENTER);
+		
+		searchCancel = new JButton("X");
+		searchCancel.setFont(Main.SMALL);
+		searchCancel.setHorizontalAlignment(SwingConstants.CENTER);
+		searchCancel.setPreferredSize(new Dimension(getPreferredSize().width, 12));
+		searchCancel.setBackground(Main.LIGHT_BLUE);
+		searchCancel.setBorder(null);
+		searchCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				endSearch();
+			}
+		});
+		searchCancel.setEnabled(false);
+		panelSearch.add(searchCancel, BorderLayout.SOUTH);
+
+
 		add(tableView, BorderLayout.CENTER);
 
 		fillerT = new JPanel();
@@ -161,6 +212,11 @@ public class DataTable extends JFrame {
 	/** The current selected cell. */
 	private Cell selectedCell;
 
+	/** A list of cells that match a search. */
+	private List<Cell> searchMatches;
+	/** The current index in cycling through search matches. */
+	private int searchIndex;
+
 
 	// GUI
 	/** A label to display the title of the data table. */
@@ -201,6 +257,15 @@ public class DataTable extends JFrame {
 	private JButton insertUp;
 	/** A button to insert a row below the selected cell. */
 	private JButton insertDown;
+
+	/** A panel to show search command buttons. */
+	private JPanel panelSearch;
+	/** The standard search button. */
+	private JButton searchInit;
+	/** A button to highlight the next search match. */
+	private JButton searchNext;
+	/** A button to cancel the search. */
+	private JButton searchCancel;
 
 
 
@@ -403,6 +468,67 @@ public class DataTable extends JFrame {
 			}
 			passLength--;
 		}
+	}
+
+
+
+	/** 
+	 * Creates a popup menu which lets the user enter a search key, then
+	 * searches the data table and highlights every cell whose value matches
+	 * the key.
+	 */
+	public void searchAndHighlight() {
+		String key = JOptionPane.showInputDialog("What would you like to search for?");
+
+		if (key == "")
+			return;
+
+		searchMatches = new ArrayList<>();
+		searchIndex = 0;
+		for (Series series : getData()) {
+			for (Cell match : series.search(key)) {
+				match.paintSearched();
+				searchMatches.add(match);
+			}
+		}
+
+		// Update buttons
+		searchInit.setEnabled(false);
+		searchNext.setEnabled(true);
+		searchCancel.setEnabled(true);
+	}
+
+
+	/**
+	 * Does the minimum possible scrolling to show the next search result on the screen.
+	 */
+	public void scrollToNextSearchResult() {
+		if (searchMatches.size() == 0)
+			return;
+
+		searchIndex = (searchIndex + 1) % searchMatches.size();
+		Cell match = searchMatches.get(searchIndex);
+		tableLayeredPane.scrollRectToVisible(match.getBounds());
+		setSelectedCell(match);
+	}
+
+
+	/**
+	 * Deselects all searched values.
+	 */
+	public void endSearch() {
+		for (Cell match : searchMatches) {
+			match.paintDeselected();
+		}
+
+		// Readjusts the selected cell, in case it was one of the search results
+		if (this.selectedCell != null)
+			selectedCell.paintSelected();
+
+		// Update buttons
+		searchInit.setEnabled(true);
+		searchNext.setEnabled(false);
+		searchCancel.setEnabled(false);
 	}
 
 
@@ -730,4 +856,28 @@ public class DataTable extends JFrame {
 		this.selectedCell = selectedCell;
 		Main.updateAllComponents();
 	}
+
+
+
+	/**
+	 * Getter: Gets the list of current search matches.
+	 * @return {@link #searchMatches}
+	 */
+	public List<Cell> getSearchMatches() {
+		return searchMatches;
+	}
+
+
+
+	/**
+	 * Getter: Gets the currently focused position in the list of search
+	 * results.
+	 * @return {@link #searchIndex}
+	 */
+	public int getSearchIndex() {
+		return searchIndex;
+	}
+
+	// No setter for searchMatches or searchIndex, as they are meant to be
+	// calculated internally.
 }
