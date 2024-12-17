@@ -306,6 +306,11 @@ public class GraphPanel extends JPanel {
 
 
 
+	/**
+	 * Calculates how much width to assign for the vertical axis label, and
+	 * stores this value in {@link #yLabelWidth}.
+	 * @param metrics The font metrics used in the calculations
+	 */
 	private void getYLabelWidth(FontMetrics metrics) {
 		int maxWidth = 30;
 
@@ -327,6 +332,11 @@ public class GraphPanel extends JPanel {
 
 
 
+	/**
+	 * Converts between x-coordinates in graph-space and window-space.
+	 * @param x The x-coordinate defined by the user, relative to the graph
+	 * @return The x-coordinate to draw this point on the GUI
+	 */
 	private int getRelativeX(double x) {
 		int labelOffset = parentGraph.getAxisTitleY().length() == 0 ? 0 : 20;
 		final Series stepX = parentGraph.getGridlinesX();
@@ -339,6 +349,11 @@ public class GraphPanel extends JPanel {
 
 
 
+	/**
+	 * Converts between y-coordinates in graph-space and window-space.
+	 * @param y The y-coordinate defined by the user, relative to the graph
+	 * @return The y-coordinate to draw this point on the GUI
+	 */
 	private int getRelativeY(double y) {
 		int labelOffset = parentGraph.getAxisTitleX().length() == 0 ? 0 : 20;
 		final Series stepY = parentGraph.getGridlinesY();
@@ -350,6 +365,11 @@ public class GraphPanel extends JPanel {
 
 
 
+	/**
+	 * Draws a point on the graph.
+	 * @param point	The point to draw
+	 * @param graphics The graphics object to use in drawing the point
+	 */
 	private void drawPoint(GraphPoint point, Graphics2D graphics) {
 		double x = point.getX();
 		double y = point.getY();
@@ -427,6 +447,14 @@ public class GraphPanel extends JPanel {
 
 
 
+	/**
+	 * Finds the coordinates at which to draw the linear regression trendline
+	 * on the graph.
+	 * @param a The slope of the trendline
+	 * @param b The y-int of the trendline
+	 * @return An array of four integers that describe the two endpoints of the
+	 * graphical trendline relative to the GUI
+	 */
 	private int[] calculateTrendline(double a, double b) {
 		// Select first point
 		double x1 = xLower;

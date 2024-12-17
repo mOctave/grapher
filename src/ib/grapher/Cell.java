@@ -414,7 +414,7 @@ public class Cell extends JPanel {
 
 	/**
 	 * Setter: Changes which series this cell belongs to.
-	 * @param previousCell The new {@link #series} for this cell
+	 * @param series The new {@link #series} for this cell
 	 */
 	public void setSeries(Series series) {
 		this.series = series;

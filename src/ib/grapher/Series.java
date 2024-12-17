@@ -212,6 +212,7 @@ public class Series implements Iterable<Cell> {
 	/**
 	 * Gets a given statistic about this series.
 	 * @param key The key to search {@link #statistics} for
+	 * @return The value of the statistic, as an double-formatted string
 	 */
 	public String getStatistic(String key) {
 		try {
@@ -227,6 +228,7 @@ public class Series implements Iterable<Cell> {
 	 * Gets a given statistic about this series, formatting it as an integer
 	 * rather than as a double.
 	 * @param key The key to search {@link #statistics} for
+	 * @return The value of the statistic, as an integer-formatted string
 	 */
 	public String getStatisticAsInt(String key) {
 		try {

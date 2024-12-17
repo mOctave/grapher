@@ -3,7 +3,13 @@ package ib.grapher;
 /** A class holding one X/Y point and associated error bars. */
 public class GraphPoint {
 	// MARK: Constructor
-	/** Constructor with both error bars. */
+	/**
+	 * Constructor with both error bars.
+	 * @param x The x-coordinate for this point
+	 * @param y The y-coordinate for this point
+	 * @param ex How long this point's horizontal error bars should be
+	 * @param ey How tall this point's vertical error bars should be
+	 */
 	public GraphPoint (
 		double x,
 		double y,
@@ -82,7 +88,7 @@ public class GraphPoint {
 
 	/**
 	 * Setter: Changes the y-coordinate for this point relative to the graph.
-	 * @param x The new {@link #y}-coordinate for this point
+	 * @param y The new {@link #y}-coordinate for this point
 	 */
 	public void setY(double y) {
 		this.y = y;

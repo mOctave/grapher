@@ -18,10 +18,10 @@ import javax.swing.filechooser.FileFilter;
  * This class holds entirely static methods, as the program is only
  * intended to handle one project at a time.
  */
-public class FileDataManager {
+public final class FileDataManager {
 	// MARK: Constructor
 	/** Sole constructor. */
-	public FileDataManager() {};
+	private FileDataManager() {};
 
 
 	// MARK: Constants
@@ -34,11 +34,20 @@ public class FileDataManager {
 	/** The number of bytes to allocate to {@link Cell} object. */
 	public static final int CELL_LENGTH = 128;
 
-	/** Flag to mark an object as {@link PlottableData} for {@link #getOffset()}. */
+	/**
+	 * Flag to mark an object as {@link PlottableData} for
+	 * {@link #getOffset}.
+	 */
 	public static final int PLOTTABLE = 0;
-	/** Flag to mark an object as a {@link Series} for {@link #getOffset()}. */
+	/**
+	 * Flag to mark an object as a {@link Series} for
+	 * {@link #getOffset}.
+	 */
 	public static final int SERIES = 1;
-	/** Flag to mark an object as a {@link Cell} for {@link #getOffset()}. */
+	/**
+	 * Flag to mark an object as a {@link Cell} for
+	 * {@link #getOffset}.
+	 */
 	public static final int CELL = 2;
 
 
@@ -495,7 +504,7 @@ public class FileDataManager {
 
 	/**
 	 * Converts a four-byte array into an integer.
-	 * @param i The byte array to convert.
+	 * @param ba The byte array to convert.
 	 * @return The integer value of the array.
 	 */
 	public static int byteArrayToInt(Byte[] ba) {

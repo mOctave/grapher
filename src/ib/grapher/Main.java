@@ -12,7 +12,11 @@ import javax.swing.SwingUtilities;
 /**
  * The main class of the grapher, in charge of managing other windows.
  */
-public abstract class Main {
+public final class Main {
+	// MARK: Constructor
+	/** Sole constructor. Intended to appease Javadoc, not to be used. */
+	private Main() {}
+
 	// MARK: Constants
 	// Colours to use for drawing graphical elements
 	/** Colour: black (#000000) */
@@ -77,6 +81,11 @@ public abstract class Main {
 
 
 	// MARK: >Main<
+	/**
+	 * Entrypoint to the graphing program. Initializes windows and the menu bar.
+	 * @param args Unused args provided by the user when the app is launched
+	 * from the command line.
+	 */
 	public static void main(String[] args) {
 		System.out.println("Launching Grapher");
 
@@ -120,7 +129,10 @@ public abstract class Main {
 
 	// MARK: Methods
 	/**
-	 * Copies a series name.
+	 * Copies a series name into a byte array.
+	 * @param r The series to copy the name of
+	 * @param destination The byte array
+	 * @param pos The position to copy the start of the series into
 	 */
 	public static void seriesCopy(Series r, Byte[] destination, int pos) {
 		try {

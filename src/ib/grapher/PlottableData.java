@@ -46,7 +46,9 @@ public class PlottableData {
 	private boolean XAgainstY;
 
 	// Linear regression data, for the form y=ax+b
+	/** Slope of the linear regression trendline. */
 	private double a;
+	/** Y-intercept of the linear regression trendline. */
 	private double b;
 	/** Pearson correlation coefficient. */
 	private double r;

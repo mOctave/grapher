@@ -401,7 +401,7 @@ public class DataTable extends JFrame {
 	// MARK: Methods
 	/**
 	 * Clears both the logical and graphical parts of the data table.
-	 * Every {@link Series}, {@link Cell}, and {@link ColumnNumber} is removed.
+	 * Every {@link Series}, {@link Cell}, and row number is removed.
 	 * The {@link #selectedCell} is reset to null.
 	 */
 	public void clear() {
@@ -763,6 +763,10 @@ public class DataTable extends JFrame {
 
 
 	// MARK: Convenience
+	/**
+	 * Adds a cell graphically to the table
+	 * @param cell The cell to add
+	 */
 	public void addCell(Cell cell) {
 		table.add(cell);
 	}
