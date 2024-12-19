@@ -2,11 +2,14 @@ package ib.grapher;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 /**
@@ -44,6 +47,18 @@ public final class Main {
 
 	/** The charset used to encode this project's text when saving/loading. */
 	public static final String CHARSET = "UTF-16LE";
+
+	// Images
+	/** Image to use for the add row/column button. */
+	public static final BufferedImage BUTTON_ADD = getImageAsset("/button_add.png");
+	/** Image to use for the search button. */
+	public static final BufferedImage BUTTON_SEARCH = getImageAsset("/button_search.png");
+	/** Image to use for the next search match button. */
+	public static final BufferedImage BUTTON_NEXT = getImageAsset("/button_next.png");
+	/** Image to use for the close search button. */
+	public static final BufferedImage BUTTON_END = getImageAsset("/button_end.png");
+	/** Image to use for the series colour change button. */
+	public static final BufferedImage BUTTON_PALETTE = getImageAsset("/button_palette.png");
 
 	/**
 	 * These are the colours that will be selected by default for the graph.
@@ -265,6 +280,28 @@ public final class Main {
 				Thread.currentThread().getStackTrace()[2].getMethodName()
 			);
 		}
+	}
+
+
+
+	/**
+	 * Loads an image asset from a path (typically within the JAR).
+	 * @param path The path to the image resource
+	 * @return The image, or null if no image is found
+	 */
+	public static BufferedImage getImageAsset(String path) {
+		try {
+			InputStream is = Main.class.getResourceAsStream(path);
+			return ImageIO.read(is);
+		} catch (Exception e) {
+			System.err.printf(
+				"Could not load image at %s.%n",
+				path
+			);
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 

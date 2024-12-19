@@ -9,6 +9,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -112,7 +113,7 @@ public class PlottableDataMenu extends JPanel {
 		});
 		buttonRemove.setPreferredSize(new Dimension(60, 20));
 
-		buttonChooseColour = new JButton("<html>&#127912;&#xFE0E;</html>");
+		buttonChooseColour = new JButton(new ImageIcon(Main.BUTTON_PALETTE));
 		int colourChoice = getTable().getDataSets().indexOf(getData()) % 7;
 		buttonChooseColour.setBackground(Main.WONG_COLORS[colourChoice]);
 		buttonChooseColour.setOpaque(true);

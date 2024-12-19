@@ -11,6 +11,9 @@
 		<javac srcdir="src" destdir="bin">
 			<exclude name="**/_Template.java"/>
 		</javac>
+		<copy todir="bin">
+			<fileset dir="assets"/>
+		</copy>
 	</target>
 	<target name="jar" depends="compile">
 		<jar destfile="Grapher.jar">

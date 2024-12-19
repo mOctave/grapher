@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -70,7 +71,7 @@ public class DataTable extends JFrame {
 		overlay.setLayout(null);
 		tableLayeredPane.add(overlay, Integer.valueOf(1), 0);
 
-		insertLeft = new JButton("+");
+		insertLeft = new JButton(new ImageIcon(Main.BUTTON_ADD));
 		insertLeft.setFont(Main.SMALL);
 		insertLeft.setHorizontalAlignment(SwingConstants.CENTER);
 		insertLeft.addActionListener(new ActionListener() {
@@ -81,7 +82,7 @@ public class DataTable extends JFrame {
 		});
 		overlay.add(insertLeft);
 
-		insertRight = new JButton("+");
+		insertRight = new JButton(new ImageIcon(Main.BUTTON_ADD));
 		insertRight.setFont(Main.SMALL);
 		insertRight.setHorizontalAlignment(SwingConstants.CENTER);
 		insertRight.addActionListener(new ActionListener() {
@@ -92,7 +93,7 @@ public class DataTable extends JFrame {
 		});
 		overlay.add(insertRight);
 
-		insertUp = new JButton("+");
+		insertUp = new JButton(new ImageIcon(Main.BUTTON_ADD));
 		insertUp.setFont(Main.SMALL);
 		insertUp.setHorizontalAlignment(SwingConstants.CENTER);
 		insertUp.addActionListener(new ActionListener() {
@@ -103,7 +104,7 @@ public class DataTable extends JFrame {
 		});
 		overlay.add(insertUp);
 
-		insertDown = new JButton("+");
+		insertDown = new JButton(new ImageIcon(Main.BUTTON_ADD));
 		insertDown.setFont(Main.SMALL);
 		insertDown.setHorizontalAlignment(SwingConstants.CENTER);
 		insertDown.addActionListener(new ActionListener() {
@@ -117,7 +118,7 @@ public class DataTable extends JFrame {
 		panelSearch = new JPanel(new BorderLayout());
 		tableView.setCorner(JScrollPane.UPPER_LEADING_CORNER, panelSearch);
 		
-		searchInit = new JButton("🔎");
+		searchInit = new JButton(new ImageIcon(Main.BUTTON_SEARCH));
 		searchInit.setFont(Main.SMALL);
 		searchInit.setHorizontalAlignment(SwingConstants.CENTER);
 		searchInit.setPreferredSize(new Dimension(getPreferredSize().width, 16));
@@ -132,7 +133,7 @@ public class DataTable extends JFrame {
 		searchInit.setEnabled(true);
 		panelSearch.add(searchInit, BorderLayout.NORTH);
 		
-		searchNext = new JButton(">");
+		searchNext = new JButton(new ImageIcon(Main.BUTTON_NEXT));
 		searchNext.setFont(Main.SMALL);
 		searchNext.setHorizontalAlignment(SwingConstants.CENTER);
 		searchNext.setPreferredSize(new Dimension(getPreferredSize().width, 12));
@@ -147,7 +148,7 @@ public class DataTable extends JFrame {
 		searchNext.setEnabled(false);
 		panelSearch.add(searchNext, BorderLayout.CENTER);
 		
-		searchCancel = new JButton("X");
+		searchCancel = new JButton(new ImageIcon(Main.BUTTON_END));
 		searchCancel.setFont(Main.SMALL);
 		searchCancel.setHorizontalAlignment(SwingConstants.CENTER);
 		searchCancel.setPreferredSize(new Dimension(getPreferredSize().width, 12));
@@ -361,7 +362,7 @@ public class DataTable extends JFrame {
 			);
 
 			insertRight.setBounds(
-				indexOf(selectedCell.getSeries()) * 110 + 102,
+				indexOf(selectedCell.getSeries()) * 110 + 100,
 				(selectedCell.getIndex() * 30) + 10,
 				10,
 				10
