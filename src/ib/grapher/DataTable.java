@@ -889,4 +889,13 @@ public class DataTable extends JFrame {
 
 	// No setter for searchMatches or searchIndex, as they are meant to be
 	// calculated internally.
+
+
+	/**
+	 * Getter: Gets the title bar with the current project file on it.
+	 * @return {@link #title}
+	 */
+	public JLabel getTitleBar() {
+		return title;
+	}
 }

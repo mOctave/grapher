@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -354,6 +356,7 @@ public final class FileDataManager {
 		Main.getGraph().sync();
 
 		Main.updateAllComponents();
+		updateTitleBar();
 	}
 
 
@@ -435,8 +438,24 @@ public final class FileDataManager {
 		} catch (IOException e) {
 			System.err.println("Sync failed when writing a byte list.");
 		}
+
+		updateTitleBar();
 	}
 
+
+
+	/**
+	 * Updates the data table's title bar with the open file and current
+	 * timestamp.
+	 */
+	 public static void updateTitleBar() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a yyyy-MM-dd");
+		Main.getDataTable().getTitleBar().setText(String.format(
+			"<html>%s <i>(%s)</i></html>",
+			currentFile.getName(),
+			dateFormat.format(new Date())
+		));
+	}
 
 
 	/**
@@ -481,6 +500,8 @@ public final class FileDataManager {
 			System.err.println("An I/O error occured inserting bytes.");
 			e.printStackTrace();
 		}
+
+		updateTitleBar();
 	}
 
 
