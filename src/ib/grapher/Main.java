@@ -10,7 +10,8 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 /**
- * The main class of the grapher, in charge of managing other windows.
+ * The main class of the grapher, in charge of managing other windows
+ * and storing constants.
  */
 public final class Main {
 	// MARK: Constructor

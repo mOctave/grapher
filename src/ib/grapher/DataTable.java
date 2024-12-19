@@ -521,9 +521,13 @@ public class DataTable extends JFrame {
 			match.paintDeselected();
 		}
 
+		searchMatches = new ArrayList<>();
+
 		// Readjusts the selected cell, in case it was one of the search results
-		if (this.selectedCell != null)
-			selectedCell.paintSelected();
+		if (selectedCell != null)
+			selectedCell.paintDeselected();
+		
+		selectedCell = null;
 
 		// Update buttons
 		searchInit.setEnabled(true);
