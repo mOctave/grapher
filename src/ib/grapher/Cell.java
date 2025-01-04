@@ -123,9 +123,14 @@ public class Cell extends JPanel {
 
 
 	// MARK: Methods
-	/** Saves this cell to the output file. */
+	/**
+	 * Saves this cell to the output file, overwriting an existing
+	 * entry for the cell. If this cell has not yet been added,
+	 * {@link FileDataManager#encodeForInsertion(Cell)} should be used instead.
+	 */
 	public void save() {
-		System.out.println("Saving cell " + value);
+
+		System.out.println("[FOP] SAVE CELL");
 		int seriesIndex = Main.getDataTable().indexOf(series);
 		int dataLength = Main.getDataTable().getData().size();
 
@@ -199,7 +204,7 @@ public class Cell extends JPanel {
 	 * @param insertedCell The cell to insert
 	 */
 	public void insertCellBefore(Cell insertedCell) {
-		System.out.println("Inserting cell before #" + this.index);
+		System.out.println("[DUP] INSERT CELL");
 		insertedCell.setSeries(this.series);
 		Cell oldPrevious = this.previousCell;
 
@@ -219,6 +224,8 @@ public class Cell extends JPanel {
 			c.setIndex(c.getIndex() + 1);
 			c = c.getNext();
 		}
+
+		FileDataManager.encodeForInsertion(insertedCell);
 	}
 
 
@@ -228,7 +235,7 @@ public class Cell extends JPanel {
 	 * @param insertedCell The cell to insert
 	 */
 	public void insertCellAfter(Cell insertedCell) {
-		System.out.println("Inserting cell after #" + this.index);
+		System.out.println("[DUP] INSERT CELL");
 		insertedCell.setSeries(this.series);
 		Cell oldNext = this.nextCell;
 		insertedCell.setPrevious(this);
@@ -247,6 +254,8 @@ public class Cell extends JPanel {
 			c.setIndex(c.getIndex() + 1);
 			c = c.getNext();
 		}
+
+		FileDataManager.encodeForInsertion(insertedCell);
 	}
 
 
@@ -255,6 +264,8 @@ public class Cell extends JPanel {
 	 * Removes this cell from its series.
 	 */
 	public void remove() {
+		FileDataManager.markForDeletion(this);
+
 		Cell oldPrevious = this.previousCell;
 		Cell oldNext = this.nextCell;
 
@@ -293,7 +304,7 @@ public class Cell extends JPanel {
 		Cell oldNext = this.nextCell;
 
 		if (oldNext == null) {
-			System.out.println("Null next cell!");
+			System.err.println("No cell after "+this.getValue());
 			return;
 		}
 
@@ -374,6 +385,7 @@ public class Cell extends JPanel {
 	public void setValue(String value) {
 		this.value = value;
 		textField.setText(value);
+		save();
 	}
 
 

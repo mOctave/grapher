@@ -150,14 +150,25 @@ public class MenuBar extends JMenuBar {
 		});
 		menuInsert.add(insertColumnRight);
 
+		// Handle this somehow
 		JMenuItem dataDeleteRow = new JMenuItem("Delete Row");
 		dataDeleteRow.setAccelerator(KeyStroke.getKeyStroke(
 			KeyEvent.VK_BACK_SPACE,
 			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
 		));
+		dataDeleteRow.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Main.getDataTable().deleteRow();
+			}
+		});
 		menuData.add(dataDeleteRow);
 
 		JMenuItem dataDeleteColumn = new JMenuItem("Delete Column");
+		dataDeleteColumn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Main.getDataTable().deleteSeries();
+			}
+		});
 		menuData.add(dataDeleteColumn);
 	}
 }

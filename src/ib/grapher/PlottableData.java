@@ -56,8 +56,14 @@ public class PlottableData {
 
 
 	// MARK: Methods
-	/** Saves this plottable data set to the output file. */
+	/**
+	 * Saves this plottable data set to the output file, overwriting an existing
+	 * entry for the set. If this plottable data has not yet been added,
+	 * {@link FileDataManager#encodeForInsertion(PlottableData)} should be used
+	 * instead.
+	 */
 	public void save() {
+		System.out.println("[FOP] SAVE PLOTTABLE");
 		int index = Main.getPlottableTable().getDataSets().indexOf(this);
 
 		int offset = FileDataManager.getOffset(
@@ -131,7 +137,7 @@ public class PlottableData {
 				n++;
 			} catch (NumberFormatException e) {
 				System.out.printf(
-					"Skipping invalid data point (%s,%s)%n",
+					"Skipping invalid data point (%s,%s) in linear regression.%n",
 					xCell.getValue(),
 					yCell.getValue()
 				);
@@ -200,6 +206,7 @@ public class PlottableData {
 	 */
 	public void setName(String name) {
 		this.name = name;
+		save();
 	}
 
 
@@ -218,6 +225,7 @@ public class PlottableData {
 	 */
 	public void setColour(Color colour) {
 		this.colour = colour;
+		save();
 	}
 
 
@@ -236,6 +244,7 @@ public class PlottableData {
 	 */
 	public void setDataX(Series dataX) {
 		this.dataX = dataX;
+		save();
 	}
 
 
@@ -254,6 +263,7 @@ public class PlottableData {
 	 */
 	public void setDataY(Series dataY) {
 		this.dataY = dataY;
+		save();
 	}
 
 
@@ -272,6 +282,7 @@ public class PlottableData {
 	 */
 	public void setErrorBarsX(Series errorBarsX) {
 		this.errorBarsX = errorBarsX;
+		save();
 	}
 
 
@@ -290,6 +301,7 @@ public class PlottableData {
 	 */
 	public void setErrorBarsY(Series errorBarsY) {
 		this.errorBarsY = errorBarsY;
+		save();
 	}
 
 
@@ -308,6 +320,7 @@ public class PlottableData {
 	 */
 	public void setActive(boolean active) {
 		this.active = active;
+		save();
 	}
 
 
@@ -327,6 +340,7 @@ public class PlottableData {
 	 */
 	public void setLinRegActive(boolean linRegActive) {
 		this.linRegActive = linRegActive;
+		save();
 	}
 
 
@@ -345,6 +359,7 @@ public class PlottableData {
 	 */
 	public void setXAgainstY(boolean XAgainstY) {
 		this.XAgainstY = XAgainstY;
+		save();
 	}
 
 

@@ -8,7 +8,7 @@
 	</path>
 	<target name="compile">
 		<mkdir dir="bin"/>
-		<javac srcdir="src" destdir="bin">
+		<javac srcdir="src" destdir="bin" release="21" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
 			<exclude name="**/_Template.java"/>
 		</javac>
 		<copy todir="bin">

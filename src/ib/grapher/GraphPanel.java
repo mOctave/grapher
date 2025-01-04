@@ -242,7 +242,7 @@ public class GraphPanel extends JPanel {
 						} catch (NumberFormatException e) {
 							// Non-numeric data. Not actually an error,
 							// but no trendline will be drawn
-							System.out.println("Non-numeric error bar skipped.");
+							System.out.println("[GRA] Non-numeric error bar skipped.");
 						}
 					}
 
@@ -252,7 +252,7 @@ public class GraphPanel extends JPanel {
 						} catch (NumberFormatException e) {
 							// Non-numeric data. Not actually an error,
 							// but no trendline will be drawn
-							System.out.println("Non-numeric error bar skipped.");
+							System.out.println("[GRA] Non-numeric error bar skipped.");
 						}
 					}
 
@@ -261,7 +261,7 @@ public class GraphPanel extends JPanel {
 				} catch (NumberFormatException e) {
 					// Non-numeric data. Not actually an error, but
 					// it'll skip the pair of cells
-					System.out.println("Non-numeric data pair skipped.");
+					System.out.println("[GRA] Non-numeric error bar skipped.");
 				}
 
 				if (activeX.getNext() == null || activeY.getNext() == null)
@@ -294,7 +294,6 @@ public class GraphPanel extends JPanel {
 				pd.doLinearRegression();
 				if (pd.getA() != Double.MIN_VALUE && pd.getB() != Double.MIN_VALUE) {
 					int[] lineCoords = calculateTrendline(pd.getA(), pd.getB());
-					System.out.printf("[(%d, %d), (%d, %d)]%n", lineCoords[0], lineCoords[1], lineCoords[2], lineCoords[3]);
 					graphics.drawLine(lineCoords[0], lineCoords[1], lineCoords[2], lineCoords[3]);
 				}
 			}

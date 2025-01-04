@@ -138,6 +138,8 @@ public class PlottableTable extends JFrame {
 		dataSets.add(pd);
 		mainPanel.add(new PlottableDataMenu(pd, this));
 		mainPanel.add(glue);
+		FileDataManager.encodeForInsertion(pd);
+		FileDataManager.insertNewBytes();
 		Main.updateAllComponents();
 	}
 
@@ -151,6 +153,8 @@ public class PlottableTable extends JFrame {
 	public void removePlottableData(PlottableDataMenu pdm) {
 		// Glue doesn't need to be removed here, since it always comes after the
 		// last element which corresponds to a data set.
+		FileDataManager.markForDeletion(pdm.getData());
+		FileDataManager.deleteOldBytes();
 		dataSets.remove(pdm.getData());
 		mainPanel.remove(pdm);
 		Main.updateAllComponents();

@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -59,6 +60,11 @@ public final class FileDataManager {
 	/** The currently open project file, as a RandomAccessFile. */
 	private static RandomAccessFile currentProject;
 
+	/** A map of the backlog of bytes to insert to the save file. */
+	private static Map<Long, Byte> bytesToInsert = new HashMap<>();
+	/** A list of the backlog of bytes to delete from the save file. */
+	private static List<Long> bytesToDelete = new ArrayList<>();
+
 
 
 	// MARK: Methods
@@ -87,6 +93,142 @@ public final class FileDataManager {
 		
 		System.err.println("Invalid data type.");
 		return -1;
+	}
+
+
+
+	/**
+	 * Encodes a cell in binary and adds it to the backlog of bytes to insert.
+	 */
+	public static void encodeForInsertion(Cell cell) {
+		System.out.println("[FOP] ENCODE CELL");
+		List<Series> data = Main.getDataTable().getData();
+		int index = (cell.getIndex() - 1) * data.size() // Account for previous rows
+					+ data.indexOf(cell.getSeries()); // Account for this row
+		long offset = getOffset(CELL, index);
+		Byte[] bytes = Main.stringToByteArray(cell.getValue(), CELL_LENGTH);
+		for (int i = 0; i < bytes.length; i++) {
+			bytesToInsert.put(i + offset, bytes[i]);
+		}
+	}
+
+
+
+	/**
+	 * Encodes a series in binary and adds it to the backlog of bytes to insert.
+	 */
+	public static void encodeForInsertion(Series series) {
+		System.out.println("[FOP] ENCODE SERIES");
+		int index = Main.getDataTable().indexOf(series);
+		long offset = getOffset(SERIES, index);
+		Byte[] bytes = Main.stringToByteArray(series.getName(), SERIES_LENGTH);
+		for (int i = 0; i < bytes.length; i++) {
+			bytesToInsert.put(i + offset, bytes[i]);
+		}
+	}
+
+
+
+	/**
+	 * Encodes a plottable data set in binary and adds it to the backlog of
+	 * bytes to insert.
+	 */
+	public static void encodeForInsertion(PlottableData pd) {
+		System.out.println("[FOP] ENCODE PLOTTABLE");
+		int index = Main.getPlottableTable().getDataSets().indexOf(pd);
+		long offset = getOffset(PLOTTABLE, index);
+
+		Byte[] ba = new Byte[321];
+		System.arraycopy(
+			Main.stringToByteArray(pd.getName(), 64),
+			0, ba, 0, 64
+		);
+		Main.seriesCopy(pd.getDataX(), ba, 64);
+		Main.seriesCopy(pd.getDataY(), ba, 128);
+		Main.seriesCopy(pd.getErrorBarsX(), ba, 192);
+		Main.seriesCopy(pd.getErrorBarsY(), ba, 256);
+
+		byte options = 0;
+		if (pd.isActive())
+			options |= 1;
+		if (pd.isLinRegActive())
+			options |= 2;
+		if (pd.isXAgainstY())
+			options |= 4;
+
+		ba[320] = options;
+
+		for (int i = 0; i < ba.length; i++) {
+			bytesToInsert.put(i + offset, ba[i]);
+		}
+	}
+
+
+
+	/**
+	 * Marks all the bytes that correspond to this cell for deletion.
+	 */
+	public static void markForDeletion(Cell cell) {
+		System.out.println("[FOP] DELETE CELL");
+		List<Series> data = Main.getDataTable().getData();
+		int index = cell.getIndex() * data.size() // Account for previous rows
+					+ data.indexOf(cell.getSeries()); // Account for this row
+		long offset = getOffset(CELL, index);
+		for (int i = 0; i < CELL_LENGTH; i++) {
+			bytesToDelete.add(offset + i);
+		}
+	}
+
+
+
+	/**
+	 * Marks all the bytes that correspond to this series for deletion.
+	 */
+	public static void markForDeletion(Series series) {
+		System.out.println("[FOP] DELETE SERIES");
+		for (Cell cell : series) {
+			markForDeletion(cell);
+		}
+		int index = Main.getDataTable().indexOf(series);
+		long offset = getOffset(SERIES, index);
+		for (int i = 0; i < SERIES_LENGTH; i++) {
+			bytesToDelete.add(offset + i);
+		}
+	}
+
+
+
+	/**
+	 * Marks all the bytes that correspond to this plottable data set for
+	 * deletion.
+	 */
+	public static void markForDeletion(PlottableData pd) {
+		System.out.println("[FOP] DELETE PLOTTABLE");
+		int index = Main.getPlottableTable().getDataSets().indexOf(pd);
+		long offset = getOffset(PLOTTABLE, index);
+		for (int i = 0; i < PLOTTABLE_LENGTH; i++) {
+			bytesToDelete.add(offset + i);
+		}
+	}
+	
+	
+	
+	/** Inserts the backlog of bytes into the project file. */
+	public static void insertNewBytes() {
+		System.out.println("[FOP] INSERT NEW");
+		FileDataManager.insertBytes(bytesToInsert);
+		bytesToInsert = new HashMap<>();
+		Main.saveMetadata();
+	}
+
+
+
+	/** Deletes the backlog of bytes from the project file. */
+	public static void deleteOldBytes() {
+		System.out.println("[FOP] DELETE OLD");
+		FileDataManager.deleteBytes(bytesToDelete);
+		bytesToDelete = new ArrayList<>();
+		Main.saveMetadata();
 	}
 
 
@@ -301,17 +443,17 @@ public final class FileDataManager {
 			dt.addSeries(r);
 
 			offset += SERIES_LENGTH;
-		}
+		} // In total, series take up SERIES_LENGTH * columns bytes
 
 		for (int i = 0; i < columns; i++) {
 			dt.getSeries(i).getFirst().setValue(
 				byteListToString(readByteList(offset, 128)));
 
 			offset += CELL_LENGTH;
-		}
+		} // In total, series headers take up CELL_LENGTH * columns bytes
 
 		for (int i = 0; offset < len; i++) {
-			dt.getSeries(i % columns).getLast().insertCellAfter(
+			dt.getSeries(i	% columns).getLast().insertCellAfter(
 				new Cell(byteListToString(readByteList(offset, 128))));
 
 			offset += CELL_LENGTH;
@@ -393,6 +535,7 @@ public final class FileDataManager {
 	 * @return An ArrayList of bytes
 	 */
 	public static List<Byte> readByteList(long pos, int len) {
+		if (currentProject == null) return new ArrayList<>();
 		try {
 			List<Byte> bytes = new ArrayList<>();
 			currentProject.seek(pos);
@@ -421,15 +564,17 @@ public final class FileDataManager {
 	 * @param pos A pointer to the first byte to overwrite
 	 */
 	public static void writeByteList(List<Byte> byteList, long pos) {
-		System.out.println(byteList);
+		if (currentProject == null) return;
 		try {
 			currentProject.seek(pos);
 			for (byte nextByte : byteList) {
 				currentProject.writeByte(nextByte);
 			}
+			updateTitleBar();
 		} catch (IOException e) {
 			System.err.println("An I/O error occured writing a byte list.");
 			e.printStackTrace();
+			resetTitleBar();
 		}
 
 		// Should be marginally faster this way than with rwd mode.
@@ -438,23 +583,6 @@ public final class FileDataManager {
 		} catch (IOException e) {
 			System.err.println("Sync failed when writing a byte list.");
 		}
-
-		updateTitleBar();
-	}
-
-
-
-	/**
-	 * Updates the data table's title bar with the open file and current
-	 * timestamp.
-	 */
-	 public static void updateTitleBar() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a yyyy-MM-dd");
-		Main.getDataTable().getTitleBar().setText(String.format(
-			"<html>%s <i>(%s)</i></html>",
-			currentFile.getName(),
-			dateFormat.format(new Date())
-		));
 	}
 
 
@@ -466,6 +594,7 @@ public final class FileDataManager {
 	 * Note that all positions are relative to the FINAL, not initial, file.
 	 */
 	public static void insertBytes(Map<Long, Byte> bytes) {
+		if (currentProject == null) return;
 		try {
 			long shift = bytes.keySet().size();
 			long filePointer;
@@ -483,7 +612,6 @@ public final class FileDataManager {
 					// Data should be inserted at this location, do so
 					byte b = bytes.remove(filePointer);
 					currentProject.write(b);
-					System.out.println(b);
 					shift --;
 				} else {
 					// There is no data to insert here, so keep shifting data
@@ -496,12 +624,77 @@ public final class FileDataManager {
 				// Iterate backwards through the file
 				currentProject.seek(currentProject.getFilePointer() - 1);
 			}
+			updateTitleBar();
 		} catch (IOException e) {
 			System.err.println("An I/O error occured inserting bytes.");
 			e.printStackTrace();
+			resetTitleBar();
 		}
+	}
 
-		updateTitleBar();
+
+
+	/**
+	 * Deletes bytes from specified locations in the project file.
+	 * Because this is an intensive process, this method allows for many
+	 * bytes to be deleted at once, even in multiple locations.
+	 * @param locations A list of positions to erase.
+	 * Note that all positions are relative to the INITIAL, not final, file.
+	 */
+	public static void deleteBytes(List<Long> locations) {
+		if (currentProject == null) return;
+		try {
+			long shift = 0;
+			long filePointer = 0;
+			currentProject.seek(0);
+
+			byte selectedByte = 0;
+			while (filePointer < currentProject.length()) {
+				if (locations.contains(filePointer)) {
+					// Data should be deleted from this location, so don't shift it
+					shift ++;
+				} else {
+					// Nothing needs deleting, so keep shifting data
+					selectedByte = currentProject.readByte();
+					currentProject.seek(filePointer - shift);
+					currentProject.write(selectedByte);
+				}
+
+				// Move on to the next byte
+				currentProject.seek(filePointer + 1);
+				filePointer = currentProject.getFilePointer();
+			}
+			currentProject.setLength(currentProject.length() - locations.size());
+			updateTitleBar();
+		} catch (IOException e) {
+			System.err.println("An I/O error occured deleting bytes.");
+			e.printStackTrace();
+			resetTitleBar();
+		}
+	}
+
+
+
+	/**
+	 * Updates the data table's title bar with the open file and current
+	 * timestamp.
+	 */
+	public static void updateTitleBar() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a yyyy-MM-dd");
+		Main.getDataTable().getTitleBar().setText(String.format(
+			"<html>%s <i>(%s)</i></html>",
+			currentFile.getName(),
+			dateFormat.format(new Date())
+		));
+	}
+
+
+
+	/**
+	 * Resets the title bar to its initial value.
+	 */
+	public static void resetTitleBar() {
+		Main.getDataTable().getTitleBar().setText("<html><i>Unsaved File</i></html>");
 	}
 
 
@@ -561,4 +754,7 @@ public final class FileDataManager {
 	}
 
 	// currentProject has no setter. It should be set with openFile().
+
+	// bytesToInsert and bytesToDelete have no getters and setters;
+	// they are intended for internal use only.
 }

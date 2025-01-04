@@ -90,10 +90,14 @@ public class Series implements Iterable<Cell> {
 	}
 
 
-	
-	/** Saves this series header to the output file. */
+
+	/**
+	 * Saves this series header to the output file, overwriting an existing
+	 * entry for the series. If this series has not yet been added,
+	 * {@link FileDataManager#encodeForInsertion(Series)} should be used instead.
+	 */
 	public void save() {
-		System.out.println("Saving series " + name);
+		System.out.println("[FOP] SAVE SERIES");
 		int index = Main.getDataTable().indexOf(this);
 
 		int offset = FileDataManager.getOffset(
@@ -257,6 +261,7 @@ public class Series implements Iterable<Cell> {
 	public void setName(String name) {
 		this.name = name;
 		header.getTextField().setText(name);
+		save();
 	}
 
 

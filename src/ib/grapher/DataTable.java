@@ -279,7 +279,7 @@ public class DataTable extends JFrame {
 	 * {@link #repaint()}.
 	 */
 	public void doUpdate() {
-		System.out.println("Doing data table update...");
+		System.out.println("[GUI] UPDATE DATA TABLE");
 
 		GridBagConstraints constraints;
 		for (Series r : data) {
@@ -322,7 +322,7 @@ public class DataTable extends JFrame {
 		if (selectedCell == null) {
 			statView.setText("Select a cell to view series statistics.");
 		} else {
-			System.out.println("A cell has been selected!");
+			System.out.println("[GUI] CELL SELECTED");
 			Series currentSeries = selectedCell.getSeries();
 			statView.setText(String.format(
 				STAT_VIEW_TEMPLATE,
@@ -353,7 +353,7 @@ public class DataTable extends JFrame {
 			insertUp.setVisible(false);
 			insertDown.setVisible(false);
 		} else {
-			System.out.println("Adding insertion buttons");
+			System.out.println("[GUI] ADD INSERTION BUTTONS");
 			insertLeft.setBounds(
 				indexOf(selectedCell.getSeries()) * 110,
 				(selectedCell.getIndex() * 30) + 10,
@@ -388,13 +388,9 @@ public class DataTable extends JFrame {
 			insertDown.setVisible(true);
 		}
 
-		System.out.println("IVR Cycle...");
-
 		invalidate();
 		validate();
 		repaint();
-
-		System.out.println("Done data table update.");
 	}
 
 
@@ -547,12 +543,11 @@ public class DataTable extends JFrame {
 	public Series getSeriesByName(String s) {
 		for (Series r : data) {
 			if (r.getName().equals(s)) {
-				System.out.printf("%s = %s%n",r.getName(), s);
 				return r;
 			}
 		}
 
-		System.out.printf("No match for series \"%s\".%n", s);
+		System.err.printf("No match in search for series \"%s\".%n", s);
 		return null;
 	}
 
@@ -568,6 +563,10 @@ public class DataTable extends JFrame {
 		resetActiveCells();
 		for (SeriesSelector selector : Main.getSelectors()) {
 			selector.refresh();
+		}
+		FileDataManager.encodeForInsertion(series);
+		for (Cell cell : series) {
+			FileDataManager.encodeForInsertion(cell);
 		}
 		Main.updateAllComponents();
 	}
@@ -586,6 +585,10 @@ public class DataTable extends JFrame {
 		for (SeriesSelector selector : Main.getSelectors()) {
 			selector.refresh();
 		}
+		FileDataManager.encodeForInsertion(series);
+		for (Cell cell : series) {
+			FileDataManager.encodeForInsertion(cell);
+		}
 		Main.updateAllComponents();
 	}
 
@@ -596,8 +599,12 @@ public class DataTable extends JFrame {
 	 * @param series The {@link Series} object to remove
 	 */
 	public void removeSeries(Series series) {
+		FileDataManager.markForDeletion(series);
 		header.remove(series.getHeader());
 		data.remove(series);
+		for (Cell cell : series) {
+			remove(cell);
+		}
 		resetActiveCells();
 		for (SeriesSelector selector : Main.getSelectors()) {
 			selector.refresh();
@@ -660,8 +667,7 @@ public class DataTable extends JFrame {
 			rnConstraints.gridy = rowNumbers.getComponentCount();
 			rowNumbers.add(rnFiller, rnConstraints);
 		} catch (IndexOutOfBoundsException e) {
-			System.out.println(
-				"Could not remove row number: no row number to remove");
+			System.err.println("Could not remove row number: no row number to remove");
 		}
 	}
 
@@ -723,6 +729,7 @@ public class DataTable extends JFrame {
 			indexOf(getSelectedCell().getSeries()),
 			new Series(getData().get(0).length())
 		);
+		FileDataManager.insertNewBytes();
 		Main.updateAllComponents();
 	}
 
@@ -736,6 +743,7 @@ public class DataTable extends JFrame {
 			indexOf(getSelectedCell().getSeries()) + 1,
 			new Series(getData().get(0).length())
 		);
+		FileDataManager.insertNewBytes();
 		Main.updateAllComponents();
 	}
 
@@ -749,6 +757,7 @@ public class DataTable extends JFrame {
 		for (Cell c : getActiveCells()) {
 			c.insertCellBefore(new Cell());
 		}
+		FileDataManager.insertNewBytes();
 		Main.updateAllComponents();
 	}
 
@@ -762,6 +771,35 @@ public class DataTable extends JFrame {
 		for (Cell c : getActiveCells()) {
 			c.insertCellAfter(new Cell());
 		}
+		FileDataManager.insertNewBytes();
+		Main.updateAllComponents();
+	}
+
+
+
+	/**
+	 * Deletes the current series, and shifts the cell.
+	 */
+	public void deleteSeries() {
+		removeSeries(selectedCell.getSeries());
+		selectedCell = null;
+		FileDataManager.deleteOldBytes();
+		Main.updateAllComponents();
+	}
+
+
+
+	/**
+	 * Inserts the selected row of {@link Cell}s.
+	 */
+	public void deleteRow() {
+		matchActiveToSelected();
+		selectedCell = null;
+		for (Cell c : getActiveCells()) {
+			c.remove();
+			remove(c);
+		}
+		FileDataManager.deleteOldBytes();
 		Main.updateAllComponents();
 	}
 

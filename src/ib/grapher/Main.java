@@ -169,11 +169,39 @@ public final class Main {
 
 
 
-
+	// MARK: File Handling
 	/**
 	 * Saves all data to the project file.
 	 */
 	public static void saveAllData() {
+		System.out.println("[FOP] SAVE ALL");
+		saveMetadata();
+
+
+		// Plottable Data Sets
+		for (PlottableData pd : plottableTable.getDataSets()) {
+			pd.save();
+		}
+
+
+		// Series and Cells
+		for (Series r : dataTable.getData()) {
+			r.save();
+			for (Cell c : r) {
+				c.save();
+			}
+		}
+	}
+
+
+
+	/**
+	 * Saves all metadata to the project file. Typically called after every
+	 * major change to the project, simply because it's easier than trying to
+	 * figure out exactly when it needs to be called.
+	 */
+	public static void saveMetadata() {
+		System.out.println("[FOP] SAVE METADATA");
 		// General metadata
 		Byte[] metadata = new Byte[937];
 		System.arraycopy(
@@ -206,24 +234,7 @@ public final class Main {
 			0, metadata, 933, 4
 		);
 		FileDataManager.writeByteList(Arrays.asList(metadata), 0);
-
-
-		// Plottable Data Sets
-		for (PlottableData pd : plottableTable.getDataSets()) {
-			pd.save();
-		}
-
-
-		// Series and Cells
-		System.out.println(dataTable.getData().size());
-		for (Series r : dataTable.getData()) {
-			r.save();
-			for (Cell c : r) {
-				c.save();
-			}
-		}
 	}
-
 
 
 
