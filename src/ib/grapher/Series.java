@@ -137,7 +137,7 @@ public class Series implements Iterable<Cell> {
 	public void calculateStatistics() {
 		double min = Integer.MAX_VALUE;
 		double max = Integer.MIN_VALUE;
-		double sum = 0;
+		double sum = 0.;
 		int nonEmpty = 0;
 		int numeric = 0;
 		for (Cell c : this) {
@@ -162,6 +162,20 @@ public class Series implements Iterable<Cell> {
 				nonEmpty++;
 		}
 
+		// Go again for variance and SD
+		double varianceSum = 0.;
+		for (Cell c : this) {
+			try {
+				double numVal = c.getNumeric();
+
+				varianceSum += Math.pow(numVal - sum / numeric, 2);
+			} catch (NumberFormatException e) {
+				// Perfectly valid situation, just don't run analytics.
+			}
+		}
+
+		double variance = varianceSum / numeric;
+
 		statistics.put("Non-Empty Cells", (double) nonEmpty);
 		statistics.put("Numeric Values", (double) numeric);
 		statistics.put("Sum", sum);
@@ -179,6 +193,9 @@ public class Series implements Iterable<Cell> {
 			statistics.put("Maximum", max);
 			statistics.put("Range", max - min);
 		}
+
+		statistics.put("Variance", variance);
+		statistics.put("Standard Deviation", Math.sqrt(variance));
 	}
 
 

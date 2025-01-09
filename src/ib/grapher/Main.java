@@ -111,6 +111,13 @@ public final class Main {
 		plottableTable = new PlottableTable();
 		graph = new Graph();
 
+
+		List<String> arglist = Arrays.asList(args);
+		if (arglist.contains("--debug")) {
+			Tests.doTests();
+			return;
+		}
+
 		// GUI
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
