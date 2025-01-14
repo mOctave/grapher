@@ -178,7 +178,7 @@ public class DataTable extends JFrame {
 		rnFiller.setOpaque(false);
 		rowNumbers.add(rnFiller);
 
-		statView = new JTextArea(6, 80);
+		statView = new JTextArea(5, 80);
 		statView.setEditable(false);
 		statView.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
 		statView.setMargin(new Insets(0, 5, 0, 5));
@@ -197,12 +197,11 @@ public class DataTable extends JFrame {
 	/** A template for the stat view. */
 	private static final String STAT_VIEW_TEMPLATE = """
 	Series Statistics
-	Minimum: %-21s Non-Empty Cells: %-13s
-	Q1: %-26s Numeric Values: %-14s
-	Median: %-22s Sum: %-25s
-	Q3: %-26s Mean: %-24s
-	Maximum: %-21s Variance: %-20s
-	Range: %-23s Standard Deviation: %-10s
+	Non-Empty Cells: %-13s Numeric Values: %-14s
+	Minimum: %-21s Maximum: %-21s
+	Mean: %-24s Sum: %-25s
+	Range: %-23s
+	Variance: %-20s Standard Deviation: %-10s
 	""";
 
 	// MARK: Properties
