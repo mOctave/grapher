@@ -2,6 +2,8 @@ package ib.grapher;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -42,6 +44,16 @@ public class PlottableDataMenu extends JPanel {
 
 		fieldName = new JTextField();
 		fieldName.setPreferredSize(new Dimension(120, 20));
+		fieldName.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				PlottableDataMenu.this.getData().setName(fieldName.getText());
+			}
+		});
+		fieldName.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PlottableDataMenu.this.getData().setName(fieldName.getText());
+			}
+		});
 		selectorXAxis = new SeriesSelector();
 		selectorXAxis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
