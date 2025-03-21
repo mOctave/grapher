@@ -97,7 +97,7 @@ public class Series implements Iterable<Cell> {
 	 * {@link FileDataManager#encodeForInsertion(Series)} should be used instead.
 	 */
 	public void save() {
-		System.out.println("[FOP] SAVE SERIES");
+		System.out.println("SAVE: Series");
 		int index = Main.getDataTable().indexOf(this);
 
 		int offset = FileDataManager.getOffset(

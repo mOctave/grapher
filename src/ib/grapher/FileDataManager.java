@@ -99,9 +99,9 @@ public final class FileDataManager {
 
 	/**
 	 * Encodes a cell in binary and adds it to the backlog of bytes to insert.
+	 * @param cell The cell to encode.
 	 */
 	public static void encodeForInsertion(Cell cell) {
-		System.out.println("[FOP] ENCODE CELL");
 		List<Series> data = Main.getDataTable().getData();
 		int index = (cell.getIndex() - 1) * data.size() // Account for previous rows
 					+ data.indexOf(cell.getSeries()); // Account for this row
@@ -116,10 +116,10 @@ public final class FileDataManager {
 
 	/**
 	 * Encodes a series in binary and adds it to the backlog of bytes to insert.
+	 * @param series The series to encode.
 	 */
 	public static void encodeForInsertion(Series series) {
-		System.out.println("[FOP] ENCODE SERIES");
-		int index = Main.getDataTable().indexOf(series);
+		int index = Main.getDataTable().indexOf(series) + 1;
 		long offset = getOffset(SERIES, index);
 		Byte[] bytes = Main.stringToByteArray(series.getName(), SERIES_LENGTH);
 		for (int i = 0; i < bytes.length; i++) {
@@ -132,10 +132,10 @@ public final class FileDataManager {
 	/**
 	 * Encodes a plottable data set in binary and adds it to the backlog of
 	 * bytes to insert.
+	 * @param pd The plottable data set to encode.
 	 */
 	public static void encodeForInsertion(PlottableData pd) {
-		System.out.println("[FOP] ENCODE PLOTTABLE");
-		int index = Main.getPlottableTable().getDataSets().indexOf(pd);
+		int index = Main.getPlottableTable().getDataSets().indexOf(pd) + 1;
 		long offset = getOffset(PLOTTABLE, index);
 
 		Byte[] ba = new Byte[321];
@@ -167,9 +167,9 @@ public final class FileDataManager {
 
 	/**
 	 * Marks all the bytes that correspond to this cell for deletion.
+	 * @param cell The cell to delete.
 	 */
 	public static void markForDeletion(Cell cell) {
-		System.out.println("[FOP] DELETE CELL");
 		List<Series> data = Main.getDataTable().getData();
 		int index = cell.getIndex() * data.size() // Account for previous rows
 					+ data.indexOf(cell.getSeries()); // Account for this row
@@ -183,9 +183,9 @@ public final class FileDataManager {
 
 	/**
 	 * Marks all the bytes that correspond to this series for deletion.
+	 * @param series The series to delete.
 	 */
 	public static void markForDeletion(Series series) {
-		System.out.println("[FOP] DELETE SERIES");
 		for (Cell cell : series) {
 			markForDeletion(cell);
 		}
@@ -201,9 +201,9 @@ public final class FileDataManager {
 	/**
 	 * Marks all the bytes that correspond to this plottable data set for
 	 * deletion.
+	 * @param pd The plottable data set to delete.
 	 */
 	public static void markForDeletion(PlottableData pd) {
-		System.out.println("[FOP] DELETE PLOTTABLE");
 		int index = Main.getPlottableTable().getDataSets().indexOf(pd);
 		long offset = getOffset(PLOTTABLE, index);
 		for (int i = 0; i < PLOTTABLE_LENGTH; i++) {
@@ -215,7 +215,7 @@ public final class FileDataManager {
 	
 	/** Inserts the backlog of bytes into the project file. */
 	public static void insertNewBytes() {
-		System.out.println("[FOP] INSERT NEW");
+		System.out.println("INSERT NEW");
 		FileDataManager.insertBytes(bytesToInsert);
 		bytesToInsert = new HashMap<>();
 		Main.saveMetadata();
@@ -225,7 +225,7 @@ public final class FileDataManager {
 
 	/** Deletes the backlog of bytes from the project file. */
 	public static void deleteOldBytes() {
-		System.out.println("[FOP] DELETE OLD");
+		System.out.println("DELETE OLD");
 		FileDataManager.deleteBytes(bytesToDelete);
 		bytesToDelete = new ArrayList<>();
 		Main.saveMetadata();
@@ -290,9 +290,15 @@ public final class FileDataManager {
 			// Opens in RWD mode because the file is supposed to autosave
 			currentFile = f;
 			currentProject = new RandomAccessFile(f, "rw");
+
+			// Clear the backlog of old bytes to write
+			bytesToInsert = new HashMap<>();
+			bytesToDelete = new ArrayList<>();
 		} catch (FileNotFoundException e) {
 			System.err.printf("No such file as \"%s\".%n", f.getName());
 			e.printStackTrace();
+		} catch (NullPointerException e) {
+			System.err.println("Cancelled opening file.");
 		}
 	}
 
@@ -400,6 +406,7 @@ public final class FileDataManager {
 	 * Loads all the data from an opened project, overwriting current data.
 	 */
 	public static void load() {
+		System.out.println("LOAD");
 		DataTable dt = Main.getDataTable();
 		PlottableTable pt = Main.getPlottableTable();
 		Graph g = Main.getGraph();
@@ -453,7 +460,7 @@ public final class FileDataManager {
 		} // In total, series headers take up CELL_LENGTH * columns bytes
 
 		for (int i = 0; offset < len; i++) {
-			dt.getSeries(i	% columns).getLast().insertCellAfter(
+			dt.getSeries(i % columns).getLast().insertCellAfter(
 				new Cell(byteListToString(readByteList(offset, 128))));
 
 			offset += CELL_LENGTH;
@@ -737,7 +744,7 @@ public final class FileDataManager {
 	 * Getter: Gets the currently opened file.
 	 * @return {@link #currentFile}
 	 */
-	public File getCurrentFile() {
+	public static File getCurrentFile() {
 		return currentFile;
 	}
 
@@ -749,7 +756,7 @@ public final class FileDataManager {
 	 * Getter: Gets the current project file as a RandomAccessFile.
 	 * @return {@link #currentProject}
 	 */
-	public RandomAccessFile getCurrentProject() {
+	public static RandomAccessFile getCurrentProject() {
 		return currentProject;
 	}
 

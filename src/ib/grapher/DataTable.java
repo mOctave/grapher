@@ -278,7 +278,7 @@ public class DataTable extends JFrame {
 	 * {@link #repaint()}.
 	 */
 	public void doUpdate() {
-		System.out.println("[GUI] UPDATE DATA TABLE");
+		System.out.println("UPDATE: Data Table");
 
 		GridBagConstraints constraints;
 		for (Series r : data) {
@@ -321,7 +321,6 @@ public class DataTable extends JFrame {
 		if (selectedCell == null) {
 			statView.setText("Select a cell to view series statistics.");
 		} else {
-			System.out.println("[GUI] CELL SELECTED");
 			Series currentSeries = selectedCell.getSeries();
 			statView.setText(String.format(
 				STAT_VIEW_TEMPLATE,
@@ -352,7 +351,6 @@ public class DataTable extends JFrame {
 			insertUp.setVisible(false);
 			insertDown.setVisible(false);
 		} else {
-			System.out.println("[GUI] ADD INSERTION BUTTONS");
 			insertLeft.setBounds(
 				indexOf(selectedCell.getSeries()) * 110,
 				(selectedCell.getIndex() * 30) + 10,
@@ -402,8 +400,8 @@ public class DataTable extends JFrame {
 	 */
 	public void clear() {
 		selectedCell = null;
-		data.clear();
-		
+		data = new ArrayList<>();
+
 		// Remove components
 		for (Component comp : table.getComponents()) {
 			if (comp instanceof Cell) {

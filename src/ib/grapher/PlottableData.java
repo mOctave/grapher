@@ -63,7 +63,7 @@ public class PlottableData {
 	 * instead.
 	 */
 	public void save() {
-		System.out.println("[FOP] SAVE PLOTTABLE");
+		System.out.println("SAVE: Plottable");
 		int index = Main.getPlottableTable().getDataSets().indexOf(this);
 
 		int offset = FileDataManager.getOffset(

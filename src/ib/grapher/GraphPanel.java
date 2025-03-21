@@ -242,7 +242,7 @@ public class GraphPanel extends JPanel {
 						} catch (NumberFormatException e) {
 							// Non-numeric data. Not actually an error,
 							// but no trendline will be drawn
-							System.out.println("[GRA] Non-numeric error bar skipped.");
+							System.out.println("GRAPH: Non-numeric error bar skipped.");
 						}
 					}
 
@@ -252,7 +252,7 @@ public class GraphPanel extends JPanel {
 						} catch (NumberFormatException e) {
 							// Non-numeric data. Not actually an error,
 							// but no trendline will be drawn
-							System.out.println("[GRA] Non-numeric error bar skipped.");
+							System.out.println("GRAPH: Non-numeric error bar skipped.");
 						}
 					}
 
@@ -261,7 +261,7 @@ public class GraphPanel extends JPanel {
 				} catch (NumberFormatException e) {
 					// Non-numeric data. Not actually an error, but
 					// it'll skip the pair of cells
-					System.out.println("[GRA] Non-numeric error bar skipped.");
+					System.out.println("GRAPH: Non-numeric error bar skipped.");
 				}
 
 				if (activeX.getNext() == null || activeY.getNext() == null)

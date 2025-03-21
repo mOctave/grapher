@@ -129,8 +129,7 @@ public class Cell extends JPanel {
 	 * {@link FileDataManager#encodeForInsertion(Cell)} should be used instead.
 	 */
 	public void save() {
-
-		System.out.println("[FOP] SAVE CELL");
+		System.out.println("SAVE: Cell");
 		int seriesIndex = Main.getDataTable().indexOf(series);
 		int dataLength = Main.getDataTable().getData().size();
 
@@ -204,7 +203,6 @@ public class Cell extends JPanel {
 	 * @param insertedCell The cell to insert
 	 */
 	public void insertCellBefore(Cell insertedCell) {
-		System.out.println("[DUP] INSERT CELL");
 		insertedCell.setSeries(this.series);
 		Cell oldPrevious = this.previousCell;
 
@@ -235,7 +233,6 @@ public class Cell extends JPanel {
 	 * @param insertedCell The cell to insert
 	 */
 	public void insertCellAfter(Cell insertedCell) {
-		System.out.println("[DUP] INSERT CELL");
 		insertedCell.setSeries(this.series);
 		Cell oldNext = this.nextCell;
 		insertedCell.setPrevious(this);

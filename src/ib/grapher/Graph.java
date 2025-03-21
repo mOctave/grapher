@@ -356,7 +356,6 @@ public class Graph extends JFrame {
 	 */
 	public void setGraphTitle(String graphTitle) {
 		this.graphTitle = graphTitle;
-		Main.saveMetadata();
 	}
 
 
@@ -375,7 +374,6 @@ public class Graph extends JFrame {
 	 */
 	public void setAxisTitleX(String axisTitleX) {
 		this.axisTitleX = axisTitleX;
-		Main.saveMetadata();
 	}
 
 
@@ -394,7 +392,6 @@ public class Graph extends JFrame {
 	 */
 	public void setAxisTitleY(String axisTitleY) {
 		this.axisTitleY = axisTitleY;
-		Main.saveMetadata();
 	}
 
 
@@ -415,7 +412,6 @@ public class Graph extends JFrame {
 	 */
 	public void setGraphType(String graphType) {
 		this.graphType = graphType;
-		Main.saveMetadata();
 	}
 
 
@@ -434,7 +430,6 @@ public class Graph extends JFrame {
 	 */
 	public void setGridlinesX(Series stepX) {
 		this.stepX = stepX;
-		Main.saveMetadata();
 	}
 
 
@@ -453,7 +448,6 @@ public class Graph extends JFrame {
 	 */
 	public void setGridlinesY(Series stepY) {
 		this.stepY = stepY;
-		Main.saveMetadata();
 	}
 }
 

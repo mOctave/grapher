@@ -111,13 +111,6 @@ public final class Main {
 		plottableTable = new PlottableTable();
 		graph = new Graph();
 
-
-		List<String> arglist = Arrays.asList(args);
-		if (arglist.contains("--debug")) {
-			Tests.doTests();
-			return;
-		}
-
 		// GUI
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -146,6 +139,7 @@ public final class Main {
 		dataTable.doUpdate();
 		plottableTable.doUpdate();
 		graph.doUpdate();
+		saveMetadata();
 	}
 
 
@@ -181,7 +175,10 @@ public final class Main {
 	 * Saves all data to the project file.
 	 */
 	public static void saveAllData() {
-		System.out.println("[FOP] SAVE ALL");
+		if (FileDataManager.getCurrentProject() == null)
+			return;
+
+		System.out.println("SAVE: Everything");
 		saveMetadata();
 
 
@@ -208,7 +205,7 @@ public final class Main {
 	 * figure out exactly when it needs to be called.
 	 */
 	public static void saveMetadata() {
-		System.out.println("[FOP] SAVE METADATA");
+		System.out.println("SAVE: Metadata");
 		// General metadata
 		Byte[] metadata = new Byte[937];
 		System.arraycopy(
