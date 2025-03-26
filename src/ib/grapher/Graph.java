@@ -92,7 +92,7 @@ public class Graph extends JFrame {
 		panelMenu.add(labelType, constraints);
 		constraints.gridy++;
 
-		selectorType = new JComboBox<String>(new String[]{SCATTERPLOT, LINE, BAR});
+		selectorType = new JComboBox<String>(new String[]{SCATTERPLOT, LINE});
 		selectorType.setPreferredSize(new Dimension(180, 20));
 		selectorType.setSelectedItem(SCATTERPLOT);
 		panelMenu.add(selectorType, constraints);
@@ -114,7 +114,8 @@ public class Graph extends JFrame {
 		selectorGridlineX.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Graph.this.setGridlinesX((Series) selectorGridlineX.getSelectedItem());
-				Main.updateAllComponents();
+				if (selectorGridlineX.shouldTriggerUpdate())
+					Main.updateAllComponents();
 			}
 		});
 		panelMenu.add(selectorGridlineX, constraints);
@@ -130,7 +131,8 @@ public class Graph extends JFrame {
 		selectorGridlineY.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Graph.this.setGridlinesY((Series) selectorGridlineY.getSelectedItem());
-				Main.updateAllComponents();
+				if (selectorGridlineY.shouldTriggerUpdate())
+					Main.updateAllComponents();
 			}
 		});
 		panelMenu.add(selectorGridlineY, constraints);
@@ -456,7 +458,7 @@ public class Graph extends JFrame {
 
 // MARK: RotatedLabel
 /** A class storing a JLabel rotated by an arbitrary amount. */
-class RotatedLabel extends JLabel {
+class RotatedLabel extends JLabel { // Adapted from trashgod, 2010.
 	// MARK: Constructor
 	/** Sole constructor. */
 	public RotatedLabel() {}

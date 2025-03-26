@@ -222,8 +222,6 @@ public class Cell extends JPanel {
 			c.setIndex(c.getIndex() + 1);
 			c = c.getNext();
 		}
-
-		FileDataManager.encodeForInsertion(insertedCell);
 	}
 
 
@@ -251,8 +249,6 @@ public class Cell extends JPanel {
 			c.setIndex(c.getIndex() + 1);
 			c = c.getNext();
 		}
-
-		FileDataManager.encodeForInsertion(insertedCell);
 	}
 
 
@@ -382,7 +378,6 @@ public class Cell extends JPanel {
 	public void setValue(String value) {
 		this.value = value;
 		textField.setText(value);
-		save();
 	}
 
 

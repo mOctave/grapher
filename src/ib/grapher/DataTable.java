@@ -29,6 +29,7 @@ import javax.swing.SwingConstants;
 /**
  * The table which stores all the textual data for a graph.
  */
+// Much of the GUI code for this class was adapted from Oracle, n.d.a
 public class DataTable extends JFrame {
 	// MARK: Constructors
 	/**
@@ -324,17 +325,14 @@ public class DataTable extends JFrame {
 			Series currentSeries = selectedCell.getSeries();
 			statView.setText(String.format(
 				STAT_VIEW_TEMPLATE,
-				currentSeries.getStatistic("Minimum"),
-				currentSeries.getStatisticAsInt("Non-Empty Cells"),
-				currentSeries.getStatistic("Q1"),
+				currentSeries.getStatistic("Non-Empty Cells"),
 				currentSeries.getStatisticAsInt("Numeric Values"),
-				currentSeries.getStatistic("Median"),
-				currentSeries.getStatistic("Sum"),
-				currentSeries.getStatistic("Q3"),
+				currentSeries.getStatistic("Minimum"),
+				currentSeries.getStatisticAsInt("Maximum"),
 				currentSeries.getStatistic("Mean"),
-				currentSeries.getStatistic("Maximum"),
-				currentSeries.getStatistic("Variance"),
+				currentSeries.getStatistic("Sum"),
 				currentSeries.getStatistic("Range"),
+				currentSeries.getStatistic("Variance"),
 				currentSeries.getStatistic("Standard Deviation")
 			));
 		}
@@ -551,7 +549,7 @@ public class DataTable extends JFrame {
 
 
 	/**
-	 * Adds a series to the data table.
+	 * Adds a series to the data table. Typically only used when loading project data.
 	 * @param series The {@link Series} object to add
 	 */
 	public void addSeries(Series series) {
@@ -559,13 +557,8 @@ public class DataTable extends JFrame {
 		data.add(series);
 		resetActiveCells();
 		for (SeriesSelector selector : Main.getSelectors()) {
-			selector.refresh();
+			selector.refresh(false);
 		}
-		FileDataManager.encodeForInsertion(series);
-		for (Cell cell : series) {
-			FileDataManager.encodeForInsertion(cell);
-		}
-		Main.updateAllComponents();
 	}
 
 
@@ -580,7 +573,7 @@ public class DataTable extends JFrame {
 		data.add(i, series);
 		resetActiveCells();
 		for (SeriesSelector selector : Main.getSelectors()) {
-			selector.refresh();
+			selector.refresh(false);
 		}
 		FileDataManager.encodeForInsertion(series);
 		for (Cell cell : series) {
@@ -604,7 +597,7 @@ public class DataTable extends JFrame {
 		}
 		resetActiveCells();
 		for (SeriesSelector selector : Main.getSelectors()) {
-			selector.refresh();
+			selector.refresh(false);
 		}
 		Main.updateAllComponents();
 	}
@@ -752,7 +745,9 @@ public class DataTable extends JFrame {
 	public void insertRowAbove() {
 		matchActiveToSelected();
 		for (Cell c : getActiveCells()) {
-			c.insertCellBefore(new Cell());
+			Cell insertedCell = new Cell();
+			c.insertCellBefore(insertedCell);
+			FileDataManager.encodeForInsertion(insertedCell);
 		}
 		FileDataManager.insertNewBytes();
 		Main.updateAllComponents();
@@ -766,7 +761,9 @@ public class DataTable extends JFrame {
 	public void insertRowBelow() {
 		matchActiveToSelected();
 		for (Cell c : getActiveCells()) {
-			c.insertCellAfter(new Cell());
+			Cell insertedCell = new Cell();
+			c.insertCellAfter(insertedCell);
+			FileDataManager.encodeForInsertion(insertedCell);
 		}
 		FileDataManager.insertNewBytes();
 		Main.updateAllComponents();

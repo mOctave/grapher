@@ -79,7 +79,7 @@ public class MenuBar extends JMenuBar {
 		dataSort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Main.getDataTable().sortBySelectedColumn();
-				Main.getDataTable().doUpdate();
+				Main.updateAllComponents();
 			}
 		});
 		menuData.add(dataSort);

@@ -47,11 +47,13 @@ public class PlottableDataMenu extends JPanel {
 		fieldName.addFocusListener(new FocusAdapter() {
 			public void focusLost(FocusEvent e) {
 				PlottableDataMenu.this.getData().setName(fieldName.getText());
+				PlottableDataMenu.this.getData().save();
 			}
 		});
 		fieldName.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData().setName(fieldName.getText());
+				PlottableDataMenu.this.getData().save();
 			}
 		});
 		selectorXAxis = new SeriesSelector();
@@ -59,7 +61,10 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setDataX((Series) selectorXAxis.getSelectedItem());
-				Main.updateAllComponents();
+				if (selectorXAxis.shouldTriggerUpdate()) {
+					PlottableDataMenu.this.getData().save();
+					Main.updateAllComponents();
+				}
 			}
 		});
 		selectorYAxis = new SeriesSelector();
@@ -67,7 +72,10 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setDataY((Series) selectorYAxis.getSelectedItem());
-				Main.updateAllComponents();
+				if (selectorYAxis.shouldTriggerUpdate()) {
+					PlottableDataMenu.this.getData().save();
+					Main.updateAllComponents();
+				}
 			}
 		});
 
@@ -81,7 +89,10 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setErrorBarsX((Series) selectorXErrorBars.getSelectedItem());
-				Main.updateAllComponents();
+				if (selectorXErrorBars.shouldTriggerUpdate()) {
+					PlottableDataMenu.this.getData().save();
+					Main.updateAllComponents();
+				}
 			}
 		});
 		selectorYErrorBars = new SeriesSelector();
@@ -89,7 +100,10 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setErrorBarsY((Series) selectorYErrorBars.getSelectedItem());
-				Main.updateAllComponents();
+				if (selectorYErrorBars.shouldTriggerUpdate()) {
+					PlottableDataMenu.this.getData().save();
+					Main.updateAllComponents();
+				}
 			}
 		});
 
@@ -99,6 +113,7 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setActive(toggleVisible.isSelected());
+				PlottableDataMenu.this.getData().save();
 				Main.updateAllComponents();
 			}
 		});
@@ -111,6 +126,7 @@ public class PlottableDataMenu extends JPanel {
 					.setLinRegActive(toggleTrendline.isSelected());
 				PlottableDataMenu.this.panelTrendline
 					.setVisible(toggleTrendline.isSelected());
+				PlottableDataMenu.this.getData().save();
 				Main.updateAllComponents();
 			}
 		});
@@ -141,6 +157,7 @@ public class PlottableDataMenu extends JPanel {
 				if (newColour != null) {
 					PlottableDataMenu.this.getData().setColour(newColour);
 					buttonChooseColour.setBackground(newColour);
+					PlottableDataMenu.this.getData().save();
 				}
 				Main.updateAllComponents();
 			}
@@ -160,6 +177,7 @@ public class PlottableDataMenu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				PlottableDataMenu.this.getData()
 					.setXAgainstY(toggleXAgainstY.isSelected());
+				PlottableDataMenu.this.getData().save();
 				Main.updateAllComponents();
 			}
 		});
@@ -290,14 +308,14 @@ public class PlottableDataMenu extends JPanel {
 	public void updateTrendlineLabel() {
 		if (plottableData.getB() < 0) {
 			labelTrendline.setText(String.format(
-				"y = %fy - %f • r = %f",
+				"y = %fx - %f, r = %f",
 				plottableData.getA(),
 				Math.abs(plottableData.getB()),
 				plottableData.getR()
 			));
 		} else {
 			labelTrendline.setText(String.format(
-				"y = %fy + %f • r = %f",
+				"y = %fx + %f, r = %f",
 				plottableData.getA(),
 				plottableData.getB(),
 				plottableData.getR()

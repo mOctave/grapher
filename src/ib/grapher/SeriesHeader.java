@@ -46,8 +46,9 @@ public class SeriesHeader extends JPanel {
 				// Losing focus also does data entry
 				SeriesHeader.this.getSeries().setName(SeriesHeader.this.textField.getText());
 				for (SeriesSelector selector : Main.getSelectors()) {
-					selector.refresh();
+					selector.refresh(true);
 				}
+				SeriesHeader.this.getSeries().save();
 				Main.updateAllComponents();
 			}
 		});
@@ -56,8 +57,9 @@ public class SeriesHeader extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				SeriesHeader.this.getSeries().setName(SeriesHeader.this.textField.getText());
 				for (SeriesSelector selector : Main.getSelectors()) {
-					selector.refresh();
+					selector.refresh(true);
 				}
+				SeriesHeader.this.getSeries().save();
 				Main.updateAllComponents();
 			}
 		});

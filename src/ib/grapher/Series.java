@@ -135,8 +135,8 @@ public class Series implements Iterable<Cell> {
 	 * {@link #statistics} for later retrieval.
 	 */
 	public void calculateStatistics() {
-		double min = Integer.MAX_VALUE;
-		double max = Integer.MIN_VALUE;
+		double min = Double.MAX_VALUE;
+		double max = -Double.MAX_VALUE;
 		double sum = 0.;
 		int nonEmpty = 0;
 		int numeric = 0;
@@ -151,7 +151,7 @@ public class Series implements Iterable<Cell> {
 					max = numVal;
 				if (numVal < min)
 					min = numVal;
-				
+
 				sum += numVal;
 
 			} catch (NumberFormatException e) {
@@ -162,7 +162,10 @@ public class Series implements Iterable<Cell> {
 				nonEmpty++;
 		}
 
-		// Go again for variance and SD
+		// The series is run through again for variance and standard deviation.
+		// Variance and standard deviation algorithms were adapted from
+		// Standard Deviation, 2024 and checked against the output of a TI-84 graphing
+		// calculator.
 		double varianceSum = 0.;
 		for (Cell c : this) {
 			try {
@@ -182,9 +185,9 @@ public class Series implements Iterable<Cell> {
 		statistics.put("Mean", sum / numeric);
 
 		// This won't work with full datasets containing only the max/min
-		// integer values, but I can't imagine anyone would ever use such
+		// double values values, but I can't imagine anyone would ever use such
 		// a data set.
-		if (min == Integer.MAX_VALUE || max == Integer.MIN_VALUE) {
+		if (min == Double.MAX_VALUE || max == -Double.MIN_VALUE) {
 			statistics.put("Minimum", null);
 			statistics.put("Maximum", null);
 			statistics.put("Range", null);
@@ -278,7 +281,6 @@ public class Series implements Iterable<Cell> {
 	public void setName(String name) {
 		this.name = name;
 		header.getTextField().setText(name);
-		save();
 	}
 
 

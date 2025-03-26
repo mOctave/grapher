@@ -101,6 +101,8 @@ public class PlottableData {
 	 * {@link #a}, {@link #b}, and {@link #r}.
 	 */
 	public void doLinearRegression() {
+		// This algorithm was adapted from the equations in Stewart, n.d., and tested
+		// against the output of a TI-84 graphing calculator.
 		double sumX = 0;
 		double sumY = 0;
 		double sumXY = 0;
@@ -206,7 +208,6 @@ public class PlottableData {
 	 */
 	public void setName(String name) {
 		this.name = name;
-		save();
 	}
 
 
@@ -225,7 +226,6 @@ public class PlottableData {
 	 */
 	public void setColour(Color colour) {
 		this.colour = colour;
-		save();
 	}
 
 
@@ -244,7 +244,6 @@ public class PlottableData {
 	 */
 	public void setDataX(Series dataX) {
 		this.dataX = dataX;
-		save();
 	}
 
 
@@ -263,7 +262,6 @@ public class PlottableData {
 	 */
 	public void setDataY(Series dataY) {
 		this.dataY = dataY;
-		save();
 	}
 
 
@@ -282,7 +280,6 @@ public class PlottableData {
 	 */
 	public void setErrorBarsX(Series errorBarsX) {
 		this.errorBarsX = errorBarsX;
-		save();
 	}
 
 
@@ -301,7 +298,6 @@ public class PlottableData {
 	 */
 	public void setErrorBarsY(Series errorBarsY) {
 		this.errorBarsY = errorBarsY;
-		save();
 	}
 
 
@@ -320,7 +316,6 @@ public class PlottableData {
 	 */
 	public void setActive(boolean active) {
 		this.active = active;
-		save();
 	}
 
 
@@ -340,7 +335,6 @@ public class PlottableData {
 	 */
 	public void setLinRegActive(boolean linRegActive) {
 		this.linRegActive = linRegActive;
-		save();
 	}
 
 
@@ -359,7 +353,6 @@ public class PlottableData {
 	 */
 	public void setXAgainstY(boolean XAgainstY) {
 		this.XAgainstY = XAgainstY;
-		save();
 	}
 
 

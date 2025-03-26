@@ -63,9 +63,11 @@ public final class Main {
 	/**
 	 * These are the colours that will be selected by default for the graph.
 	 * They are specifically designed to be high contrast, including for
-	 * colour-blind people. I don't expect that to be an issue with my client,
+	 * colour-blind people. That isn't an issue for my client,
 	 * but since I have to choose arbitrary colours anyways, I might as well
 	 * choose the most accessible ones possible. Plus, I like the palette.
+	 * 
+	 * Taken from Nichols, n.d.
 	 */
 	public static final Color[] WONG_COLORS = {
 		new Color(230, 159, 0),
@@ -124,6 +126,7 @@ public final class Main {
 
 				graph.setSize(400, 300);
 				graph.setVisible(true);
+				Main.updateAllComponents();
 			}
 		});
 	}
@@ -275,26 +278,6 @@ public final class Main {
 		}
 
 		return ba;
-	}
-
-
-
-	/**
-	 * Debug method that prints the method that calls it and whether or not that
-	 * method is running on the Event Dispatch Thread.
-	 */
-	static void whereAmI() {
-		if (SwingUtilities.isEventDispatchThread()) {
-			System.out.printf(
-				"Currently executing %s as EDT%n",
-				Thread.currentThread().getStackTrace()[2].getMethodName()
-			);
-		} else {
-			System.out.printf(
-				"Currently executing %s (not EDT)%n",
-				Thread.currentThread().getStackTrace()[2].getMethodName()
-			);
-		}
 	}
 
 

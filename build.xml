@@ -29,8 +29,8 @@
 			<fileset dir="src" defaultexcludes="yes">
 				<exclude name="**/_Template.java"/>
 			</fileset>
-			<!--<doclet name="nl.talsmasoftware.umldoclet.UMLDoclet" pathref="umlDoclet.classpath">
-			</doclet>-->
+			<doclet name="nl.talsmasoftware.umldoclet.UMLDoclet" pathref="umlDoclet.classpath">
+			</doclet>
 		</javadoc>
 	</target>
 	<target name="run" depends="jar">

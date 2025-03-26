@@ -82,7 +82,11 @@ public class PlottableTable extends JFrame {
 		JButton addButton = new JButton("Add Dataset");
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				PlottableTable.this.addPlottableData(new PlottableData());
+				PlottableData pd = new PlottableData();
+				PlottableTable.this.addPlottableData(pd);
+				FileDataManager.encodeForInsertion(pd);
+				FileDataManager.insertNewBytes();
+				Main.updateAllComponents();
 			}
 		});
 		add(addButton, BorderLayout.SOUTH);
@@ -138,9 +142,6 @@ public class PlottableTable extends JFrame {
 		dataSets.add(pd);
 		mainPanel.add(new PlottableDataMenu(pd, this));
 		mainPanel.add(glue);
-		FileDataManager.encodeForInsertion(pd);
-		FileDataManager.insertNewBytes();
-		Main.updateAllComponents();
 	}
 
 
@@ -157,7 +158,6 @@ public class PlottableTable extends JFrame {
 		FileDataManager.deleteOldBytes();
 		dataSets.remove(pdm.getData());
 		mainPanel.remove(pdm);
-		Main.updateAllComponents();
 	}
 
 

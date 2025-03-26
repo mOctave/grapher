@@ -119,7 +119,7 @@ public final class FileDataManager {
 	 * @param series The series to encode.
 	 */
 	public static void encodeForInsertion(Series series) {
-		int index = Main.getDataTable().indexOf(series) + 1;
+		int index = Main.getDataTable().indexOf(series);
 		long offset = getOffset(SERIES, index);
 		Byte[] bytes = Main.stringToByteArray(series.getName(), SERIES_LENGTH);
 		for (int i = 0; i < bytes.length; i++) {
@@ -135,7 +135,7 @@ public final class FileDataManager {
 	 * @param pd The plottable data set to encode.
 	 */
 	public static void encodeForInsertion(PlottableData pd) {
-		int index = Main.getPlottableTable().getDataSets().indexOf(pd) + 1;
+		int index = Main.getPlottableTable().getDataSets().indexOf(pd);
 		long offset = getOffset(PLOTTABLE, index);
 
 		Byte[] ba = new Byte[321];
@@ -290,10 +290,6 @@ public final class FileDataManager {
 			// Opens in RWD mode because the file is supposed to autosave
 			currentFile = f;
 			currentProject = new RandomAccessFile(f, "rw");
-
-			// Clear the backlog of old bytes to write
-			bytesToInsert = new HashMap<>();
-			bytesToDelete = new ArrayList<>();
 		} catch (FileNotFoundException e) {
 			System.err.printf("No such file as \"%s\".%n", f.getName());
 			e.printStackTrace();
@@ -407,6 +403,12 @@ public final class FileDataManager {
 	 */
 	public static void load() {
 		System.out.println("LOAD");
+
+		if (currentProject == null) {
+			System.err.println("No data to load.");
+			return;
+		}
+
 		DataTable dt = Main.getDataTable();
 		PlottableTable pt = Main.getPlottableTable();
 		Graph g = Main.getGraph();
@@ -500,6 +502,15 @@ public final class FileDataManager {
 			plottable.getMenu().sync();
 			
 			offset += PLOTTABLE_LENGTH;
+		}
+
+		// Clear the backlog of old bytes to write
+		bytesToInsert = new HashMap<>();
+		bytesToDelete = new ArrayList<>();
+
+		// Calculate series stats so users aren't faced with a wall of N/As
+		for (Series series : Main.getDataTable().getData()) {
+			series.calculateStatistics();
 		}
 
 		Main.getGraph().sync();
