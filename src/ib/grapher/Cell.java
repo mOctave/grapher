@@ -59,12 +59,14 @@ public class Cell extends JPanel {
 				// Losing focus also does data entry
 				Cell.this.setValue(Cell.this.textField.getText());
 				Cell.this.getSeries().calculateStatistics();
+				Cell.this.save();
 			}
 		});
 		textField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Cell.this.setValue(Cell.this.textField.getText());
 				Cell.this.getSeries().calculateStatistics();
+				Cell.this.save();
 			}
 		});
 		add(textField);

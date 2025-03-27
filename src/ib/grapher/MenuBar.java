@@ -37,7 +37,6 @@ public class MenuBar extends JMenuBar {
 			}
 		});
 		menuProject.add(projectSaveAs);
-
 		JMenuItem projectOpen = new JMenuItem("Open");
 		projectOpen.setAccelerator(KeyStroke.getKeyStroke(
 			KeyEvent.VK_O,
@@ -45,9 +44,14 @@ public class MenuBar extends JMenuBar {
 		));
 		projectOpen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FileDataManager.openFile(FileDataManager.chooseFile(
-					".graph", "Grapher Files", false));
-				FileDataManager.load();
+				File file = FileDataManager.chooseFile(
+					".graph", "Grapher Files", false);
+				if (file == null) {
+					System.out.println("Cancelled opening project.");
+				} else {
+					FileDataManager.openFile(file);
+					FileDataManager.load();
+				}
 			}
 		});
 		menuProject.add(projectOpen);
@@ -80,6 +84,12 @@ public class MenuBar extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				Main.getDataTable().sortBySelectedColumn();
 				Main.updateAllComponents();
+				// Save the sorted data. Series don't need to be saved.
+				for (Series r : Main.getDataTable().getData()) {
+					for (Cell c : r) {
+						c.save();
+					}
+				}
 			}
 		});
 		menuData.add(dataSort);

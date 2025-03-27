@@ -103,7 +103,7 @@ public final class FileDataManager {
 	 */
 	public static void encodeForInsertion(Cell cell) {
 		List<Series> data = Main.getDataTable().getData();
-		int index = (cell.getIndex() - 1) * data.size() // Account for previous rows
+		int index = (cell.getIndex()) * data.size() // Account for previous rows
 					+ data.indexOf(cell.getSeries()); // Account for this row
 		long offset = getOffset(CELL, index);
 		Byte[] bytes = Main.stringToByteArray(cell.getValue(), CELL_LENGTH);
@@ -720,6 +720,7 @@ public final class FileDataManager {
 	// MARK: Convenience
 	/**
 	 * Converts an integer into an array of four bytes.
+	 * Adapted from Le, 2011.
 	 * @param i The integer to convert.
 	 * @return The byte array.
 	 */

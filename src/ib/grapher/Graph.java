@@ -14,6 +14,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JButton;
@@ -318,7 +319,11 @@ public class Graph extends JFrame {
 		panelGraph.printAll(g);
 		g.dispose();
 		try {
-			ImageIO.write(img, "png", FileDataManager.chooseFile(".png", "PNG Images", true));
+			File destination = FileDataManager.chooseFile(".png", "PNG Images", true);
+			if (destination == null)
+				System.out.println("Cancelled graph export.");
+			else
+				ImageIO.write(img, "png", destination);
 		} catch (IOException e) {
 			System.err.println("Could not export graph to file.");
 			e.printStackTrace();

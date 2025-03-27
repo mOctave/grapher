@@ -204,10 +204,10 @@ public class GraphPanel extends JPanel {
 			}
 		}
 
-		List<GraphPoint> points = new ArrayList<>();
-
 		// Draw plottable data sets
 		for (PlottableData pd : Main.getPlottableTable().getDataSets()) {
+			List<GraphPoint> points = new ArrayList<>();
+
 			graphics.setColor(pd.getColour());
 
 			if (
