@@ -1,6 +1,5 @@
 package ib.grapher;
 
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
