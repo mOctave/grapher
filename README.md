@@ -27,8 +27,10 @@ Once you have your data ready to plot, you can switch to windows, and use the‬
 
 After you’ve added valid values for the X and Y axes, the data should be plotted‬ automatically on the graph! Using the graph window, you can change the title of the‬ graph as well as its two axis titles, and switch between scatterplot and line graph‬ modes. Once you have a graph you are happy with, resize the window to the size you‬ want and then hit “Export” to get a .png file.‬
 
-‭### Gridlines‬
-‭Unfortunately, it was not feasible to implement automatic gridlines as part of the‬ program in the end. Thus, gridlines remain the hardest to use part of this program. If the‬ default window (gridlines at x=0 and y=0, bounds at ±10) do not work for you, then you‬ will have to add custom gridlines.‬
+‭
+### Gridlines
+‭
+Unfortunately, it was not feasible to implement automatic gridlines as part of the‬ program in the end. Thus, gridlines remain the hardest to use part of this program. If the‬ default window (gridlines at x=0 and y=0, bounds at ±10) do not work for you, then you‬ will have to add custom gridlines.‬
 ‭
 
 To do so, add a column to your data table, and title it however you want (I usually‬ call mine “Gridlines (X)” and “Gridlines (Y)”). Assign this as a gridline series using one of‬ the dropdown menus on the graph window. Note that the labels on the graph window‬ might be misleading; horizontal gridlines are drawn vertically at specific points on the‬ X-axis, not horizontal lines at specific points on the Y-axis. You should notice that one of‬ the lines on the graph immediately vanishes. You can now enter custom gridline data in‬ your new column, and produce your own gridlines. Gridline data is formatted as follows:‬
